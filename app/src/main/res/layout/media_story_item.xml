@@ -9,7 +9,8 @@
             android:id="@+id/image_holder"
             android:layout_width="fill_parent"
             android:layout_height="220dp"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            android:src="@drawable/thumbnail_news"/>
 
         <ImageView
             android:id="@+id/image_overlay"
