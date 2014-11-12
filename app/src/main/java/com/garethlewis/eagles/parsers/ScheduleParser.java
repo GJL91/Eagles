@@ -46,7 +46,7 @@ public class ScheduleParser extends AsyncTask<ParserPackage, Void, List<Fixture>
         List<Fixture> fixtures = new ArrayList<Fixture>();
 
         try {
-            for (int w = 1; w < 3; w++) {
+            for (int w = 1; w < 5; w++) {
                 week = "" + w;
                 String url = getUrl();
                 Document doc = Jsoup.connect(url).get();
@@ -65,16 +65,21 @@ public class ScheduleParser extends AsyncTask<ParserPackage, Void, List<Fixture>
                         if (matchup.contains(",")) { // Fixture is in the past OR a bye row
                             if (matchup.contains(":")) { // Fixture is a bye row of teams
                                 String[] teams = matchup.split(",");
-                                teams[0] = teams[0].substring(6).trim();
+                                teams[0] = teams[0].substring(6);
+
+                                for (String t : teams) {
+                                    Fixture fixture = new Fixture(t.trim(), "", 0, 0, date, "0:00 AM", week);
+                                    fixtures.add(fixture);
+                                }
 
                             } else { // Normal fixture
                                 String[] parts = matchup.split(",");
 
                                 String pattern = "(\\D*)(\\d+)(.*)";
-                                String awayTeam = parts[0].replaceAll(pattern, "$1").trim();
-                                int awayScore = Integer.parseInt(parts[0].replaceAll(pattern, "$2").trim());
-                                String homeTeam = parts[1].replaceAll(pattern, "$1").trim();
-                                int homeScore = Integer.parseInt(parts[1].replaceAll(pattern, "$2").trim());
+                                String homeTeam = parts[0].replaceAll(pattern, "$1").trim();
+                                int homeScore = Integer.parseInt(parts[0].replaceAll(pattern, "$2").trim());
+                                String awayTeam = parts[1].replaceAll(pattern, "$1").trim();
+                                int awayScore = Integer.parseInt(parts[1].replaceAll(pattern, "$2").trim());
 
                                 Fixture fixture = new Fixture(homeTeam, awayTeam, homeScore, awayScore, date, "0:00 AM", week);
                                 fixtures.add(fixture);
@@ -119,11 +124,46 @@ public class ScheduleParser extends AsyncTask<ParserPackage, Void, List<Fixture>
         int i = 0;
 //        Resources resources = context.getResources();
         for (Fixture f : fixtures) {
-            FrameLayout view = (FrameLayout) inflater.inflate(R.layout.fixture_item, null, false);
-            TextView textView = (TextView) view.findViewById(R.id.away_team_name);
-            textView.setText(f.getAwayTeam());
+            if (i == 62) {
+                i = 62;
+            }
+            if ("".equals(f.getAwayTeam())) {
+                // Bye Week for homeTeam
+                FrameLayout view = (FrameLayout) inflater.inflate(R.layout.bye_week_fixture, null, false);
 
-            textView = (TextView) view.findViewById(R.id.away_team_name);
+                TextView textView = (TextView) view.findViewById(R.id.home_team_name);
+                textView.setText(f.getHomeTeam().toUpperCase());
+
+                textView = (TextView) view.findViewById(R.id.week_number);
+                textView.setText("WEEK " + f.getWeek());
+
+                String homeName = f.getHomeTeam().toLowerCase().replace(" ", "_").replace(".", "");
+                int teamIndex = getTeamIndex(homeName);
+                Bitmap bitmap;
+                if (logos[teamIndex] == null) {
+                    int homeImage = context.getResources().getIdentifier(homeName, "drawable", context.getPackageName());
+
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inSampleSize = 4;
+                    bitmap = BitmapFactory.decodeResource(context.getResources(), homeImage, options);
+
+                    logos[teamIndex] = bitmap;
+                } else {
+                    bitmap = logos[teamIndex];
+                }
+                ImageView imageView = (ImageView) view.findViewById(R.id.home_team_image);
+                imageView.setImageBitmap(bitmap);
+
+                input.getLinearLayout().addView(view);
+                i++;
+                Log.e("EAGLES", "" + i);
+
+                continue;
+            }
+
+            FrameLayout view = (FrameLayout) inflater.inflate(R.layout.fixture_item, null, false);
+
+            TextView textView = (TextView) view.findViewById(R.id.away_team_name);
             textView.setText(f.getAwayTeam().toUpperCase());
 
             textView = (TextView) view.findViewById(R.id.home_team_name);
