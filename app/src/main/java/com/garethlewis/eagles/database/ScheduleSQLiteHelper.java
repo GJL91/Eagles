@@ -213,6 +213,22 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
         return fixtureList;
     }
 
+    public List<Fixture> getFixturesForWeek(int week) {
+        List<Fixture> fixtureList = new ArrayList<Fixture>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String[] selectionArgs = new String[]{"" + week};
+        Cursor cursor = db.rawQuery("SELECT * FROM SCHEDULE WHERE Week = ?", selectionArgs);
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            Fixture fixture = cursorToFixture(cursor);
+            fixtureList.add(fixture);
+            cursor.moveToNext();
+        }
+        cursor.close();
+        db.close();
+        return fixtureList;
+    }
+
     /**
      * Converts the cursor returned from a query into a Fixture object.
      * @param cursor Cursor to convert
@@ -248,8 +264,8 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
         String selection = COLUMN_DATE + " = ? AND " + COLUMN_HOME_TEAM + " = ? AND " + COLUMN_AWAY_TEAM + " = ? AND " + COLUMN_WEEK + " = ?";
         String epoch = String.valueOf(Fixture.dateStringToEpoch(fixture.getDate() + " " + fixture.getTime()));
         String[] selectionArgs = new String[]{epoch, fixture.getHomeTeam(),fixture.getAwayTeam(), fixture.getWeek()};
-//        Cursor cursor = db.rawQuery("SELECT _id FROM SCHEDULE WHERE (Date = ? AND HomeTeam = ? AND AwayTeam = ? AND Week = ?)", selectionArgs);
-        Cursor cursor = db.query(TABLE_SCHEDULE,null,selection,selectionArgs,null,null,null);
+        Cursor cursor = db.rawQuery("SELECT _id FROM SCHEDULE WHERE (Date = ? AND HomeTeam = ? AND AwayTeam = ? AND Week = ?)", selectionArgs);
+//        Cursor cursor = db.query(TABLE_SCHEDULE,null,selection,selectionArgs,null,null,null);
         int id=-1;
         if(cursor.moveToNext()){
             id = cursor.getInt(0);

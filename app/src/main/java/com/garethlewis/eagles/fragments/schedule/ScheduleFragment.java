@@ -1,4 +1,4 @@
-package com.garethlewis.eagles.fragments;
+package com.garethlewis.eagles.fragments.schedule;
 
 import android.os.AsyncTask;
 import android.os.Build;
@@ -7,18 +7,26 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 import com.garethlewis.eagles.ParserPackage;
 import com.garethlewis.eagles.R;
+import com.garethlewis.eagles.database.Fixture;
+import com.garethlewis.eagles.database.ScheduleSQLiteHelper;
 import com.garethlewis.eagles.parsers.ScheduleParser;
+
+import java.util.List;
 
 public class ScheduleFragment extends Fragment {
 
+    private LinearLayout fixturesList;
+    private int showing;
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View parent = inflater.inflate(R.layout.schedule_main, container, false);
 
         Spinner teamSpinner = (Spinner) parent.findViewById(R.id.team_spinner);
@@ -33,8 +41,29 @@ public class ScheduleFragment extends Fragment {
                 R.array.weekHeadings, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position + 1 != showing) {
+                    fixturesList.removeAllViewsInLayout();
+                    ScheduleSQLiteHelper db = new ScheduleSQLiteHelper(getActivity());
+                    List<Fixture> fixtures = db.getFixturesForWeek(position + 1);
+                    for (Fixture f : fixtures) {
+                        View fixtureView = ScheduleViewHelper.setupViewForFixture(getActivity(), inflater, f);
+                        fixturesList.addView(fixtureView);
+                    }
+                    showing = position + 1;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         LinearLayout view = (LinearLayout) parent.findViewById(R.id.fixtures_list);
+        fixturesList = view;
 
         ParserPackage parserPackage = new ParserPackage(getActivity(), inflater, container, view, null);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -42,6 +71,8 @@ public class ScheduleFragment extends Fragment {
         } else {
             new ScheduleParser().execute(parserPackage);
         }
+
+        showing = 1;
 
         return parent;
     }

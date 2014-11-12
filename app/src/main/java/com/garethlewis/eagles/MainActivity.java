@@ -12,7 +12,7 @@ import android.view.View;
 
 import com.garethlewis.eagles.database.MasterDatabase;
 import com.garethlewis.eagles.fragments.NewsFragment;
-import com.garethlewis.eagles.fragments.ScheduleFragment;
+import com.garethlewis.eagles.fragments.schedule.ScheduleFragment;
 import com.garethlewis.eagles.fragments.home.HomeFragment;
 
 
