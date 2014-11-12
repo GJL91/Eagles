@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="250dp"
+    android:padding="15dp">
+
+        <ImageView
+            android:id="@+id/image_holder"
+            android:layout_width="fill_parent"
+            android:layout_height="220dp"
+            android:scaleType="centerCrop" />
+
+        <ImageView
+            android:id="@+id/image_overlay"
+            android:layout_width="fill_parent"
+            android:layout_height="220dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/item_news_overlay_large_mob" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:layout_gravity="bottom|left">
+
+            <TextView
+                android:id="@+id/post_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:text="Posted 2 hours ago"/>
+
+            <TextView
+                android:id="@+id/post_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:text="Eagles Fans, You Can Help Us Sack Hunger"/>
+
+        </LinearLayout>
+
+</FrameLayout>

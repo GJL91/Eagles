@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <array name="sectionHeadings">
+        <item>Home</item>
+        <item>News</item>
+        <item>Team</item>
+        <item>Schedule</item>
+        <item>Standings</item>
+        <item>Settings</item>
+    </array>
+
+    <integer-array name="activityLayouts">
+        <item>@layout/home_main</item>
+        <item>@layout/news_main</item>
+        <item>@layout/team_main</item>
+        <item>@layout/schedule_main</item>
+        <item>@layout/standings_main</item>
+        <item>@layout/settings_main</item>
+    </integer-array>
+
+    <array name="weekHeadings">
+        <item>Week 1</item>
+        <item>Week 2</item>
+        <item>Week 3</item>
+        <item>Week 4</item>
+        <item>Week 5</item>
+        <item>Week 6</item>
+        <item>Week 7</item>
+        <item>Week 8</item>
+        <item>Week 9</item>
+        <item>Week 10</item>
+        <item>Week 11</item>
+        <item>Week 12</item>
+        <item>Week 13</item>
+        <item>Week 14</item>
+        <item>Week 15</item>
+        <item>Week 16</item>
+        <item>Week 17</item>
+        <item>Playoffs</item>
+    </array>
+
+    <array name="spinnerTeams">
+        <item>All Teams</item>
+        <item>Arizona</item>
+        <item>Atlanta</item>
+        <item>Baltimore</item>
+        <item>Buffalo</item>
+        <item>Carolina</item>
+        <item>Chicago</item>
+        <item>Cincinnati</item>
+        <item>Cleveland</item>
+        <item>Dallas</item>
+        <item>Denver</item>
+        <item>Detroit</item>
+        <item>Green Bay</item>
+        <item>Houston</item>
+        <item>Indianapolis</item>
+        <item>Jacksonville</item>
+        <item>Kansas City</item>
+        <item>Miami</item>
+        <item>Minnesota</item>
+        <item>New England</item>
+        <item>New Orleans</item>
+        <item>NY Giants</item>
+        <item>NY Jets</item>
+        <item>Oakland</item>
+        <item>Philadelphia</item>
+        <item>Pittsburgh</item>
+        <item>St Louis</item>
+        <item>San Diego</item>
+        <item>San Francisco</item>
+        <item>Seattle</item>
+        <item>Tampa Bay</item>
+        <item>Tennessee</item>
+        <item>Washington</item>
+    </array>
+
+</resources>

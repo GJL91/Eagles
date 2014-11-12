@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Eagles</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="refresh">Refresh</string>
+    <string name="menu_image">&#x2261;</string>
+
+    <string name="pass_header">PASS</string>
+    <string name="rush_header">RUSH</string>
+    <string name="rec_header">REC</string>
+
+    <string name="at_symbol">\@</string>
+
+</resources>
