@@ -12,8 +12,9 @@ import android.view.View;
 
 import com.garethlewis.eagles.database.MasterDatabase;
 import com.garethlewis.eagles.fragments.NewsFragment;
-import com.garethlewis.eagles.fragments.schedule.ScheduleFragment;
 import com.garethlewis.eagles.fragments.home.HomeFragment;
+import com.garethlewis.eagles.fragments.schedule.ScheduleFragment;
+import com.garethlewis.eagles.fragments.standings.StandingsFragment;
 
 
 public class MainActivity extends FragmentActivity
@@ -159,9 +160,9 @@ public class MainActivity extends FragmentActivity
             case 3:
                 fragment = new ScheduleFragment();
                 break;
-//                case 4:
-//                    fragment = new StandingsFragment();
-//                    break;
+            case 4:
+                fragment = new StandingsFragment();
+                break;
 //                case 5:
 //                    fragment = new SettingsFragment();
 //                    break;
