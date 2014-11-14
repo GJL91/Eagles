@@ -4,13 +4,14 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.garethlewis.eagles.ParserPackage;
-import com.garethlewis.eagles.NewsItem;
+import com.garethlewis.eagles.database.entities.NewsItem;
 import com.garethlewis.eagles.R;
 import com.garethlewis.eagles.database.MediaSQLiteHelper;
 import com.garethlewis.eagles.database.UpdatedSQLiteHelper;
@@ -37,6 +38,8 @@ public class NewsParser extends AsyncTask<ParserPackage, Void, List<NewsItem>>  
         list = params[0];
         MediaSQLiteHelper db = new MediaSQLiteHelper(list.getContext());
         //db.deleteAllStories();
+
+        list.getProgress().setVisibility(View.VISIBLE);
 
         List<NewsItem> newsItems = new ArrayList<NewsItem>();
         try {
@@ -151,6 +154,7 @@ public class NewsParser extends AsyncTask<ParserPackage, Void, List<NewsItem>>  
         UpdatedSQLiteHelper updatedSQLiteHelper = new UpdatedSQLiteHelper(list.getContext());
         updatedSQLiteHelper.setUpdated("Media");
 
+        list.getProgress().setVisibility(View.GONE);
         //db.deleteAllStories();
     }
 

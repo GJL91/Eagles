@@ -1,8 +1,12 @@
 package com.garethlewis.eagles.database;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import com.garethlewis.eagles.TeamHelper;
+import com.garethlewis.eagles.database.entities.Standing;
 
 public class MasterDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "eagles.db";
@@ -33,6 +37,20 @@ public class MasterDatabase extends SQLiteOpenHelper {
                 "Name TEXT NOT NULL PRIMARY KEY, " +
                 "Date INTEGER NOT NULL);";
 
+    private static final String STANDINGS_CREATE =
+            "CREATE Table Standings (" +
+                "Name TEXT NOT NULL PRIMARY KEY, " +
+                "Wins INTEGER NOT NULL, " +
+                "Losses INTEGER NOT NULL, " +
+                "Ties INTEGER NOT NULL, " +
+                "HomeRecord TEXT NOT NULL, " +
+                "RoadRecord TEXT NOT NULL, " +
+                "DivisionRecord TEXT NOT NULL, " +
+                "ConferenceRecord TEXT NOT NULL, " +
+                "PointsFor INTEGER NOT NULL, " +
+                "PointsAgainst INTEGER NOT NULL, " +
+                "Streak INTEGER NOT NULL);";
+
     private Context context;
 
     public MasterDatabase(Context context) {
@@ -52,6 +70,10 @@ public class MasterDatabase extends SQLiteOpenHelper {
         db.execSQL(MEDIA_CREATE);
         db.execSQL(SCHEDULE_CREATE);
         db.execSQL(UPDATED_CREATE);
+        db.execSQL(STANDINGS_CREATE);
+
+        insertInitialUpdates(db);
+        insertInitialStandings(db);
 
 //        Cursor cursor = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
 //        while (cursor.moveToNext()) {
@@ -66,10 +88,52 @@ public class MasterDatabase extends SQLiteOpenHelper {
             db.execSQL("DROP TABLE IF EXISTS Media");
             db.execSQL("DROP TABLE IF EXISTS Schedule");
             db.execSQL("DROP TABLE IF EXISTS LastUpdated");
+            db.execSQL("DROP TABLE IF EXISTS Standings");
 
             DATABASE_VERSION = newVersion;
             onCreate(db);
         }
+    }
+
+    private void insertInitialUpdates(SQLiteDatabase db) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("Name", "Media");
+        contentValues.put("Date", 0);
+        db.insert("LastUpdated", null, contentValues);
+
+        contentValues = new ContentValues();
+        contentValues.put("Name", "Schedule");
+        contentValues.put("Date", 0);
+        db.insert("LastUpdated", null, contentValues);
+
+        contentValues = new ContentValues();
+        contentValues.put("Name", "Standings");
+        contentValues.put("Date", 0);
+        db.insert("LastUpdated", null, contentValues);
+    }
+
+    private void insertInitialStandings(SQLiteDatabase db) {
+        for (int i = 0; i < 32; i++) {
+            Standing standing = new Standing();
+
+            ContentValues contentValues = new ContentValues();
+            String team = TeamHelper.getTeamName(i);
+
+            contentValues.put("Name", team);
+            contentValues.put("Wins", standing.getWins());
+            contentValues.put("Losses", standing.getLosses());
+            contentValues.put("Ties", standing.getTies());
+            contentValues.put("HomeRecord", standing.getHomeRecord());
+            contentValues.put("RoadRecord", standing.getRoadRecord());
+            contentValues.put("DivisionRecord", standing.getDivisionRecord());
+            contentValues.put("ConferenceRecord", standing.getConferenceRecord());
+            contentValues.put("PointsFor", standing.getPointsFor());
+            contentValues.put("PointsAgainst", standing.getPointsAgainst());
+            contentValues.put("Streak", standing.getStreak());
+
+            db.insert("Standings", null, contentValues);
+        }
+
     }
 
     public void resetDatabase() {
@@ -78,6 +142,7 @@ public class MasterDatabase extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS Media");
         db.execSQL("DROP TABLE IF EXISTS Schedule");
         db.execSQL("DROP TABLE IF EXISTS LastUpdated");
+        db.execSQL("DROP TABLE IF EXISTS Standings");
 
         onCreate(db);
 

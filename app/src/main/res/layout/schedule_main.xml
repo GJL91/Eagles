@@ -36,6 +36,15 @@
 
         </LinearLayout>
 
+        <ProgressBar
+            android:id="@+id/schedule_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_gravity="center"
+            android:paddingTop="40dp"
+            android:visibility="gone" />
+
         <LinearLayout
             android:id="@+id/fixtures_list"
             android:layout_width="match_parent"

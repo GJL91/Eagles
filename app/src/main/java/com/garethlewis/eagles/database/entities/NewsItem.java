@@ -1,4 +1,4 @@
-package com.garethlewis.eagles;
+package com.garethlewis.eagles.database.entities;
 
 import android.graphics.drawable.Drawable;
 

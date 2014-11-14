@@ -10,12 +10,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 
 import com.garethlewis.eagles.ParserPackage;
 import com.garethlewis.eagles.R;
-import com.garethlewis.eagles.database.Fixture;
 import com.garethlewis.eagles.database.ScheduleSQLiteHelper;
+import com.garethlewis.eagles.database.UpdatedSQLiteHelper;
+import com.garethlewis.eagles.database.entities.Fixture;
 import com.garethlewis.eagles.parsers.ScheduleParser;
 
 import java.util.List;
@@ -49,7 +51,7 @@ public class ScheduleFragment extends Fragment {
                     ScheduleSQLiteHelper db = new ScheduleSQLiteHelper(getActivity());
                     List<Fixture> fixtures = db.getFixturesForWeek(position + 1);
                     for (Fixture f : fixtures) {
-                        View fixtureView = ScheduleViewHelper.setupViewForFixture(getActivity(), inflater, f);
+                        View fixtureView = ScheduleViewHelper.setupViewForFixture(getActivity(), inflater, f, true);
                         fixturesList.addView(fixtureView);
                     }
                     showing = position + 1;
@@ -65,11 +67,24 @@ public class ScheduleFragment extends Fragment {
         LinearLayout view = (LinearLayout) parent.findViewById(R.id.fixtures_list);
         fixturesList = view;
 
-        ParserPackage parserPackage = new ParserPackage(getActivity(), inflater, container, view, null);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            new ScheduleParser().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, parserPackage);
+        UpdatedSQLiteHelper db = new UpdatedSQLiteHelper(getActivity());
+        if (db.needsUpdate("Schedule")) {
+
+            ProgressBar progressBar = (ProgressBar) parent.findViewById(R.id.schedule_progress);
+
+            ParserPackage parserPackage = new ParserPackage(getActivity(), inflater, container, view, progressBar);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                new ScheduleParser().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, parserPackage);
+            } else {
+                new ScheduleParser().execute(parserPackage);
+            }
         } else {
-            new ScheduleParser().execute(parserPackage);
+            ScheduleSQLiteHelper scheduleDB = new ScheduleSQLiteHelper(getActivity());
+            List<Fixture> fixtures = scheduleDB.getFixturesForWeek(1);
+            for (Fixture f : fixtures) {
+                View fixtureView = ScheduleViewHelper.setupViewForFixture(getActivity(), inflater, f, true);
+                fixturesList.addView(fixtureView);
+            }
         }
 
         showing = 1;

@@ -40,6 +40,8 @@ public class MainActivity extends FragmentActivity
 //    private boolean blurred = false;
 //    private boolean changeOnFinish = false;
 
+    private int fragmentDisplayed = -1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         FileHandler.setContext(getApplicationContext());
@@ -137,7 +139,9 @@ public class MainActivity extends FragmentActivity
 //        fragmentManager.beginTransaction()
 //            .replace(R.id.container, activityFragments[position - 1])
 //            .commit();
-        displayFragment(position - 1);
+        if (fragmentDisplayed != position - 1) {
+            displayFragment(position - 1);
+        }
     }
 
     private void displayFragment(int position) {
@@ -174,6 +178,8 @@ public class MainActivity extends FragmentActivity
         fragmentManager.beginTransaction()
                 .replace(R.id.container, fragment)
                 .commit();
+
+        fragmentDisplayed = position;
     }
 
 //    public void onSectionAttached(int number) {
@@ -229,6 +235,16 @@ public class MainActivity extends FragmentActivity
 //        else {
 //            ((ImageView) findViewById(R.id.home_match_background)).setImageBitmap(blurredBackground);
 //        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (fragmentDisplayed != 0) {
+            mNavigationDrawerFragment.setItemChecked(1);
+            displayFragment(0);
+        } else {
+            super.onBackPressed();
+        }
     }
 
 //    public void showMediaContent(View view) {

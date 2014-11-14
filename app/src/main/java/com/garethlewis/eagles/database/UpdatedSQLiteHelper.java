@@ -29,7 +29,6 @@ public class UpdatedSQLiteHelper extends MasterDatabase {
         contentValues.put("Date", date);
 
         boolean success = (db.replace(TABLE_UPDATED, null, contentValues) != -1);
-        db.close();
 
         return success;
     }
@@ -42,9 +41,14 @@ public class UpdatedSQLiteHelper extends MasterDatabase {
         String dateString = cursor.getString(cursor.getColumnIndex("Date"));
 
         cursor.close();
-        db.close();
 
         return new Date(Long.parseLong(dateString));
+    }
+
+    public boolean needsUpdate(String table) {
+        Date date = getLastUpdated(table);
+        if (new Date().getTime() - date.getTime() > 259200000) return true;
+        else return false;
     }
 
 }

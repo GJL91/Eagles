@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import com.garethlewis.eagles.ParserPackage;
 import com.garethlewis.eagles.parsers.NewsParser;
@@ -35,8 +36,9 @@ public class HomeContentFragment extends android.support.v4.app.Fragment {
 
         if (position == 0) {
             LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.home_media_list);
+            ProgressBar progress = (ProgressBar) view.findViewById(R.id.media_progress);
 
-            ParserPackage parserPackage = new ParserPackage(getActivity(), inflater, container, linearLayout, null);
+            ParserPackage parserPackage = new ParserPackage(getActivity(), inflater, container, linearLayout, progress);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 new NewsParser().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, parserPackage);
             } else {

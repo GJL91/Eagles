@@ -33,13 +33,14 @@
                     android:paddingLeft="10dp"
                     android:textColor="@color/grey"
                     android:textStyle="bold"
+                    android:layout_gravity="center"
                     android:text="3-5-1" />
 
                 <ImageView
                     android:id="@+id/away_team_image"
                     android:layout_width="0dp"
                     android:layout_weight="1"
-                    android:layout_height="match_parent"
+                    android:layout_height="30dp"
                     android:src="@drawable/philadelphia"
                     android:scaleType="centerInside"/>
 
@@ -88,7 +89,7 @@
                     android:id="@+id/home_team_image"
                     android:layout_width="0dp"
                     android:layout_weight="1"
-                    android:layout_height="match_parent"
+                    android:layout_height="30dp"
                     android:src="@drawable/arizona"
                     android:scaleType="centerInside" />
 
@@ -96,12 +97,13 @@
                     android:id="@+id/home_team_record"
                     android:layout_width="0dp"
                     android:layout_weight="1"
+                    android:layout_height="wrap_content"
                     android:paddingRight="10dp"
                     android:paddingLeft="0dp"
                     android:gravity="right"
                     android:textStyle="bold"
                     android:textColor="@color/grey"
-                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:text="6-2"/>
 
             </LinearLayout>

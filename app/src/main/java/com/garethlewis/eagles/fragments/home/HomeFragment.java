@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import com.garethlewis.eagles.R;
 import com.garethlewis.eagles.adapters.HomeContentPagerAdapter;
 import com.garethlewis.eagles.adapters.MatchPagerAdapter;
+import com.garethlewis.eagles.tabs.TabPageIndicator;
 
 public class HomeFragment extends Fragment {
 
@@ -57,31 +58,50 @@ public class HomeFragment extends Fragment {
         mViewPager.setOffscreenPageLimit(2);
         mViewPager.setCurrentItem(1);
 
-//        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-//            @Override
-//            public void onPageScrolled(int i, float v, int i2) {}
-//
-//            @Override
-//            public void onPageScrollStateChanged(int i) {}
-//
-//            @Override
-//            public void onPageSelected(int position) {
-//                if (position == 0 || position == 2) {
-//                    if (!blurred) changeOnFinish = true;
-//                    else {
-//                        ((ImageView) root.findViewById(R.id.home_match_background)).setImageBitmap(blurredBackground);
-//                    }
-//                } else {
-//                    ((ImageView) root.findViewById(R.id.home_match_background)).setImageBitmap(currentBackground);
-//                }
-//            }
-//        });
+        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int i, float v, int i2) {}
+
+            @Override
+            public void onPageScrollStateChanged(int i) {}
+
+            @Override
+            public void onPageSelected(int position) {
+                if (position == 0 || position == 2) {
+                    if (!blurred) changeOnFinish = true;
+                    else {
+                        ((ImageView) root.findViewById(R.id.home_match_background)).setImageBitmap(blurredBackground);
+                    }
+                } else {
+                    ((ImageView) root.findViewById(R.id.home_match_background)).setImageBitmap(currentBackground);
+                }
+            }
+        });
 
         ViewPager contentViewPager = (ViewPager) root.findViewById(R.id.placeholder_content);
         HomeContentPagerAdapter mContentPagerAdapter = new HomeContentPagerAdapter(getChildFragmentManager());
         contentViewPager.setAdapter(mContentPagerAdapter);
+
+        final TabPageIndicator tabPageIndicator = (TabPageIndicator) root.findViewById(R.id.tab_indicator);
+        tabPageIndicator.setInflater(inflater);
+        tabPageIndicator.setViewPager(contentViewPager, 0);
+//        tabPageIndicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+//            @Override
+//            public void onPageScrolled(int i, float v, int i2) {
+//
+//            }
+//
+//            @Override
+//            public void onPageSelected(int i) {
+//            }
+//
+//            @Override
+//            public void onPageScrollStateChanged(int i) {
+//
+//            }
+//        });
+
         contentViewPager.setOffscreenPageLimit(2);
-        contentViewPager.setCurrentItem(0);
 
         setMatchBackground();
 

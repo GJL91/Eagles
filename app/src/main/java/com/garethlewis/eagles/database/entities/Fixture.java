@@ -1,4 +1,4 @@
-package com.garethlewis.eagles.database;
+package com.garethlewis.eagles.database.entities;
 
 import android.util.Log;
 
@@ -109,7 +109,7 @@ public class Fixture {
      */
     public static String epochToDateString(long epochTime){
         Date epochDate = new Date(epochTime);
-        SimpleDateFormat formatter = new SimpleDateFormat("EEEE, d MMMMM yyyy h:mm a");
+        SimpleDateFormat formatter = new SimpleDateFormat("EEE, MMM d yyyy h:mm a");
         return formatter.format(epochDate);
     }
 

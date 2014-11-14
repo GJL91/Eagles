@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
 
 import com.garethlewis.eagles.FileHandler;
-import com.garethlewis.eagles.NewsItem;
+import com.garethlewis.eagles.database.entities.NewsItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +47,6 @@ public class MediaSQLiteHelper extends MasterDatabase {
         contentValues.put("Image", source);
 
         boolean success = (db.insert("Media", null, contentValues) != -1);
-        db.close();
         return success;
     }
 
@@ -56,14 +55,12 @@ public class MediaSQLiteHelper extends MasterDatabase {
         Cursor res = db.rawQuery("SELECT * FROM Media WHERE Title = '" + title.replace("'", "[apos]") + "'", null);
         boolean contained = res.getCount() > 0;
         res.close();
-        db.close();
         return contained;
     }
 
     public boolean deleteStory(String title) {
         SQLiteDatabase db = this.getWritableDatabase();
         boolean success = (db.delete("Media", "Title = ? ", new String[] { title }) != 0);
-        db.close();
         return success;
     }
 
@@ -101,8 +98,6 @@ public class MediaSQLiteHelper extends MasterDatabase {
         }
 
         res.close();
-        db.close();
-        dbw.close();
     }
 
     public boolean deleteAllStories() {
@@ -131,8 +126,6 @@ public class MediaSQLiteHelper extends MasterDatabase {
         boolean success = (dbw.delete("Media", "1", null) > 0);
 
         res.close();
-        db.close();
-        dbw.close();
 
         return success;
     }
@@ -158,7 +151,6 @@ public class MediaSQLiteHelper extends MasterDatabase {
         }
 
         res.close();
-        db.close();
 
         return newsItems;
     }

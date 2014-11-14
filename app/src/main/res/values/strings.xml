@@ -11,6 +11,7 @@
     <string name="rush_header">RUSH</string>
     <string name="rec_header">REC</string>
 
+    <string name="bye_week">BYE</string>
     <string name="at_symbol">\@</string>
 
 </resources>

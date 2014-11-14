@@ -1,15 +1,15 @@
 package com.garethlewis.eagles.parsers;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 
 import com.garethlewis.eagles.ParserPackage;
-import com.garethlewis.eagles.database.Fixture;
+import com.garethlewis.eagles.database.entities.Fixture;
 import com.garethlewis.eagles.database.ScheduleSQLiteHelper;
+import com.garethlewis.eagles.database.StandingsSQLiteHelper;
 import com.garethlewis.eagles.fragments.schedule.ScheduleViewHelper;
 
 import org.jsoup.Jsoup;
@@ -36,14 +36,20 @@ public class ScheduleParser extends AsyncTask<ParserPackage, Void, List<Fixture>
 
     @Override
     protected List<Fixture> doInBackground(ParserPackage... parserPackages) {
+        Log.e("EAGLES", "GETTING SCHEDULES");
+
         this.input = parserPackages[0];
+        input.getProgress().setVisibility(View.VISIBLE);
         ScheduleSQLiteHelper db = new ScheduleSQLiteHelper(input.getContext());
-        db.deleteAllFixtures();
+//        db.deleteAllFixtures();
+
+        StandingsSQLiteHelper dbs = new StandingsSQLiteHelper(input.getContext());
+//        dbs.deleteAllStandings();
 
         List<Fixture> fixtures = new ArrayList<Fixture>();
 
         try {
-            for (int w = 1; w < 5; w++) {
+            for (int w = 1; w < 18; w++) {
                 week = "" + w;
                 String url = getUrl();
                 Document doc = Jsoup.connect(url).get();
@@ -59,17 +65,17 @@ public class ScheduleParser extends AsyncTask<ParserPackage, Void, List<Fixture>
                     if (!element.hasClass("stathead") && !element.hasClass("colhead")) {
                         String matchup = element.child(0).text();
                         //                    Log.e("EAGLES", matchup);
-                        if (matchup.contains(",")) { // Fixture is in the past OR a bye row
-                            if (matchup.contains(":")) { // Fixture is a bye row of teams
+                        if (matchup.contains(",")) { // Bye week or Result
+                            if (matchup.contains(":")) { // Bye week
                                 String[] teams = matchup.split(",");
                                 teams[0] = teams[0].substring(6);
 
                                 for (String t : teams) {
-                                    Fixture fixture = new Fixture(t.trim(), "", 0, 0, date, "0:00 AM", week);
+                                    Fixture fixture = new Fixture(t.trim(), "", 0, 0, date, "5:32 AM", week);
                                     fixtures.add(fixture);
                                 }
 
-                            } else { // Normal fixture
+                            } else { // Result
                                 String[] parts = matchup.split(",");
 
                                 String pattern = "(\\D*)(\\d+)(.*)";
@@ -78,29 +84,29 @@ public class ScheduleParser extends AsyncTask<ParserPackage, Void, List<Fixture>
                                 String awayTeam = parts[1].replaceAll(pattern, "$1").trim();
                                 int awayScore = Integer.parseInt(parts[1].replaceAll(pattern, "$2").trim());
 
-                                Fixture fixture = new Fixture(homeTeam, awayTeam, homeScore, awayScore, date, "0:00 AM", week);
+                                Fixture fixture = new Fixture(homeTeam, awayTeam, homeScore, awayScore, date, "5:32 AM", week);
                                 fixtures.add(fixture);
                             }
-                        } else {
-                            // Do nothing
+                        } else {  // Fixture is in the future
+                            String[] parts = matchup.split(" at ");
+                            String homeTeam = parts[1];
+                            String awayTeam = parts[0];
 
+                            String time = element.child(1).text();
+
+                            Fixture fixture = new Fixture(homeTeam, awayTeam, -1, -1, date, time, week);
+                            fixtures.add(fixture);
                         }
-                    } else {
-                        // Likely a date, check before updating
+                    } else { // Likely a date, check before updating
                         if (element.hasClass("colhead")) {
                             date = element.child(0).text() + " " + year;
                         }
                     }
                 }
-
             }
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-
-
-
-
 
         return fixtures;
     }
@@ -113,10 +119,11 @@ public class ScheduleParser extends AsyncTask<ParserPackage, Void, List<Fixture>
 
         db.insertFixtures(fixtures);
 
-        LayoutInflater inflater = input.getInflater();
+        StandingsSQLiteHelper standingsDB = new StandingsSQLiteHelper(context);
+        standingsDB.setContext(context);
+        standingsDB.updateStandings(fixtures);
 
-        Bitmap[] logos = new Bitmap[32];
-        for (int i = 0; i < 32; i++) logos[i] = null;
+        LayoutInflater inflater = input.getInflater();
 
         fixtures = db.getFixturesForWeek(1);
 
@@ -178,7 +185,7 @@ public class ScheduleParser extends AsyncTask<ParserPackage, Void, List<Fixture>
 //            textView.setText("WEEK " + f.getWeek());
 //
 //            String time = f.getTime();
-//            if ("0:00 AM".equals(time)) time = "Final";
+//            if ("5:32 AM".equals(time)) time = "Final";
 //            textView = (TextView) view.findViewById(R.id.game_time);
 //            textView.setText(time);
 //
@@ -218,12 +225,14 @@ public class ScheduleParser extends AsyncTask<ParserPackage, Void, List<Fixture>
 //            imageView = (ImageView) view.findViewById(R.id.home_team_image);
 //            imageView.setImageBitmap(bitmap);
 
-            View view = ScheduleViewHelper.setupViewForFixture(context, inflater, f);
+            View view = ScheduleViewHelper.setupViewForFixture(context, inflater, f, true);
 
             input.getLinearLayout().addView(view);
             i++;
             Log.e("EAGLES", "" + i);
         }
+
+        input.getProgress().setVisibility(View.GONE);
     }
 
     private String getUrl() {

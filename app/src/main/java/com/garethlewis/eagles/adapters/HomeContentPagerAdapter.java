@@ -28,7 +28,7 @@ public class HomeContentPagerAdapter extends FragmentPagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         switch (position) {
-            case 0: return "Media";
+            case 0: return "News";
             case 1: return "Schedule";
             default: return "Twitter";
         }

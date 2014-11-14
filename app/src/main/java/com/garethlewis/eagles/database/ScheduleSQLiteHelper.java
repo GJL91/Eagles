@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.garethlewis.eagles.database.entities.Fixture;
 import com.garethlewis.eagles.exceptions.FixtureNotFoundException;
 
 import java.util.ArrayList;
@@ -32,8 +33,6 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
         SQLiteDatabase dbw = this.getWritableDatabase();
         boolean success = (dbw.delete("Schedule", "1", null) > 0);
 
-        dbw.close();
-
         return success;
     }
 
@@ -42,7 +41,10 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
         for (Fixture f : fixtures) {
             ContentValues contentValues = new ContentValues();
 
-            contentValues.put(COLUMN_DATE, Fixture.dateStringToEpoch(f.getDate() + " " + f.getTime()));
+            String time = f.getTime();
+            if ("TBD".equals(time)) time = "5:32 AM";
+
+            contentValues.put(COLUMN_DATE, Fixture.dateStringToEpoch(f.getDate() + " " + time));
             contentValues.put(COLUMN_HOME_TEAM, f.getHomeTeam());
             contentValues.put(COLUMN_AWAY_TEAM, f.getAwayTeam());
             contentValues.put(COLUMN_WEEK, f.getWeek());
@@ -63,7 +65,6 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
 
             if (!success) return false;
         }
-        db.close();
 
         UpdatedSQLiteHelper updatedSQLiteHelper = new UpdatedSQLiteHelper(getContext());
         updatedSQLiteHelper.setUpdated(TABLE_SCHEDULE);
@@ -99,7 +100,6 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
         }else{
             success = (db.insert(TABLE_SCHEDULE, null, contentValues) != -1);
         }
-        db.close();
         return success;
     }
 
@@ -119,7 +119,6 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
             fixture = cursorToFixture(cursor);
         }
         cursor.close();
-        db.close();
         return fixture;
     }
 
@@ -142,7 +141,6 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
             cursor.moveToNext();
         }
         cursor.close();
-        db.close();
         return lastTwoGames;
     }
 
@@ -186,7 +184,6 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
             cursor.moveToNext();
         }
         cursor.close();
-        db.close();
         return fixtureList;
     }
 
@@ -209,7 +206,6 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
             cursor.moveToNext();
         }
         cursor.close();
-        db.close();
         return fixtureList;
     }
 
@@ -225,7 +221,6 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
             cursor.moveToNext();
         }
         cursor.close();
-        db.close();
         return fixtureList;
     }
 
@@ -236,20 +231,21 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
      */
     private Fixture cursorToFixture(Cursor cursor) {
         Fixture fixture = new Fixture();
-        fixture.setDate(Fixture.epochToDateString(cursor.getLong(1)));
 
-        String[] dateParts = fixture.getDate().split(" ");
+        String date = Fixture.epochToDateString(cursor.getLong(1));
+        String[] dateParts = date.split(" ");
+
         String time = dateParts[dateParts.length - 2] + " " + dateParts[dateParts.length - 1];
+
+        fixture.setDate(date.replace(time, "").trim());
+        if ("5:32 AM".equals(time) && cursor.getInt(3) == -1) time = "TBD";
         fixture.setTime(time);
 
         fixture.setHomeTeam(cursor.getString(2));
-        if (!cursor.isNull(3)) {
-            fixture.setHomeScore(cursor.getInt(3));
-        }
+        fixture.setHomeScore(cursor.getInt(3));
         fixture.setAwayTeam(cursor.getString(4));
-        if (!cursor.isNull(5)) {
-            fixture.setAwayScore(cursor.getInt(5));
-        }
+        fixture.setAwayScore(cursor.getInt(5));
+
         fixture.setWeek(cursor.getString(6));
         return fixture;
     }
@@ -271,7 +267,6 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
             id = cursor.getInt(0);
         }
         cursor.close();
-//        db.close();
         return id;
     }
 }
