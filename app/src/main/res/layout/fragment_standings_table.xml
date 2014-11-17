@@ -7,21 +7,20 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp">
+        android:padding="10dp"
+        android:background="@color/off_white">
 
         <LinearLayout
             android:id="@+id/name_layout"
             android:layout_width="120dp"
             android:layout_height="fill_parent"
-            android:background="@color/black"
             android:orientation="vertical">
 
         </LinearLayout>
 
         <HorizontalScrollView
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:background="@color/eaglesGreen">
+            android:layout_height="fill_parent">
 
             <LinearLayout
                 android:id="@+id/stats_layout"
@@ -29,9 +28,9 @@
                 android:layout_height="fill_parent"
                 android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="400dp"
-                    android:layout_height="wrap_content" />
+                <!--<TextView-->
+                    <!--android:layout_width="400dp"-->
+                    <!--android:layout_height="wrap_content" />-->
 
             </LinearLayout>
 

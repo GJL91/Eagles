@@ -119,6 +119,11 @@ public class StandingsSQLiteHelper extends MasterDatabase {
         return standings;
     }
 
+    public Standing[] getAllTeams() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return getExistingStandings(db);
+    }
+
     public String getRecord(String team) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT Wins, Losses, Ties FROM Standings Where Name = ?", new String[] {team});

@@ -1,6 +1,7 @@
 package com.garethlewis.eagles;
 
 import android.content.Context;
+import android.content.res.Resources;
 
 import java.util.Arrays;
 import java.util.List;
@@ -253,6 +254,23 @@ public class TeamHelper {
         }
         // Don't need to check team1
         return nfcTeams.contains(team2);
+    }
+
+    public static int[][] getAllDivisionTeams(Context context) {
+        int[][] teams = new int[8][];
+        Resources resources = context.getResources();
+
+        teams[0] = resources.getIntArray(R.array.nfcEastTeams);
+        teams[1] = resources.getIntArray(R.array.nfcNorthTeams);
+        teams[2] = resources.getIntArray(R.array.nfcSouthTeams);
+        teams[3] = resources.getIntArray(R.array.nfcWestTeams);
+
+        teams[4] = resources.getIntArray(R.array.afcEastTeams);
+        teams[5] = resources.getIntArray(R.array.afcNorthTeams);
+        teams[6] = resources.getIntArray(R.array.afcSouthTeams);
+        teams[7] = resources.getIntArray(R.array.afcWestTeams);
+
+        return teams;
     }
 
 }

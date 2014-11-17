@@ -16,7 +16,6 @@ import android.widget.Spinner;
 import com.garethlewis.eagles.ParserPackage;
 import com.garethlewis.eagles.R;
 import com.garethlewis.eagles.database.ScheduleSQLiteHelper;
-import com.garethlewis.eagles.database.UpdatedSQLiteHelper;
 import com.garethlewis.eagles.database.entities.Fixture;
 import com.garethlewis.eagles.parsers.ScheduleParser;
 
@@ -67,8 +66,10 @@ public class ScheduleFragment extends Fragment {
         LinearLayout view = (LinearLayout) parent.findViewById(R.id.fixtures_list);
         fixturesList = view;
 
-        UpdatedSQLiteHelper db = new UpdatedSQLiteHelper(getActivity());
-        if (db.needsUpdate("Schedule")) {
+//        UpdatedSQLiteHelper db = new UpdatedSQLiteHelper(getActivity());
+//        if (db.needsUpdate("Schedule")) {
+
+//            ScheduleParams.readFromFile();
 
             ProgressBar progressBar = (ProgressBar) parent.findViewById(R.id.schedule_progress);
 
@@ -78,14 +79,14 @@ public class ScheduleFragment extends Fragment {
             } else {
                 new ScheduleParser().execute(parserPackage);
             }
-        } else {
-            ScheduleSQLiteHelper scheduleDB = new ScheduleSQLiteHelper(getActivity());
-            List<Fixture> fixtures = scheduleDB.getFixturesForWeek(1);
-            for (Fixture f : fixtures) {
-                View fixtureView = ScheduleViewHelper.setupViewForFixture(getActivity(), inflater, f, true);
-                fixturesList.addView(fixtureView);
-            }
-        }
+//        } else {
+//            ScheduleSQLiteHelper scheduleDB = new ScheduleSQLiteHelper(getActivity());
+//            List<Fixture> fixtures = scheduleDB.getFixturesForWeek(1);
+//            for (Fixture f : fixtures) {
+//                View fixtureView = ScheduleViewHelper.setupViewForFixture(getActivity(), inflater, f, true);
+//                fixturesList.addView(fixtureView);
+//            }
+//        }
 
         showing = 1;
 

@@ -2,14 +2,17 @@ package com.garethlewis.eagles.parsers;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import com.garethlewis.eagles.FileHandler;
 import com.garethlewis.eagles.ParserPackage;
-import com.garethlewis.eagles.database.entities.Fixture;
+import com.garethlewis.eagles.ScheduleParams;
 import com.garethlewis.eagles.database.ScheduleSQLiteHelper;
 import com.garethlewis.eagles.database.StandingsSQLiteHelper;
+import com.garethlewis.eagles.database.entities.Fixture;
 import com.garethlewis.eagles.fragments.schedule.ScheduleViewHelper;
 
 import org.jsoup.Jsoup;
@@ -36,20 +39,24 @@ public class ScheduleParser extends AsyncTask<ParserPackage, Void, List<Fixture>
 
     @Override
     protected List<Fixture> doInBackground(ParserPackage... parserPackages) {
+
         Log.e("EAGLES", "GETTING SCHEDULES");
 
         this.input = parserPackages[0];
         input.getProgress().setVisibility(View.VISIBLE);
         ScheduleSQLiteHelper db = new ScheduleSQLiteHelper(input.getContext());
-//        db.deleteAllFixtures();
+        db.deleteAllFixtures();
 
         StandingsSQLiteHelper dbs = new StandingsSQLiteHelper(input.getContext());
-//        dbs.deleteAllStandings();
+        dbs.deleteAllStandings();
 
         List<Fixture> fixtures = new ArrayList<Fixture>();
 
+        int start = ScheduleParams.getFirstFixture();
+        if (start == 0) start = 1;
+
         try {
-            for (int w = 1; w < 18; w++) {
+            for (int w = start; w < 18; w++) {
                 week = "" + w;
                 String url = getUrl();
                 Document doc = Jsoup.connect(url).get();
@@ -76,6 +83,7 @@ public class ScheduleParser extends AsyncTask<ParserPackage, Void, List<Fixture>
                                 }
 
                             } else { // Result
+                                ScheduleParams.setLastResult(w);
                                 String[] parts = matchup.split(",");
 
                                 String pattern = "(\\D*)(\\d+)(.*)";
@@ -88,6 +96,9 @@ public class ScheduleParser extends AsyncTask<ParserPackage, Void, List<Fixture>
                                 fixtures.add(fixture);
                             }
                         } else {  // Fixture is in the future
+                            if (ScheduleParams.getFirstFixture() == 0 || w < ScheduleParams.getFirstFixture()) {
+                                ScheduleParams.setFirstFixture(w);
+                            }
                             String[] parts = matchup.split(" at ");
                             String homeTeam = parts[1];
                             String awayTeam = parts[0];
@@ -113,6 +124,12 @@ public class ScheduleParser extends AsyncTask<ParserPackage, Void, List<Fixture>
 
     @Override
     protected void onPostExecute(List<Fixture> fixtures) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            new FileHandler.writeScheduleParams().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void) null);
+        } else {
+            new FileHandler.writeScheduleParams().execute();
+        }
+
         Context context = input.getContext();
         ScheduleSQLiteHelper db = new ScheduleSQLiteHelper(context);
         db.setContext(context);

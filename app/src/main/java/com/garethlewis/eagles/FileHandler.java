@@ -4,11 +4,16 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
+import android.util.Log;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class FileHandler {
 
@@ -25,6 +30,22 @@ public class FileHandler {
             return null;
         }
     }
+
+//    public static FileOutputStream getInternalOutputStream(String filename) {
+//        try {
+//            return context.openFileOutput(filename, Context.MODE_PRIVATE);
+//        } catch (FileNotFoundException e) {
+//            return null;
+//        }
+//    }
+//
+//    public static FileInputStream getInternalInputStream(String filename) {
+//        try {
+//            return context.openFileInput(filename);
+//        } catch (FileNotFoundException e) {
+//            return null;
+//        }
+//    }
 
     public static boolean deleteFile(String filename) {
         File file = getFilesDirectory(filename);
@@ -71,6 +92,48 @@ public class FileHandler {
             }
         }
         return true;
+    }
+
+    public static class writeScheduleParams extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                FileOutputStream outputStream = context.openFileOutput("schedule_parameters.dat", Context.MODE_PRIVATE);
+
+                String string = "LastResultWeek = " + ScheduleParams.getLastResult() + "\n";
+                string = string + "FirstFixtureWeek = " + ScheduleParams.getFirstFixture();
+
+                outputStream.write(string.getBytes());
+                outputStream.close();
+            } catch (NullPointerException e) {
+                Log.e("Eagles", "Could not create file for writing");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+    }
+
+    public static class readScheduleParams extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                FileInputStream inputStream = context.openFileInput("schedule_parameters.dat");
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+                String line = bufferedReader.readLine();
+                ScheduleParams.setLastResult(Integer.parseInt(line.split(" ")[2]));
+
+                line = bufferedReader.readLine();
+                ScheduleParams.setFirstFixture(Integer.parseInt(line.split(" ")[2]));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
     }
 
 }

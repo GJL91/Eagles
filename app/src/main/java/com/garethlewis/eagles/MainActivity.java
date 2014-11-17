@@ -1,5 +1,7 @@
 package com.garethlewis.eagles;
 
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -48,6 +50,13 @@ public class MainActivity extends FragmentActivity
         FileHandler.setContext(getApplicationContext());
         MasterDatabase db = new MasterDatabase(this);
         db.setContext(getApplicationContext());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            new FileHandler.readScheduleParams().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void) null);
+        } else {
+            new FileHandler.readScheduleParams().execute();
+        }
+
 //        db.resetDatabase();
 
 //        MediaSQLiteHelper db = new MediaSQLiteHelper(this);

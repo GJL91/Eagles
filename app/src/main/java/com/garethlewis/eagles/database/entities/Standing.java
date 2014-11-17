@@ -1,6 +1,8 @@
 package com.garethlewis.eagles.database.entities;
 
-public class Standing {
+public class Standing implements Comparable<Standing>{
+
+    private String name;
 
     private int wins;
     private int losses;
@@ -27,6 +29,8 @@ public class Standing {
     private int streak;
 
     public Standing() {
+        this.name = "";
+
         this.wins = 0;
         this.losses = 0;
         this.ties = 0;
@@ -51,7 +55,15 @@ public class Standing {
         this.pointsAgainst = 0;
         this.streak = 0;
     }
-    
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
     public void addHomeWin(boolean sameDivision, boolean sameConference) {
         this.wins++;
         this.homeWins++;
@@ -224,5 +236,44 @@ public class Standing {
 
     public void setStreak(int streak) {
         this.streak = streak;
+    }
+
+    @Override
+    public int compareTo(Standing other) {
+        if (other == null) return 1;
+
+        float myPct = (float) (this.wins + (this.ties / 2)) / (float) (this.wins + this.losses + this.ties);
+        float otherPct = (float) (other.wins + (other.ties / 2)) / (float) (other.wins + other.losses + other.ties);
+
+        String tmp1 = String.format("%.3f", myPct);
+        String tmp2 = String.format("%.3f", otherPct);
+
+        if (!tmp1.equals(tmp2)) {
+            return (Float.compare(myPct, otherPct) * -1);
+        }
+
+        // TODO: check results against each other.
+
+        myPct = (float) (this.divisionWins + (this.divisionTies / 2)) / (float) (this.divisionWins + this.divisionLosses + this.divisionTies);
+        otherPct = (float) (other.divisionWins + (other.divisionTies / 2)) / (float) (other.divisionWins + other.divisionLosses + other.divisionTies);
+
+        tmp1 = String.format("%.3f", myPct);
+        tmp2 = String.format("%.3f", otherPct);
+
+        if (!tmp1.equals(tmp2)) {
+            return (Float.compare(myPct, otherPct) * -1);
+        }
+
+        myPct = (float) (this.conferenceWins + (this.conferenceTies / 2)) / (float) (this.conferenceWins + this.conferenceLosses + this.conferenceTies);
+        otherPct = (float) (other.conferenceWins + (other.conferenceTies / 2)) / (float) (other.conferenceWins + other.conferenceLosses + other.conferenceTies);
+
+//        tmp1 = String.format("%.3f", myPct);
+//        tmp2 = String.format("%.3f", otherPct);
+
+//        if (!tmp1.equals(tmp2)) {
+            return (Float.compare(myPct, otherPct) * -1);
+//        }
+        
+//        return 0;
     }
 }
