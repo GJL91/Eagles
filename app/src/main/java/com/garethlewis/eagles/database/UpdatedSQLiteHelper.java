@@ -35,9 +35,9 @@ public class UpdatedSQLiteHelper extends MasterDatabase {
         long date = Long.parseLong(String.valueOf(new Date().getTime()));
         contentValues.put("Date", date);
 
-        boolean success = (db.replace(TABLE_UPDATED, null, contentValues) != -1);
+        return (db.replace(TABLE_UPDATED, null, contentValues) != -1);
 
-        return success;
+//        return success;
     }
 
     public Date getLastUpdated(String table) {
@@ -54,8 +54,7 @@ public class UpdatedSQLiteHelper extends MasterDatabase {
 
     public boolean needsUpdate(String table) {
         Date date = getLastUpdated(table);
-        if (new Date().getTime() - date.getTime() > 259200000) return true;
-        else return false;
+        return (new Date().getTime() - date.getTime() > getTimeLimit(table));
     }
 
     private int getTimeLimit(String table) {
