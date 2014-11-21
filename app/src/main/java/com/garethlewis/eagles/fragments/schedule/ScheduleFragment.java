@@ -43,14 +43,22 @@ public class ScheduleFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (weekSpinner.isEnabled()) {
                     if (position + 1 != showing) {
+                        if (position == 17) {
+                            fixturesList.removeAllViews();
+                            ScheduleSQLiteHelper db = new ScheduleSQLiteHelper(getActivity());
+                            List<Fixture> fixtures = db.getPostseasonFixtures();
+                            ScheduleViewHelper.displayList(getActivity(), inflater, fixturesList, fixtures, false);
+
+                            teamShowing = 0;
+                            showing = position + 1;
+                            return;
+                        }
+
                         fixturesList.removeAllViews();
                         ScheduleSQLiteHelper db = new ScheduleSQLiteHelper(getActivity());
                         List<Fixture> fixtures = db.getFixturesForWeek(position + 1);
                         ScheduleViewHelper.displayList(getActivity(), inflater, fixturesList, fixtures, true);
-                        //                    for (Fixture f : fixtures) {
-                        //                        View fixtureView = ScheduleViewHelper.setupViewForFixture(getActivity(), inflater, f, true);
-                        //                        fixturesList.addView(fixtureView);
-                        //                    }
+
                         teamShowing = 0;
                         showing = position + 1;
                     }
@@ -108,8 +116,9 @@ public class ScheduleFragment extends Fragment {
         UpdatedSQLiteHelper db = new UpdatedSQLiteHelper(getActivity());
         if (db.needsUpdate("Schedule")) {
             ProgressBar progressBar = (ProgressBar) parent.findViewById(R.id.schedule_progress);
+            progressBar.setVisibility(View.VISIBLE);
 
-            ParserPackage parserPackage = new ParserPackage(getActivity(), inflater, container, view, progressBar);
+            ParserPackage parserPackage = new ParserPackage(getActivity(), inflater, container, view, progressBar, false);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 new ScheduleParser().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, parserPackage);
             } else {

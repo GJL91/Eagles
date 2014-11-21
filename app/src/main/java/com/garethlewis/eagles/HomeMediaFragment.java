@@ -21,7 +21,7 @@ public class HomeMediaFragment extends Fragment {
 //        ProgressBar spinner = (ProgressBar) getActivity().findViewById(R.id.media_progress);
 //        spinner.setVisibility(View.VISIBLE);
 
-        ParserPackage parserPackage = new ParserPackage(getActivity(), inflater, container, linearLayout, null);
+        ParserPackage parserPackage = new ParserPackage(getActivity(), inflater, container, linearLayout, null, false);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             new NewsParser().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, parserPackage);
         } else {

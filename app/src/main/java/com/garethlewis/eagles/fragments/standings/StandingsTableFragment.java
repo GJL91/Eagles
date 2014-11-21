@@ -57,11 +57,11 @@ public class StandingsTableFragment extends android.support.v4.app.Fragment {
                 view.setBackgroundColor(getResources().getColor(R.color.grey));
 //                view.setGravity(Gravity.CENTER);
 
-//                int padding = (int) (5 * getResources().getDisplayMetrics().density + 0.5f);
+                int padding = (int) (5 * getResources().getDisplayMetrics().density + 0.5f);
 //                Log.e("EAGLES", "Padding in pixels = " + padding);
 //
 //                view.setPadding(0,padding,0,padding);
-                view.setPadding(55,10,0,10);
+                view.setPadding(55,padding,0,padding);
             } else {
 //                int index = divTeams[i / 5][(i % 5) - 1] + 1;
                 view.setText((i % 5) + "  " + standings[i].getName());

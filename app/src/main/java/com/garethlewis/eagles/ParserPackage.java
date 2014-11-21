@@ -14,13 +14,17 @@ public class ParserPackage {
     private LinearLayout linearLayout;
     private ProgressBar progress;
 
+    /** Whether the ScheduleParser should display only the Eagles Schedule */
+    private boolean mode;
+
     public ParserPackage(Context context, LayoutInflater inflater, ViewGroup container,
-                         LinearLayout linearLayout, ProgressBar progress) {
+                         LinearLayout linearLayout, ProgressBar progress, boolean mode) {
         this.context = context;
         this.inflater = inflater;
         this.container = container;
         this.linearLayout = linearLayout;
         this.progress = progress;
+        this.mode = mode;
     }
 
     public Context getContext() {
@@ -41,5 +45,9 @@ public class ParserPackage {
 
     public ProgressBar getProgress() {
         return progress;
+    }
+
+    public boolean getMode() {
+        return mode;
     }
 }

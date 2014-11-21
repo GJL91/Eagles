@@ -183,28 +183,6 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
         return fixtureList;
     }
 
-//    /**
-//     * Gets the fixtures or results for all teams.
-//     * @param isResult  Determines what is returned, true if results required
-//     * @return  A list of fixtures or results for all teams.
-//     */
-//    public List<Fixture> getFixturesForAll(boolean isResult){
-//        List<Fixture> fixtureList = new ArrayList<Fixture>();
-//        SQLiteDatabase db = this.getReadableDatabase();
-//        String comparator = isResult? "<":">";
-//        String where = COLUMN_DATE + " " + comparator+" ?";
-//        String[] selectionArgs = new String[]{String.valueOf(new Date().getTime())};
-//        String orderBy = COLUMN_DATE + " ASC";
-//        Cursor cursor = db.query(TABLE_SCHEDULE, null, where, selectionArgs, null, null, orderBy);
-//        while (!cursor.isAfterLast()) {
-//            Fixture fixture = cursorToFixture(cursor);
-//            fixtureList.add(fixture);
-//            cursor.moveToNext();
-//        }
-//        cursor.close();
-//        return fixtureList;
-//    }
-
     /**
      * Fetches all fixtures for a specified game week.
      * @param week the game week to get fixtures for.
@@ -214,12 +192,25 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
         List<Fixture> fixtureList = new ArrayList<Fixture>();
         SQLiteDatabase db = this.getReadableDatabase();
         String[] selectionArgs = new String[]{"" + week};
-        Cursor cursor = db.rawQuery("SELECT * FROM SCHEDULE WHERE Week = ?", selectionArgs);
+        Cursor cursor = db.rawQuery("SELECT * FROM SCHEDULE WHERE Week = ?;", selectionArgs);
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             Fixture fixture = cursorToFixture(cursor);
             fixtureList.add(fixture);
             cursor.moveToNext();
+        }
+        cursor.close();
+        return fixtureList;
+    }
+
+    public List<Fixture> getPostseasonFixtures() {
+        List<Fixture> fixtureList = new ArrayList<Fixture>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String[] selectionArgs = new String[] {"17"};
+        Cursor cursor = db.rawQuery("SELECT * FROM SCHEDULE WHERE CAST(Week as INTEGER) > ?;", selectionArgs);
+        while (cursor.moveToNext()) {
+            Fixture fixture = cursorToFixture(cursor);
+            fixtureList.add(fixture);
         }
         cursor.close();
         return fixtureList;
@@ -260,6 +251,10 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
 //        SQLiteDatabase db = this.getReadableDatabase();
 //        String selection = COLUMN_HOME_TEAM + " = ? AND " + COLUMN_AWAY_TEAM + " = ? AND " + COLUMN_WEEK + " = ?";
 //        String epoch = String.valueOf(Fixture.dateStringToEpoch(fixture.getDate() + " " + fixture.getTime()));
+        if ("TBC".equals(fixture.getHomeTeam())) {
+            return -1;
+        }
+
         String[] selectionArgs = new String[]{fixture.getHomeTeam(), fixture.getAwayTeam(), fixture.getWeek()};
         Cursor cursor = db.rawQuery("SELECT _id FROM SCHEDULE WHERE (HomeTeam = ? AND AwayTeam = ? AND Week = ?)", selectionArgs);
 //        Cursor cursor = db.query(TABLE_SCHEDULE,null,selection,selectionArgs,null,null,null);

@@ -39,6 +39,11 @@ public class ScheduleViewHelper {
             return setupByeWeek(fixture, viewAll);
         }
 
+        if (Integer.parseInt(fixture.getWeek()) > 17) {
+            // Postseason game
+            return setupPlayoffGame(fixture);
+        }
+
         if (fixture.getHomeScore() == -1) {
             // fixture is in the future
             return setupFutureFixture(fixture, viewAll);
@@ -78,6 +83,31 @@ public class ScheduleViewHelper {
         }
         ImageView imageView = (ImageView) view.findViewById(R.id.home_team_image);
         imageView.setImageBitmap(bitmap);
+
+        return view;
+    }
+
+    private static View setupPlayoffGame(Fixture fixture) {
+        FrameLayout view = (FrameLayout) inflater.inflate(R.layout.fixture_result_item, null, false);
+
+        if ("TBC".equals(fixture.getHomeTeam())) {
+            TextView textView = (TextView) view.findViewById(R.id.away_team_score);
+            textView.setText("TBC");
+
+            textView = (TextView) view.findViewById(R.id.home_team_score);
+            textView.setText("TBC");
+
+            textView = (TextView) view.findViewById(R.id.date_text);
+            textView.setText("TBC");
+
+            textView = (TextView) view.findViewById(R.id.week_number);
+            textView.setText("WEEK " + fixture.getWeek());
+
+            textView = (TextView) view.findViewById(R.id.game_time);
+            textView.setText("TBC");
+
+            return view;
+        }
 
         return view;
     }
