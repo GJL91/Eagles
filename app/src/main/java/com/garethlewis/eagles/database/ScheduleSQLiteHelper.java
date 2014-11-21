@@ -36,7 +36,7 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
         return success;
     }
 
-    public boolean insertFixtures(List<Fixture> fixtures) {
+    public boolean insertManyFixtures(List<Fixture> fixtures) {
         SQLiteDatabase db = this.getWritableDatabase();
         for (Fixture f : fixtures) {
             ContentValues contentValues = new ContentValues();
@@ -167,48 +167,49 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
     /**
      * Gets the fixtures or results for a specified team.
      * @param teamName Team to retrieve fixtures and results for.
-     * @param isResult Determines what is returned, true if results required
      * @return A list of fixtures or results for the specified team
      */
-    public List<Fixture> getFixturesResultsForTeam(String teamName, boolean isResult){
+    public List<Fixture> getFixturesForTeam(String teamName){
         List<Fixture> fixtureList = new ArrayList<Fixture>();
         SQLiteDatabase db = this.getReadableDatabase();
-        String comparator = isResult? "<":">";
-        String where = COLUMN_DATE + " "+ comparator+" ? AND ( " + MATCH_TEAM + ")";
-        String[] selectionArgs = new String[]{String.valueOf(new Date().getTime()), teamName, teamName};
-        String orderBy = COLUMN_DATE + " ASC";
-        Cursor cursor = db.query(TABLE_SCHEDULE, null, where, selectionArgs, null, null, orderBy);
-        while (!cursor.isAfterLast()) {
+        String[] selectionArgs = new String[]{teamName, teamName};
+        String orderBy = COLUMN_ID + " ASC";
+        Cursor cursor = db.query(TABLE_SCHEDULE, null, MATCH_TEAM, selectionArgs, null, null, orderBy);
+        while (cursor.moveToNext()) {
             Fixture fixture = cursorToFixture(cursor);
             fixtureList.add(fixture);
-            cursor.moveToNext();
         }
         cursor.close();
         return fixtureList;
     }
+
+//    /**
+//     * Gets the fixtures or results for all teams.
+//     * @param isResult  Determines what is returned, true if results required
+//     * @return  A list of fixtures or results for all teams.
+//     */
+//    public List<Fixture> getFixturesForAll(boolean isResult){
+//        List<Fixture> fixtureList = new ArrayList<Fixture>();
+//        SQLiteDatabase db = this.getReadableDatabase();
+//        String comparator = isResult? "<":">";
+//        String where = COLUMN_DATE + " " + comparator+" ?";
+//        String[] selectionArgs = new String[]{String.valueOf(new Date().getTime())};
+//        String orderBy = COLUMN_DATE + " ASC";
+//        Cursor cursor = db.query(TABLE_SCHEDULE, null, where, selectionArgs, null, null, orderBy);
+//        while (!cursor.isAfterLast()) {
+//            Fixture fixture = cursorToFixture(cursor);
+//            fixtureList.add(fixture);
+//            cursor.moveToNext();
+//        }
+//        cursor.close();
+//        return fixtureList;
+//    }
 
     /**
-     * Gets the fixtures or results for all teams.
-     * @param isResult  Determines what is returned, true if results required
-     * @return  A list of fixtures or results for all teams.
+     * Fetches all fixtures for a specified game week.
+     * @param week the game week to get fixtures for.
+     * @return a list of the fixtures.
      */
-    public List<Fixture> getFixturesForAll(boolean isResult){
-        List<Fixture> fixtureList = new ArrayList<Fixture>();
-        SQLiteDatabase db = this.getReadableDatabase();
-        String comparator = isResult? "<":">";
-        String where = COLUMN_DATE + " " + comparator+" ?";
-        String[] selectionArgs = new String[]{String.valueOf(new Date().getTime())};
-        String orderBy = COLUMN_DATE + " ASC";
-        Cursor cursor = db.query(TABLE_SCHEDULE, null, where, selectionArgs, null, null, orderBy);
-        while (!cursor.isAfterLast()) {
-            Fixture fixture = cursorToFixture(cursor);
-            fixtureList.add(fixture);
-            cursor.moveToNext();
-        }
-        cursor.close();
-        return fixtureList;
-    }
-
     public List<Fixture> getFixturesForWeek(int week) {
         List<Fixture> fixtureList = new ArrayList<Fixture>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -257,10 +258,10 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
      */
     private int getFixture(SQLiteDatabase db, Fixture fixture) {
 //        SQLiteDatabase db = this.getReadableDatabase();
-        String selection = COLUMN_DATE + " = ? AND " + COLUMN_HOME_TEAM + " = ? AND " + COLUMN_AWAY_TEAM + " = ? AND " + COLUMN_WEEK + " = ?";
-        String epoch = String.valueOf(Fixture.dateStringToEpoch(fixture.getDate() + " " + fixture.getTime()));
-        String[] selectionArgs = new String[]{epoch, fixture.getHomeTeam(),fixture.getAwayTeam(), fixture.getWeek()};
-        Cursor cursor = db.rawQuery("SELECT _id FROM SCHEDULE WHERE (Date = ? AND HomeTeam = ? AND AwayTeam = ? AND Week = ?)", selectionArgs);
+//        String selection = COLUMN_HOME_TEAM + " = ? AND " + COLUMN_AWAY_TEAM + " = ? AND " + COLUMN_WEEK + " = ?";
+//        String epoch = String.valueOf(Fixture.dateStringToEpoch(fixture.getDate() + " " + fixture.getTime()));
+        String[] selectionArgs = new String[]{fixture.getHomeTeam(), fixture.getAwayTeam(), fixture.getWeek()};
+        Cursor cursor = db.rawQuery("SELECT _id FROM SCHEDULE WHERE (HomeTeam = ? AND AwayTeam = ? AND Week = ?)", selectionArgs);
 //        Cursor cursor = db.query(TABLE_SCHEDULE,null,selection,selectionArgs,null,null,null);
         int id=-1;
         if(cursor.moveToNext()){

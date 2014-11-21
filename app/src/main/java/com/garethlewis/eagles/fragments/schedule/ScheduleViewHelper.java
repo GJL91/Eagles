@@ -7,33 +7,47 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.garethlewis.eagles.R;
-import com.garethlewis.eagles.database.entities.Fixture;
-
 import com.garethlewis.eagles.TeamHelper;
 import com.garethlewis.eagles.database.StandingsSQLiteHelper;
+import com.garethlewis.eagles.database.entities.Fixture;
+
+import java.util.List;
 
 public class ScheduleViewHelper {
 
+    private static Context context;
+    private static LayoutInflater inflater;
     private static Bitmap[] logos = new Bitmap[32];
 
-    public static View setupViewForFixture(Context context, LayoutInflater inflater, Fixture fixture, boolean viewAll) {
+    public static void displayList(Context c, LayoutInflater i, LinearLayout parent, List<Fixture> fixtures, boolean viewAll) {
+        context = c;
+        inflater = i;
+
+        for (Fixture f : fixtures) {
+            View fixtureView = setupViewForFixture(f, viewAll);
+            parent.addView(fixtureView);
+        }
+    }
+
+    private static View setupViewForFixture(Fixture fixture, boolean viewAll) {
         if ("".equals(fixture.getAwayTeam())) {
             // fixture indicates a bye week
-            return setupByeWeek(context, inflater, fixture, viewAll);
+            return setupByeWeek(fixture, viewAll);
         }
 
         if (fixture.getHomeScore() == -1) {
             // fixture is in the future
-            return setupFutureFixture(context, inflater, fixture, viewAll);
+            return setupFutureFixture(fixture, viewAll);
         }
 
-        return setupResultFixture(context, inflater, fixture, viewAll);
+        return setupResultFixture(fixture, viewAll);
     }
 
-    private static View setupByeWeek(Context context, LayoutInflater inflater, Fixture fixture, boolean viewAll) {
+    private static View setupByeWeek(Fixture fixture, boolean viewAll) {
         FrameLayout view;
 
         TextView textView;
@@ -68,10 +82,10 @@ public class ScheduleViewHelper {
         return view;
     }
 
-    private static View setupFutureFixture(Context context, LayoutInflater inflater, Fixture fixture, boolean viewAll) {
+    private static View setupFutureFixture(Fixture fixture, boolean viewAll) {
         FrameLayout view = (FrameLayout) inflater.inflate(R.layout.fixture_future_item, null, false);
 
-        setupCommonViews(context, view, fixture, viewAll);
+        setupCommonViews(view, fixture, viewAll);
 
         String awayName = fixture.getAwayTeam().toLowerCase().replace(" ", "_").replace(".", "");
         String homeName = fixture.getHomeTeam().toLowerCase().replace(" ", "_").replace(".", "");
@@ -88,10 +102,10 @@ public class ScheduleViewHelper {
         return view;
     }
 
-    private static View setupResultFixture(Context context, LayoutInflater inflater, Fixture fixture, boolean viewAll) {
+    private static View setupResultFixture(Fixture fixture, boolean viewAll) {
         FrameLayout view = (FrameLayout) inflater.inflate(R.layout.fixture_result_item, null, false);
 
-        setupCommonViews(context, view, fixture, viewAll);
+        setupCommonViews(view, fixture, viewAll);
 
         TextView textView = (TextView) view.findViewById(R.id.away_team_score);
         textView.setText("" + fixture.getAwayScore());
@@ -102,7 +116,7 @@ public class ScheduleViewHelper {
         return view;
     }
 
-    private static void setupCommonViews(Context context, FrameLayout view, Fixture fixture, boolean viewAll) {
+    private static void setupCommonViews(FrameLayout view, Fixture fixture, boolean viewAll) {
         TextView textView = (TextView) view.findViewById(R.id.away_team_name);
         textView.setText(fixture.getAwayTeam().toUpperCase());
 
@@ -123,17 +137,17 @@ public class ScheduleViewHelper {
         textView.setText(time);
 
         String awayName = fixture.getAwayTeam().toLowerCase().replace(" ", "_").replace(".", "");
-        Bitmap bitmap = getTeamLogo(context, awayName);
+        Bitmap bitmap = getTeamLogo(awayName);
         ImageView imageView = (ImageView) view.findViewById(R.id.away_team_image);
         imageView.setImageBitmap(bitmap);
 
         String homeName = fixture.getHomeTeam().toLowerCase().replace(" ", "_").replace(".", "");
-        bitmap = getTeamLogo(context, homeName);
+        bitmap = getTeamLogo(homeName);
         imageView = (ImageView) view.findViewById(R.id.home_team_image);
         imageView.setImageBitmap(bitmap);
     }
 
-    private static Bitmap getTeamLogo(Context context, String team) {
+    private static Bitmap getTeamLogo(String team) {
         int teamIndex = TeamHelper.getTeamIndex(team);
         Bitmap bitmap;
         if (logos[teamIndex] == null) {
