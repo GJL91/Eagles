@@ -15,7 +15,16 @@ import java.util.UUID;
 
 public class MediaSQLiteHelper extends MasterDatabase {
 
-    public MediaSQLiteHelper(Context context) {
+    private static MediaSQLiteHelper sInstance;
+
+    public static MediaSQLiteHelper getInstance(Context context) {
+        if (sInstance == null) {
+            sInstance = new MediaSQLiteHelper(context.getApplicationContext());
+        }
+        return sInstance;
+    }
+
+    private MediaSQLiteHelper(Context context) {
         super(context);
     }
 

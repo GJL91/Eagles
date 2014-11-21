@@ -45,7 +45,7 @@ public class ScheduleFragment extends Fragment {
                     if (position + 1 != showing) {
                         if (position == 17) {
                             fixturesList.removeAllViews();
-                            ScheduleSQLiteHelper db = new ScheduleSQLiteHelper(getActivity());
+                            ScheduleSQLiteHelper db = ScheduleSQLiteHelper.getInstance(getActivity());
                             List<Fixture> fixtures = db.getPostseasonFixtures();
                             ScheduleViewHelper.displayList(getActivity(), inflater, fixturesList, fixtures, false);
 
@@ -55,7 +55,7 @@ public class ScheduleFragment extends Fragment {
                         }
 
                         fixturesList.removeAllViews();
-                        ScheduleSQLiteHelper db = new ScheduleSQLiteHelper(getActivity());
+                        ScheduleSQLiteHelper db = ScheduleSQLiteHelper.getInstance(getActivity());
                         List<Fixture> fixtures = db.getFixturesForWeek(position + 1);
                         ScheduleViewHelper.displayList(getActivity(), inflater, fixturesList, fixtures, true);
 
@@ -81,7 +81,7 @@ public class ScheduleFragment extends Fragment {
                 if (position != teamShowing) {
                     if (position == 0) {
                         fixturesList.removeAllViews();
-                        ScheduleSQLiteHelper db = new ScheduleSQLiteHelper(getActivity());
+                        ScheduleSQLiteHelper db = ScheduleSQLiteHelper.getInstance(getActivity());
                         List<Fixture> fixtures = db.getFixturesForWeek(1);
 
                         ScheduleViewHelper.displayList(getActivity(), inflater, fixturesList, fixtures, true);
@@ -97,7 +97,7 @@ public class ScheduleFragment extends Fragment {
                     weekSpinner.setSelection(0);
 
                     fixturesList.removeAllViews();
-                    ScheduleSQLiteHelper db = new ScheduleSQLiteHelper(getActivity());
+                    ScheduleSQLiteHelper db = ScheduleSQLiteHelper.getInstance(getActivity());
                     List<Fixture> fixtures = db.getFixturesForTeam(getResources().getStringArray(R.array.spinnerTeams)[position]);
                     ScheduleViewHelper.displayList(getActivity(), inflater, fixturesList, fixtures, false);
 
@@ -113,7 +113,7 @@ public class ScheduleFragment extends Fragment {
         LinearLayout view = (LinearLayout) parent.findViewById(R.id.fixtures_list);
         fixturesList = view;
 
-        UpdatedSQLiteHelper db = new UpdatedSQLiteHelper(getActivity());
+        UpdatedSQLiteHelper db = UpdatedSQLiteHelper.getInstance(getActivity());
         if (db.needsUpdate("Schedule")) {
             ProgressBar progressBar = (ProgressBar) parent.findViewById(R.id.schedule_progress);
             progressBar.setVisibility(View.VISIBLE);
@@ -126,7 +126,7 @@ public class ScheduleFragment extends Fragment {
             }
 
         } else {
-            ScheduleSQLiteHelper scheduleDB = new ScheduleSQLiteHelper(getActivity());
+            ScheduleSQLiteHelper scheduleDB = ScheduleSQLiteHelper.getInstance(getActivity());
             List<Fixture> fixtures = scheduleDB.getFixturesForWeek(1);
 
             ScheduleViewHelper.displayList(getActivity(), inflater, fixturesList, fixtures, true);

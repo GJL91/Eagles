@@ -234,12 +234,12 @@ public class ScheduleParser extends AsyncTask<ParserPackage, Void, List<Fixture>
         }
 
         Context context = input.getContext();
-        ScheduleSQLiteHelper db = new ScheduleSQLiteHelper(context);
+        ScheduleSQLiteHelper db = ScheduleSQLiteHelper.getInstance(context);
         db.setContext(context);
 
         db.insertManyFixtures(fixtures);
 
-        StandingsSQLiteHelper standingsDB = new StandingsSQLiteHelper(context);
+        StandingsSQLiteHelper standingsDB = StandingsSQLiteHelper.getInstance(context);
         standingsDB.setContext(context);
         standingsDB.updateStandings(fixtures);
 

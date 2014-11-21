@@ -9,14 +9,21 @@ import java.util.Date;
 
 public class UpdatedSQLiteHelper extends MasterDatabase {
 
+    private static UpdatedSQLiteHelper sInstance;
     private static final String TABLE_UPDATED = "LastUpdated";
 
     private static final String DATE_QUERY =
             "SELECT Date FROM " + TABLE_UPDATED + " WHERE Name = ?;";
 
-    private SQLiteDatabase db;
 
-    public UpdatedSQLiteHelper(Context context) {
+    public static UpdatedSQLiteHelper getInstance(Context context) {
+        if (sInstance == null) {
+            sInstance = new UpdatedSQLiteHelper(context.getApplicationContext());
+        }
+        return sInstance;
+    }
+
+    private UpdatedSQLiteHelper(Context context) {
         super(context);
     }
 
@@ -49,6 +56,14 @@ public class UpdatedSQLiteHelper extends MasterDatabase {
         Date date = getLastUpdated(table);
         if (new Date().getTime() - date.getTime() > 259200000) return true;
         else return false;
+    }
+
+    private int getTimeLimit(String table) {
+        switch (table) {
+            case "Schedule": return 259200000;
+            case "Media": return 300000;
+            default: return 3600000;
+        }
     }
 
 }

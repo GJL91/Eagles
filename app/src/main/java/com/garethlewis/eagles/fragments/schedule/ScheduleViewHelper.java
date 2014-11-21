@@ -120,7 +120,7 @@ public class ScheduleViewHelper {
         String awayName = fixture.getAwayTeam().toLowerCase().replace(" ", "_").replace(".", "");
         String homeName = fixture.getHomeTeam().toLowerCase().replace(" ", "_").replace(".", "");
 
-        StandingsSQLiteHelper db = new StandingsSQLiteHelper(context);
+        StandingsSQLiteHelper db = StandingsSQLiteHelper.getInstance(context);
         String record = db.getRecord(homeName);
         TextView textView = (TextView) view.findViewById(R.id.home_team_record);
         textView.setText(record);

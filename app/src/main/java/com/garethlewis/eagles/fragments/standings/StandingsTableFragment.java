@@ -186,7 +186,7 @@ public class StandingsTableFragment extends android.support.v4.app.Fragment {
     }
 
     private Standing[] calculateTables(int[][] divTeams) {
-        StandingsSQLiteHelper db = new StandingsSQLiteHelper(getActivity());
+        StandingsSQLiteHelper db = StandingsSQLiteHelper.getInstance(getActivity());
         Standing[] sortedStandings = new Standing[40];
         Standing[] tableStandings = db.getAllTeams();
 

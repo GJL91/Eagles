@@ -13,9 +13,18 @@ import java.util.List;
 
 public class StandingsSQLiteHelper extends MasterDatabase {
 
+    private static StandingsSQLiteHelper sInstance;
+
     private Context context;
 
-    public StandingsSQLiteHelper(Context context) {
+    public static StandingsSQLiteHelper getInstance(Context context) {
+        if (sInstance == null) {
+            sInstance = new StandingsSQLiteHelper(context.getApplicationContext());
+        }
+        return sInstance;
+    }
+
+    private StandingsSQLiteHelper(Context context) {
         super(context);
     }
 

@@ -14,6 +14,8 @@ import java.util.Date;
 import java.util.List;
 
 public class ScheduleSQLiteHelper extends MasterDatabase {
+    private static ScheduleSQLiteHelper sInstance;
+
     private static String TABLE_SCHEDULE = "Schedule";
     private static final String COLUMN_ID = "_id";
     private static final String COLUMN_DATE = "Date";
@@ -25,7 +27,14 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
 
     private static final String MATCH_TEAM = COLUMN_HOME_TEAM + " = ? OR " + COLUMN_AWAY_TEAM + " = ?";
 
-    public ScheduleSQLiteHelper(Context context) {
+    public static ScheduleSQLiteHelper getInstance(Context context) {
+        if (sInstance == null) {
+            sInstance = new ScheduleSQLiteHelper(context.getApplicationContext());
+        }
+        return sInstance;
+    }
+    
+    private ScheduleSQLiteHelper(Context context) {
         super(context);
     }
 
@@ -66,7 +75,7 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
             if (!success) return false;
         }
 
-        UpdatedSQLiteHelper updatedSQLiteHelper = new UpdatedSQLiteHelper(getContext());
+        UpdatedSQLiteHelper updatedSQLiteHelper = UpdatedSQLiteHelper.getInstance(getContext());
         updatedSQLiteHelper.setUpdated(TABLE_SCHEDULE);
 
         return true;

@@ -10,9 +10,12 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.garethlewis.eagles.ParserPackage;
+import com.garethlewis.eagles.database.MediaSQLiteHelper;
 import com.garethlewis.eagles.database.ScheduleSQLiteHelper;
 import com.garethlewis.eagles.database.UpdatedSQLiteHelper;
 import com.garethlewis.eagles.database.entities.Fixture;
+import com.garethlewis.eagles.database.entities.NewsItem;
+import com.garethlewis.eagles.fragments.news.NewsViewHelper;
 import com.garethlewis.eagles.fragments.schedule.ScheduleViewHelper;
 import com.garethlewis.eagles.parsers.NewsParser;
 import com.garethlewis.eagles.R;
@@ -44,7 +47,7 @@ public class HomeContentFragment extends android.support.v4.app.Fragment {
         if (position == 0) {
             LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.home_media_list);
 
-            UpdatedSQLiteHelper db = new UpdatedSQLiteHelper(getActivity());
+            UpdatedSQLiteHelper db = UpdatedSQLiteHelper.getInstance(getActivity());
             if (db.needsUpdate("Media")) {
                 ProgressBar progress = (ProgressBar) view.findViewById(R.id.media_progress);
                 progress.setVisibility(View.VISIBLE);
@@ -57,7 +60,10 @@ public class HomeContentFragment extends android.support.v4.app.Fragment {
                 }
 
             } else {
+                MediaSQLiteHelper mediaDB = MediaSQLiteHelper.getInstance(getActivity());
+                NewsItem[] newsItems = mediaDB.getStories();
 
+                NewsViewHelper.displayList(getActivity(), inflater, linearLayout, newsItems);
             }
 
         } else {
@@ -66,7 +72,7 @@ public class HomeContentFragment extends android.support.v4.app.Fragment {
                 LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.home_schedule_list);
 
                 if (linearLayout != null) {
-                    UpdatedSQLiteHelper db = new UpdatedSQLiteHelper(getActivity());
+                    UpdatedSQLiteHelper db = UpdatedSQLiteHelper.getInstance(getActivity());
                     if (db.needsUpdate("Schedule")) {
                         ProgressBar progressBar = (ProgressBar) view.findViewById(R.id.schedule_progress);
                         progressBar.setVisibility(View.VISIBLE);
@@ -79,7 +85,7 @@ public class HomeContentFragment extends android.support.v4.app.Fragment {
                         }
 
                     } else {
-                        ScheduleSQLiteHelper scheduleDB = new ScheduleSQLiteHelper(getActivity());
+                        ScheduleSQLiteHelper scheduleDB = ScheduleSQLiteHelper.getInstance(getActivity());
                         List<Fixture> fixtures = scheduleDB.getFixturesForTeam("Philadelphia");
 
                         ScheduleViewHelper.displayList(getActivity(), inflater, linearLayout, fixtures, false);

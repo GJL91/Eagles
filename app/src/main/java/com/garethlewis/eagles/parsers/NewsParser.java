@@ -5,16 +5,13 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.garethlewis.eagles.ParserPackage;
-import com.garethlewis.eagles.database.entities.NewsItem;
-import com.garethlewis.eagles.R;
 import com.garethlewis.eagles.database.MediaSQLiteHelper;
 import com.garethlewis.eagles.database.UpdatedSQLiteHelper;
+import com.garethlewis.eagles.database.entities.NewsItem;
+import com.garethlewis.eagles.fragments.news.NewsViewHelper;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -36,10 +33,10 @@ public class NewsParser extends AsyncTask<ParserPackage, Void, List<NewsItem>>  
     protected List<NewsItem> doInBackground(ParserPackage... params) {
 
         list = params[0];
-        MediaSQLiteHelper db = new MediaSQLiteHelper(list.getContext());
+        MediaSQLiteHelper db = MediaSQLiteHelper.getInstance(list.getContext());
         //db.deleteAllStories();
 
-        list.getProgress().setVisibility(View.VISIBLE);
+//        list.getProgress().setVisibility(View.VISIBLE);
 
         List<NewsItem> newsItems = new ArrayList<NewsItem>();
         try {
@@ -107,9 +104,7 @@ public class NewsParser extends AsyncTask<ParserPackage, Void, List<NewsItem>>  
                 }
                 i++;
             }
-        } catch(IOException e) {
-            e.printStackTrace();
-        } catch (NumberFormatException e) {
+        } catch(IOException | NumberFormatException e) {
             e.printStackTrace();
         }
 
@@ -121,7 +116,7 @@ public class NewsParser extends AsyncTask<ParserPackage, Void, List<NewsItem>>  
         LayoutInflater inflater = list.getInflater();
         LinearLayout linearLayout = list.getLinearLayout();
 
-        MediaSQLiteHelper db = new MediaSQLiteHelper(list.getContext());
+        MediaSQLiteHelper db = MediaSQLiteHelper.getInstance(list.getContext());
 
         db.deleteOldStories(newStories.size());
 
@@ -130,28 +125,29 @@ public class NewsParser extends AsyncTask<ParserPackage, Void, List<NewsItem>>  
         }
 
         NewsItem[] newsItems = db.getStories();
+        NewsViewHelper.displayList(list.getContext(), inflater, linearLayout, newsItems);
 
-        for (NewsItem n : newsItems) {
-            FrameLayout view = (FrameLayout) inflater.inflate(R.layout.media_story_item, null, false);
+//        for (NewsItem n : newsItems) {
+//            FrameLayout view = (FrameLayout) inflater.inflate(R.layout.media_story_item, null, false);
+//
+//            if (n.getImg() != null) {
+//                ((ImageView) view.findViewById(R.id.image_holder)).setImageDrawable(n.getImg());
+//            }
+//
+//            Drawable overlay = null;
+//            if (n.getType() == 0) {
+//                overlay = list.getContext().getResources().getDrawable(R.drawable.item_news_overlay_large_mob);
+//            }
+//
+//            ((ImageView) view.findViewById(R.id.image_overlay)).setImageDrawable(overlay);
+//
+//            ((TextView) view.findViewById(R.id.post_date)).setText(n.getTime());
+//            ((TextView) view.findViewById(R.id.post_title)).setText(n.getTitle());
+//
+//            linearLayout.addView(view);
+//        }
 
-            if (n.getImg() != null) {
-                ((ImageView) view.findViewById(R.id.image_holder)).setImageDrawable(n.getImg());
-            }
-
-            Drawable overlay = null;
-            if (n.getType() == 0) {
-                overlay = list.getContext().getResources().getDrawable(R.drawable.item_news_overlay_large_mob);
-            }
-
-            ((ImageView) view.findViewById(R.id.image_overlay)).setImageDrawable(overlay);
-
-            ((TextView) view.findViewById(R.id.post_date)).setText(n.getTime());
-            ((TextView) view.findViewById(R.id.post_title)).setText(n.getTitle());
-
-            linearLayout.addView(view);
-        }
-
-        UpdatedSQLiteHelper updatedSQLiteHelper = new UpdatedSQLiteHelper(list.getContext());
+        UpdatedSQLiteHelper updatedSQLiteHelper = UpdatedSQLiteHelper.getInstance(list.getContext());
         updatedSQLiteHelper.setUpdated("Media");
 
         list.getProgress().setVisibility(View.GONE);
