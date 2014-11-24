@@ -4,10 +4,11 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
-import com.garethlewis.eagles.TeamHelper;
 import com.garethlewis.eagles.database.entities.Fixture;
 import com.garethlewis.eagles.database.entities.Standing;
+import com.garethlewis.eagles.util.TeamHelper;
 
 import java.util.List;
 
@@ -45,10 +46,10 @@ public class StandingsSQLiteHelper extends MasterDatabase {
         Standing[] standings = getExistingStandings(db);
 
         for (Fixture f : fixtures) {
-            String team = f.getHomeTeam().toLowerCase().replace(" ", "_").replace(".", "");
-            int home = TeamHelper.getTeamIndex(team);
-            team = f.getAwayTeam().toLowerCase().replace(" ", "_").replace(".", "");
-            int away = TeamHelper.getTeamIndex(team);
+            String team = f.getHomeTeam().toLowerCase(); //.replace(" ", "_").replace(".", "");
+            int home = TeamHelper.getTeamIndexFromNick(team);
+            team = f.getAwayTeam().toLowerCase(); //.replace(" ", "_").replace(".", "");
+            int away = TeamHelper.getTeamIndexFromNick(team);
 
             int homeScore = f.getHomeScore();
             int awayScore = f.getAwayScore();
@@ -80,7 +81,7 @@ public class StandingsSQLiteHelper extends MasterDatabase {
 
         for (int i = 0; i < standings.length; i++) {
             ContentValues contentValues = new ContentValues();
-            String team = TeamHelper.getTeamName(i);
+            String team = TeamHelper.getTeamNickname(i);
 
             contentValues.put("Name", team);
             contentValues.put("Wins", standings[i].getWins());
@@ -109,7 +110,7 @@ public class StandingsSQLiteHelper extends MasterDatabase {
 
         Cursor cursor = db.rawQuery("SELECT * FROM Standings", null);
         while (cursor.moveToNext()) {
-            int team = TeamHelper.getTeamIndex(cursor.getString(0));
+            int team = TeamHelper.getTeamIndexFromNick(cursor.getString(0).toLowerCase());
             standings[team].setWins(cursor.getInt(1));
             standings[team].setLosses(cursor.getInt(2));
             standings[team].setTies(cursor.getInt(3));
@@ -136,11 +137,24 @@ public class StandingsSQLiteHelper extends MasterDatabase {
     public String getRecord(String team) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT Wins, Losses, Ties FROM Standings Where Name = ?", new String[] {team});
-        cursor.moveToFirst();
-        String record = cursor.getString(0) + " - " + cursor.getString(1);
-        String ties = cursor.getString(2);
-        if (!"0".equals(ties)) record += (" - " + ties);
-        return record;
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            String record = cursor.getString(0) + " - " + cursor.getString(1);
+            String ties = cursor.getString(2);
+            if (!"0".equals(ties)) record += (" - " + ties);
+            return record;
+        }
+        Log.e("EAGLES", "Failed to find standings for: " + team);
+        return "X-X";
+    }
+
+    public void printTeamNames() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT Name FROM STANDINGS", null);
+        while (cursor.moveToNext()) {
+            String name = cursor.getString(0);
+            Log.e("EAGLES", "Has Record: '" + name + "'");
+        }
     }
 
 }

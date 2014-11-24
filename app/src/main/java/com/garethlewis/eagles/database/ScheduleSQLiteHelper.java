@@ -7,9 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.garethlewis.eagles.database.entities.Fixture;
 import com.garethlewis.eagles.exceptions.FixtureNotFoundException;
+import com.garethlewis.eagles.util.TeamHelper;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -136,46 +136,54 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
      * @param teamName team to retrieve the previous two games for.
      * @return A list of the previous two results.
      */
-    private List<Fixture> getLastTwoGames(String teamName) {
-        List<Fixture> lastTwoGames = new ArrayList<Fixture>();
+    public Fixture getLastGame(String teamName) {
         SQLiteDatabase db = this.getReadableDatabase();
+        Fixture lastGame = null;
+
         String where = COLUMN_DATE + " < ? AND ( " + MATCH_TEAM + ")";
         String[] selectionArgs = new String[]{String.valueOf(new Date().getTime()), teamName, teamName};
         String orderBy = COLUMN_DATE + " DESC";
-        Cursor cursor = db.query(TABLE_SCHEDULE, null, where, selectionArgs, null, null, orderBy, "2");
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            Fixture fixture = cursorToFixture(cursor);
-            lastTwoGames.add(fixture);
-            cursor.moveToNext();
+        Cursor cursor = db.query(TABLE_SCHEDULE, null, where, selectionArgs, null, null, orderBy, "1");
+        while (cursor.moveToNext()) {
+            lastGame = cursorToFixture(cursor);
         }
+
         cursor.close();
-        return lastTwoGames;
+        return lastGame;
     }
 
     /**
      * Convenience method for getting the three games required for the home header
      * @param teamName team to retrieve fixtures fo.
-     * @return A list of 2 previous results and next game.
+     * @return An array of the previous game and the next game.
      * @throws FixtureNotFoundException if any data is wrong.
      */
-    public List<Fixture> getHomeHeaderGames(String teamName) throws FixtureNotFoundException {
-        List<Fixture> lastTwoGames = getLastTwoGames(teamName);
-        if (lastTwoGames.isEmpty() || lastTwoGames.size() != 2) {
-            throw new FixtureNotFoundException();
-        }
-        Collections.reverse(lastTwoGames);
+    public Fixture[] getHomeHeaderGames(String teamName) throws FixtureNotFoundException {
+        Fixture[] fixtures = new Fixture[2];
+        Fixture lastGame = getLastGame(teamName);
         Fixture nextGame = getNextGame(teamName);
-        if (nextGame == null) {
+        if (lastGame == null || nextGame == null) {
             throw new FixtureNotFoundException();
         }
-        lastTwoGames.add(nextGame);
-        return lastTwoGames;
+
+        fixtures[0] = lastGame;
+        fixtures[1] = nextGame;
+        return fixtures;
     }
 
     /**
      * Gets the fixtures or results for a specified team.
-     * @param teamName Team to retrieve fixtures and results for.
+     * @param teamIndex Position of the team to retrieve fixtures and results for.
+     * @return A list of fixtures or results for the specified team
+     */
+    public List<Fixture> getFixturesForTeam(int teamIndex){
+        String teamName = TeamHelper.getTeamNickname(teamIndex);
+        return getFixturesForTeam(teamName);
+    }
+
+    /**
+     * Gets the fixtures or results for a specified team.
+     * @param teamName Name of the team to retrieve fixtures and results for.
      * @return A list of fixtures or results for the specified team
      */
     public List<Fixture> getFixturesForTeam(String teamName){

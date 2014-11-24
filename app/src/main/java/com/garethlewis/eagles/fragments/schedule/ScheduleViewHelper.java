@@ -2,7 +2,6 @@ package com.garethlewis.eagles.fragments.schedule;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -11,9 +10,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.garethlewis.eagles.R;
-import com.garethlewis.eagles.TeamHelper;
 import com.garethlewis.eagles.database.StandingsSQLiteHelper;
 import com.garethlewis.eagles.database.entities.Fixture;
+import com.garethlewis.eagles.util.TeamHelper;
 
 import java.util.List;
 
@@ -21,7 +20,6 @@ public class ScheduleViewHelper {
 
     private static Context context;
     private static LayoutInflater inflater;
-    private static Bitmap[] logos = new Bitmap[32];
 
     public static void displayList(Context c, LayoutInflater i, LinearLayout parent, List<Fixture> fixtures, boolean viewAll) {
         context = c;
@@ -67,20 +65,21 @@ public class ScheduleViewHelper {
         textView = (TextView) view.findViewById(R.id.home_team_name);
         textView.setText(fixture.getHomeTeam().toUpperCase());
 
-        String homeName = fixture.getHomeTeam().toLowerCase().replace(" ", "_").replace(".", "");
-        int teamIndex = TeamHelper.getTeamIndex(homeName);
-        Bitmap bitmap;
-        if (logos[teamIndex] == null) {
-            int homeImage = context.getResources().getIdentifier(homeName, "drawable", context.getPackageName());
-
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inSampleSize = 4;
-            bitmap = BitmapFactory.decodeResource(context.getResources(), homeImage, options);
-
-            logos[teamIndex] = bitmap;
-        } else {
-            bitmap = logos[teamIndex];
-        }
+        String homeName = fixture.getHomeTeam().toLowerCase(); //.replace(" ", "_").replace(".", "");
+//        int teamIndex = TeamHelper.getTeamIndex(homeName);
+//        Bitmap bitmap;
+//        if (logos[teamIndex] == null) {
+//            int homeImage = context.getResources().getIdentifier(homeName, "drawable", context.getPackageName());
+//
+//            BitmapFactory.Options options = new BitmapFactory.Options();
+//            options.inSampleSize = 4;
+//            bitmap = BitmapFactory.decodeResource(context.getResources(), homeImage, options);
+//
+//            logos[teamIndex] = bitmap;
+//        } else {
+//            bitmap = logos[teamIndex];
+//        }
+        Bitmap bitmap = TeamHelper.getTeamLogo(homeName);
         ImageView imageView = (ImageView) view.findViewById(R.id.home_team_image);
         imageView.setImageBitmap(bitmap);
 
@@ -117,8 +116,10 @@ public class ScheduleViewHelper {
 
         setupCommonViews(view, fixture, viewAll);
 
-        String awayName = fixture.getAwayTeam().toLowerCase().replace(" ", "_").replace(".", "");
-        String homeName = fixture.getHomeTeam().toLowerCase().replace(" ", "_").replace(".", "");
+        String awayName = fixture.getAwayTeam(); //.toLowerCase().replace(" ", "_").replace(".", "");
+        String homeName = fixture.getHomeTeam(); //.toLowerCase().replace(" ", "_").replace(".", "");
+
+//        Log.e("EAGLES", awayName + " - " + homeName);
 
         StandingsSQLiteHelper db = StandingsSQLiteHelper.getInstance(context);
         String record = db.getRecord(homeName);
@@ -128,6 +129,8 @@ public class ScheduleViewHelper {
         record = db.getRecord(awayName);
         textView = (TextView) view.findViewById(R.id.away_team_record);
         textView.setText(record);
+
+//        db.printTeamNames();
 
         return view;
     }
@@ -166,33 +169,40 @@ public class ScheduleViewHelper {
         textView = (TextView) view.findViewById(R.id.game_time);
         textView.setText(time);
 
-        String awayName = fixture.getAwayTeam().toLowerCase().replace(" ", "_").replace(".", "");
-        Bitmap bitmap = getTeamLogo(awayName);
+        String awayName = fixture.getAwayTeam().toLowerCase(); //.replace(" ", "_").replace(".", "");
+        Bitmap bitmap = TeamHelper.getTeamLogo(awayName);
         ImageView imageView = (ImageView) view.findViewById(R.id.away_team_image);
         imageView.setImageBitmap(bitmap);
 
-        String homeName = fixture.getHomeTeam().toLowerCase().replace(" ", "_").replace(".", "");
-        bitmap = getTeamLogo(homeName);
+        String homeName = fixture.getHomeTeam().toLowerCase(); //.replace(" ", "_").replace(".", "");
+        bitmap = TeamHelper.getTeamLogo(homeName);
         imageView = (ImageView) view.findViewById(R.id.home_team_image);
         imageView.setImageBitmap(bitmap);
     }
 
-    private static Bitmap getTeamLogo(String team) {
-        int teamIndex = TeamHelper.getTeamIndex(team);
-        Bitmap bitmap;
-        if (logos[teamIndex] == null) {
-            int awayImage = context.getResources().getIdentifier(team, "drawable", context.getPackageName());
-
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inSampleSize = 4;
-            bitmap = BitmapFactory.decodeResource(context.getResources(), awayImage, options);
-
-            logos[teamIndex] = bitmap;
-        } else {
-            bitmap = logos[teamIndex];
-        }
-        return bitmap;
-    }
+//    private static Bitmap getTeamLogo(String nickname) {
+////        int teamIndex = TeamHelper.getTeamIndex(team);
+//        int teamIndex = TeamHelper.getTeamIndexFromNick(nickname);
+//        if (teamIndex != -1) {
+//            Bitmap bitmap;
+//            String place = TeamHelper.getTeamPlacename(teamIndex).toLowerCase().replace(" ", "_");
+//            if (logos[teamIndex] == null) {
+//                int awayImage = context.getResources().getIdentifier(place, "drawable", context.getPackageName());
+//
+//                BitmapFactory.Options options = new BitmapFactory.Options();
+//                options.inSampleSize = 4;
+//                bitmap = BitmapFactory.decodeResource(context.getResources(), awayImage, options);
+//
+//                logos[teamIndex] = bitmap;
+//            } else {
+//                bitmap = logos[teamIndex];
+//            }
+//            return bitmap;
+//        } else {
+//            Log.e("EAGLES", "Index not found for team: " + nickname);
+//        }
+//        return null;
+//    }
 
     private static String formatDateString(String date) {
         String tmp = date.substring(0, date.length() - 5).trim();

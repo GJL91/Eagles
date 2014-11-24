@@ -17,6 +17,7 @@ import com.garethlewis.eagles.fragments.NewsFragment;
 import com.garethlewis.eagles.fragments.home.HomeFragment;
 import com.garethlewis.eagles.fragments.schedule.ScheduleFragment;
 import com.garethlewis.eagles.fragments.standings.StandingsFragment;
+import com.garethlewis.eagles.util.TeamHelper;
 
 
 public class MainActivity extends FragmentActivity
@@ -50,6 +51,8 @@ public class MainActivity extends FragmentActivity
         FileHandler.setContext(getApplicationContext());
         MasterDatabase db = new MasterDatabase(this);
         db.setContext(getApplicationContext());
+
+        TeamHelper.setupTeams(this);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             new FileHandler.readScheduleParams().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void) null);

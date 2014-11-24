@@ -4,9 +4,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
-import com.garethlewis.eagles.TeamHelper;
 import com.garethlewis.eagles.database.entities.Standing;
+import com.garethlewis.eagles.util.TeamHelper;
 
 public class MasterDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "eagles.db";
@@ -117,7 +118,9 @@ public class MasterDatabase extends SQLiteOpenHelper {
             Standing standing = new Standing();
 
             ContentValues contentValues = new ContentValues();
-            String team = TeamHelper.getTeamName(i);
+            String team = TeamHelper.getTeamNickname(i);
+
+            Log.e("EAGLES", "Inserting standings record for team: " + team);
 
             contentValues.put("Name", team);
             contentValues.put("Wins", standing.getWins());

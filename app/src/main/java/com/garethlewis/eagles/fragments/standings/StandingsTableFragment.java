@@ -9,7 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.garethlewis.eagles.R;
-import com.garethlewis.eagles.TeamHelper;
+import com.garethlewis.eagles.util.TeamHelper;
 import com.garethlewis.eagles.database.StandingsSQLiteHelper;
 import com.garethlewis.eagles.database.entities.Standing;
 
@@ -190,9 +190,14 @@ public class StandingsTableFragment extends android.support.v4.app.Fragment {
         Standing[] sortedStandings = new Standing[40];
         Standing[] tableStandings = db.getAllTeams();
 
-        String[] teamNames = getResources().getStringArray(R.array.spinnerTeams);
+//        String[] teamNames = getResources().getStringArray(R.array.spinnerTeams);
+//        for (int i = 0; i < 32; i++) {
+//            tableStandings[i].setName(teamNames[i+1]);
+//        }
+
+        String[] teamNames = getResources().getStringArray(R.array.team_nicknames);
         for (int i = 0; i < 32; i++) {
-            tableStandings[i].setName(teamNames[i+1]);
+            tableStandings[i].setName(teamNames[i]);
         }
 
         int index = 1;

@@ -8,17 +8,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.garethlewis.eagles.ParserPackage;
+import com.garethlewis.eagles.R;
 import com.garethlewis.eagles.database.MediaSQLiteHelper;
 import com.garethlewis.eagles.database.ScheduleSQLiteHelper;
+import com.garethlewis.eagles.database.StandingsSQLiteHelper;
 import com.garethlewis.eagles.database.UpdatedSQLiteHelper;
 import com.garethlewis.eagles.database.entities.Fixture;
 import com.garethlewis.eagles.database.entities.NewsItem;
 import com.garethlewis.eagles.fragments.news.NewsViewHelper;
 import com.garethlewis.eagles.fragments.schedule.ScheduleViewHelper;
 import com.garethlewis.eagles.parsers.NewsParser;
-import com.garethlewis.eagles.R;
 import com.garethlewis.eagles.parsers.ScheduleParser;
 
 import java.util.List;
@@ -85,8 +87,13 @@ public class HomeContentFragment extends android.support.v4.app.Fragment {
                         }
 
                     } else {
+                        TextView recordView = (TextView) view.findViewById(R.id.record_text);
+                        StandingsSQLiteHelper standingsDB = StandingsSQLiteHelper.getInstance(getActivity());
+                        String record = standingsDB.getRecord("Eagles");
+                        recordView.setText(record);
+
                         ScheduleSQLiteHelper scheduleDB = ScheduleSQLiteHelper.getInstance(getActivity());
-                        List<Fixture> fixtures = scheduleDB.getFixturesForTeam("Philadelphia");
+                        List<Fixture> fixtures = scheduleDB.getFixturesForTeam("Eagles");
 
                         ScheduleViewHelper.displayList(getActivity(), inflater, linearLayout, fixtures, false);
                     }

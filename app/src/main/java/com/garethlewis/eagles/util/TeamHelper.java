@@ -1,12 +1,19 @@
-package com.garethlewis.eagles;
+package com.garethlewis.eagles.util;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Log;
+
+import com.garethlewis.eagles.R;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class TeamHelper {
+
+    private static Context context;
 
     private static List<Integer> afcTeams = null;
     private static List<Integer> nfcTeams = null;
@@ -20,8 +27,107 @@ public class TeamHelper {
     private static List<Integer> nfcSouthTeams = null;
     private static List<Integer> nfcWestTeams = null;
 
+    private static Team[] teams;
+    private static Bitmap[] logos = new Bitmap[32];
+
+    public static void setupTeams(Context c) {
+        context = c;
+
+        String[] teamPlaceNames = context.getResources().getStringArray(R.array.team_place_names);
+        String[] teamNicknames = context.getResources().getStringArray(R.array.team_nicknames);
+
+        teams = new Team[32];
+        for (int i = 0; i < 32; i++) {
+            teams[i] = new Team(teamPlaceNames[i], teamNicknames[i]);
+        }
+    }
+
+    public static String getTriCode(String nickname) {
+        return getTeamPlacename(nickname).substring(0, 3).toUpperCase();
+    }
+
+    public static String getTeamPlacename(String nickname) {
+        int index = getTeamIndexFromNick(nickname);
+        return getTeamPlacename(index);
+    }
+
+    public static String getTeamPlacename(int index) {
+        return teams[index].getPlace();
+    }
+
+    public static String getTeamNickname(String placename) {
+        int index = getTeamIndex(placename);
+        return getTeamNickname(index);
+    }
+
+    public static Bitmap getTeamLogo(String nickname) {
+//        int teamIndex = TeamHelper.getTeamIndex(team);
+        int teamIndex = getTeamIndexFromNick(nickname);
+        if (teamIndex != -1) {
+            Bitmap bitmap;
+            String place = getTeamPlacename(teamIndex).toLowerCase().replace(" ", "_");
+            if (logos[teamIndex] == null) {
+                int awayImage = context.getResources().getIdentifier(place, "drawable", context.getPackageName());
+
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inSampleSize = 4;
+                bitmap = BitmapFactory.decodeResource(context.getResources(), awayImage, options);
+
+                logos[teamIndex] = bitmap;
+            } else {
+                bitmap = logos[teamIndex];
+            }
+            return bitmap;
+        } else {
+            Log.e("EAGLES", "Index not found for team: " + nickname);
+        }
+        return null;
+    }
+
+    public static String getTeamNickname(int index) {
+        return teams[index].getNickname();
+    }
+
+    public static int getTeamIndexFromNick(String nickname) {
+        switch (nickname.toLowerCase()) {
+            case "cardinals": return 0;
+            case "falcons": return 1;
+            case "ravens": return 2;
+            case "bills": return 3;
+            case "panthers": return 4;
+            case "bears": return 5;
+            case "bengals": return 6;
+            case "browns": return 7;
+            case "cowboys": return 8;
+            case "broncos": return 9;
+            case "lions": return 10;
+            case "packers": return 11;
+            case "texans": return 12;
+            case "colts": return 13;
+            case "jaguars": return 14;
+            case "chiefs": return 15;
+            case "dolphins": return 16;
+            case "vikings": return 17;
+            case "patriots": return 18;
+            case "saints": return 19;
+            case "giants": return 20;
+            case "jets": return 21;
+            case "raiders": return 22;
+            case "eagles": return 23;
+            case "steelers": return 24;
+            case "rams": return 25;
+            case "chargers": return 26;
+            case "49ers": return 27;
+            case "seahawks": return 28;
+            case "buccaneers": return 29;
+            case "titans": return 30;
+            case "redskins": return 31;
+            default: return -1;
+        }
+    }
+
     /**
-     * Takes a team name and returns an index representing where the team sits in an alpabetical
+     * Takes a team name and returns an index representing where the team sits in an alphabetical
      * list of all NFL teams.
      * @param name
      *      The name of the team to get the index for.

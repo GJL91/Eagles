@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,7 @@ public class ScheduleFragment extends Fragment {
     private LinearLayout fixturesList;
     private int showing = 1;
     private int teamShowing = 0;
+    private boolean programmatic = false;
 
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -38,30 +40,43 @@ public class ScheduleFragment extends Fragment {
 
         weekAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         weekSpinner.setAdapter(weekAdapter);
+
+        final Spinner teamSpinner = (Spinner) parent.findViewById(R.id.team_spinner);
+        ArrayAdapter<CharSequence> teamAdapter = ArrayAdapter.createFromResource(getActivity(),
+                R.array.spinnerTeams, android.R.layout.simple_spinner_item);
+
+        teamAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        teamSpinner.setAdapter(teamAdapter);
+
         weekSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (weekSpinner.isEnabled()) {
+                if (weekSpinner.isEnabled() && !programmatic) {
                     if (position + 1 != showing) {
-                        if (position == 17) {
-                            fixturesList.removeAllViews();
-                            ScheduleSQLiteHelper db = ScheduleSQLiteHelper.getInstance(getActivity());
-                            List<Fixture> fixtures = db.getPostseasonFixtures();
-                            ScheduleViewHelper.displayList(getActivity(), inflater, fixturesList, fixtures, false);
-
-                            teamShowing = 0;
-                            showing = position + 1;
-                            return;
-                        }
-
-                        fixturesList.removeAllViews();
-                        ScheduleSQLiteHelper db = ScheduleSQLiteHelper.getInstance(getActivity());
-                        List<Fixture> fixtures = db.getFixturesForWeek(position + 1);
-                        ScheduleViewHelper.displayList(getActivity(), inflater, fixturesList, fixtures, true);
+                        Log.e("EAGLES","Changing week");
+                        teamSpinner.setEnabled(false);
+//                        programmatic = true;
+                        teamSpinner.setSelection(0);
 
                         teamShowing = 0;
                         showing = position + 1;
+
+                        fixturesList.removeAllViews();
+                        ScheduleSQLiteHelper db = ScheduleSQLiteHelper.getInstance(getActivity());
+
+                        final List<Fixture> fixtures;
+                        if (position == 17) {
+                            fixtures = db.getPostseasonFixtures();
+                        } else {
+                            fixtures = db.getFixturesForWeek(position + 1);
+                        }
+
+                        ScheduleViewHelper.displayList(getActivity(), inflater, fixturesList, fixtures, true);
+
+                        teamSpinner.setEnabled(true);
                     }
+                } else {
+                    programmatic = false;
                 }
             }
 
@@ -69,40 +84,33 @@ public class ScheduleFragment extends Fragment {
             public void onNothingSelected(AdapterView<?> parent) { }
         });
 
-        Spinner teamSpinner = (Spinner) parent.findViewById(R.id.team_spinner);
-        ArrayAdapter<CharSequence> teamAdapter = ArrayAdapter.createFromResource(getActivity(),
-                R.array.spinnerTeams, android.R.layout.simple_spinner_item);
-
-        teamAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        teamSpinner.setAdapter(teamAdapter);
         teamSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position != teamShowing) {
-                    if (position == 0) {
+                if (teamSpinner.isEnabled()) {
+                    if (position != teamShowing) {
+                        Log.e("EAGLES","Changing team");
+                        weekSpinner.setEnabled(false);
+                        if (showing != 1) programmatic = true;
+                        weekSpinner.setSelection(0);
+
+                        teamShowing = position;
+                        showing = 1;
+
                         fixturesList.removeAllViews();
                         ScheduleSQLiteHelper db = ScheduleSQLiteHelper.getInstance(getActivity());
-                        List<Fixture> fixtures = db.getFixturesForWeek(1);
 
-                        ScheduleViewHelper.displayList(getActivity(), inflater, fixturesList, fixtures, true);
-                        weekSpinner.setSelection(0);
+                        final List<Fixture> fixtures;
+                        if (position == 0) {
+                            fixtures = db.getFixturesForWeek(1);
+                        } else {
+                            fixtures = db.getFixturesForTeam(position - 1);
+                        }
+
+                        ScheduleViewHelper.displayList(getActivity(), inflater, fixturesList, fixtures, false);
+
                         weekSpinner.setEnabled(true);
-
-                        teamShowing = 0;
-                        showing = 1;
-                        return;
                     }
-
-                    weekSpinner.setEnabled(false);
-                    weekSpinner.setSelection(0);
-
-                    fixturesList.removeAllViews();
-                    ScheduleSQLiteHelper db = ScheduleSQLiteHelper.getInstance(getActivity());
-                    List<Fixture> fixtures = db.getFixturesForTeam(getResources().getStringArray(R.array.spinnerTeams)[position]);
-                    ScheduleViewHelper.displayList(getActivity(), inflater, fixturesList, fixtures, false);
-
-                    teamShowing = position;
-                    showing = position + 1;
                 }
             }
 
