@@ -17,6 +17,11 @@ import com.garethlewis.eagles.util.TeamHelper;
 public class MatchPagerFragment extends android.support.v4.app.Fragment {
     public static final String ARG_SECTION_NUMBER = "section_number";
     private int position = 0;
+    private int[] layouts = new int[] {
+        R.layout.fragment_previous_match,
+        R.layout.fragment_next_match,
+        R.layout.fragment_next_match
+    };
 
     public MatchPagerFragment() { }
 
@@ -28,7 +33,7 @@ public class MatchPagerFragment extends android.support.v4.app.Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_next_match, container, false);
+        View view = inflater.inflate(layouts[position], container, false);
 
         if (position == 1) {
             LinearLayout parent = (LinearLayout) view.findViewById(R.id.home_match_parent);
@@ -43,29 +48,29 @@ public class MatchPagerFragment extends android.support.v4.app.Fragment {
                 String matchup = awayTeam + " @ " + homeTeam;
                 matchup = matchup.toUpperCase();
 
-                TextView textView = (TextView) view.findViewById(R.id.away_team_record);
+                TextView textView = (TextView) view.findViewById(R.id.previous_match_away_team_record);
                 textView.setText("" + lastGame.getAwayScore());
 
-                textView = (TextView) view.findViewById(R.id.home_team_record);
+                textView = (TextView) view.findViewById(R.id.previous_match_home_team_record);
                 textView.setText("" + lastGame.getHomeScore());
 
-                textView = (TextView) view.findViewById(R.id.matchup_text);
+                textView = (TextView) view.findViewById(R.id.previous_match_matchup_text);
                 textView.setText(matchup);
 
-                textView = (TextView) view.findViewById(R.id.week_number);
+                textView = (TextView) view.findViewById(R.id.previous_match_week_number);
                 textView.setText("WEEK " + lastGame.getWeek());
 
-                textView = (TextView) view.findViewById(R.id.date_text);
+                textView = (TextView) view.findViewById(R.id.previous_match_date_text);
                 textView.setText("FINAL");
 
                 String awayName = lastGame.getAwayTeam().toLowerCase();
                 Bitmap bitmap = TeamHelper.getTeamLogo(awayName);
-                ImageView imageView = (ImageView) view.findViewById(R.id.away_team_image);
+                ImageView imageView = (ImageView) view.findViewById(R.id.previous_match_away_team_image);
                 imageView.setImageBitmap(bitmap);
 
                 String homeName = lastGame.getHomeTeam().toLowerCase();
                 bitmap = TeamHelper.getTeamLogo(homeName);
-                imageView = (ImageView) view.findViewById(R.id.home_team_image);
+                imageView = (ImageView) view.findViewById(R.id.previous_match_home_team_image);
                 imageView.setImageBitmap(bitmap);
             } else {
 

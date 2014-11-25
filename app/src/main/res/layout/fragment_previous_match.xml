@@ -2,100 +2,113 @@
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="160dp">
+    android:layout_height="200dp">
 
     <LinearLayout
+        android:id="@+id/home_match_parent"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_gravity="center|bottom">
+        android:layout_gravity="center|bottom"
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="12dp"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingBottom="12dp">
 
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
+                android:layout_weight="1.5"
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/away_team_score"
+                    android:id="@+id/previous_match_away_team_record"
                     android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:paddingRight="0dp"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
                     android:paddingLeft="10dp"
+                    android:paddingRight="0dp"
+                    android:text="24"
                     android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:textSize="24dp"
-                    android:text="31" />
+                    android:textSize="30sp"
+                    android:textStyle="bold" />
 
                 <ImageView
-                    android:id="@+id/away_team_image"
+                    android:id="@+id/previous_match_away_team_image"
                     android:layout_width="0dp"
+                    android:layout_height="30dp"
                     android:layout_weight="1"
-                    android:layout_height="wrap_content" />
+                    android:scaleType="centerInside"
+                    android:src="@drawable/philadelphia" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_weight="2"
                 android:layout_height="wrap_content"
+                android:layout_weight="2"
                 android:gravity="center"
                 android:orientation="vertical">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:layout_marginBottom="5dp"
-                    android:text="WEEK 9" />
-
-                <TextView
+                    android:id="@+id/previous_match_week_number"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="5dp"
+                    android:text="WEEK 10"
                     android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:text="PHI @ HOU" />
+                    android:textSize="18sp" />
 
                 <TextView
+                    android:id="@+id/previous_match_matchup_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:text="CAR @ PHI"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/previous_match_date_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Nov 11, 1:30 AM"
                     android:textColor="@color/grey"
-                    android:text="FINAL" />
+                    android:textSize="18sp" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
+                android:layout_weight="1.5"
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:id="@+id/home_team_image"
+                    android:id="@+id/previous_match_home_team_image"
                     android:layout_width="0dp"
+                    android:layout_height="30dp"
                     android:layout_weight="1"
-                    android:layout_height="wrap_content" />
+                    android:scaleType="centerInside"
+                    android:src="@drawable/arizona" />
 
                 <TextView
-                    android:id="@+id/home_team_score"
+                    android:id="@+id/previous_match_home_team_record"
                     android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:paddingRight="10dp"
-                    android:paddingLeft="0dp"
-                    android:textStyle="bold"
-                    android:textColor="@color/white"
                     android:layout_height="wrap_content"
-                    android:textSize="24dp"
-                    android:text="21"/>
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:paddingLeft="0dp"
+                    android:paddingRight="10dp"
+                    android:textColor="@color/white"
+                    android:textSize="30sp"
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
@@ -104,66 +117,75 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="30dp"
-            android:orientation="horizontal"
             android:background="@color/grey"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/heading_pass"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:clickable="true"
                 android:gravity="center"
-                android:text="PASS" />
+                android:text="@string/pass_header"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/heading_rush"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textColor="@color/white"
+                android:clickable="true"
                 android:gravity="center"
-                android:text="RUSH" />
+                android:text="@string/rush_header"
+                android:textColor="@color/translucent_black_dark"
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/heading_rec"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:clickable="true"
                 android:gravity="center"
-                android:text="REC" />
+                android:text="@string/rec_header"
+                android:textColor="@color/translucent_black_dark"
+                android:textSize="18sp" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
             android:orientation="horizontal"
-            android:background="@color/black">
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp">
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingLeft="8dp"
-                android:paddingRight="0dp"
                 android:gravity="center"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:paddingLeft="8dp"
+                android:paddingRight="0dp">
 
                 <TextView
+                    android:id="@+id/away_player_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="Cam Newton"
                     android:textColor="@color/white"
                     android:textSize="13sp"
-                    android:textStyle="bold"
-                    android:text="LeSean McCoy" />
+                    android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/away_player_stats"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:text="23 att, 117 yds, 0 TD" />
+                    android:text="147/256, 1794 yds, 8 TD"
+                    android:textColor="@color/white" />
 
             </LinearLayout>
 
@@ -175,24 +197,26 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingLeft="0dp"
-                android:paddingRight="8dp"
                 android:gravity="center"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:paddingLeft="0dp"
+                android:paddingRight="8dp">
 
                 <TextView
+                    android:id="@+id/home_player_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="Nick Foles"
                     android:textColor="@color/white"
                     android:textSize="13sp"
-                    android:textStyle="bold"
-                    android:text="Arian Foster" />
+                    android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/home_player_stats"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:text="15 att, 56 yds, 0 TD" />
+                    android:text="187/312, 2163 yds, 13 TD"
+                    android:textColor="@color/white" />
 
             </LinearLayout>
 
