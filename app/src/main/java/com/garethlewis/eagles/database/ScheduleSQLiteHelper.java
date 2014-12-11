@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.garethlewis.eagles.database.entities.Fixture;
-import com.garethlewis.eagles.exceptions.FixtureNotFoundException;
 import com.garethlewis.eagles.util.TeamHelper;
 
 import java.util.ArrayList;
@@ -24,6 +23,8 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
     private static final String COLUMN_HOME_TEAM_SCORE = "HomeTeamScore";
     private static final String COLUMN_AWAY_TEAM_SCORE = "AwayTeamScore";
     private static final String COLUMN_WEEK = "Week";
+    private static final String COLUMN_STATUS = "Status";
+    private static final String COLUMN_ADDED = "Added";
 
     private static final String MATCH_TEAM = COLUMN_HOME_TEAM + " = ? OR " + COLUMN_AWAY_TEAM + " = ?";
 
@@ -40,9 +41,24 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
 
     public boolean deleteAllFixtures() {
         SQLiteDatabase dbw = this.getWritableDatabase();
-        boolean success = (dbw.delete("Schedule", "1", null) > 0);
+        return (dbw.delete("Schedule", "1", null) > 0);
+    }
 
-        return success;
+    public boolean setAdded(List<Fixture> fixtures) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String whereClause = "HomeTeam = ? AND AwayTeam = ? AND Week = ?";
+
+        for (Fixture f : fixtures) {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put("Added", 1);
+
+            String[] terms = new String[] { f.getHomeTeam(), f.getAwayTeam(), f.getWeek() };
+            boolean success = (db.update(TABLE_SCHEDULE, contentValues, whereClause, terms) > 0);
+            if (!success) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public boolean insertManyFixtures(List<Fixture> fixtures) {
@@ -63,6 +79,8 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
             if (f.getAwayScore() != null) {
                 contentValues.put(COLUMN_AWAY_TEAM_SCORE, f.getAwayScore());
             }
+            contentValues.put(COLUMN_STATUS, f.getStatus());
+            contentValues.put(COLUMN_ADDED, 0);
             int id = getFixture(db, f);
             boolean success;
             if (id != -1) {
@@ -117,14 +135,14 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
      * @param teamName team to retrieve the next game for.
      * @return The object containing the fixture.
      */
-    private Fixture getNextGame(String teamName) {
+    public Fixture getNextGame(String teamName) {
         SQLiteDatabase db = this.getReadableDatabase();
         String where = COLUMN_DATE + " > ? AND ( " + MATCH_TEAM + ")";
         String[] selectionArgs = new String[]{String.valueOf(new Date().getTime()), teamName, teamName};
         String orderBy = COLUMN_DATE + " ASC";
         Cursor cursor = db.query(TABLE_SCHEDULE, null, where, selectionArgs, null, null, orderBy, "1");
         Fixture fixture = null;
-        if (!cursor.moveToFirst()) {
+        while (cursor.moveToNext()) {
             fixture = cursorToFixture(cursor);
         }
         cursor.close();
@@ -152,24 +170,24 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
         return lastGame;
     }
 
-    /**
-     * Convenience method for getting the three games required for the home header
-     * @param teamName team to retrieve fixtures fo.
-     * @return An array of the previous game and the next game.
-     * @throws FixtureNotFoundException if any data is wrong.
-     */
-    public Fixture[] getHomeHeaderGames(String teamName) throws FixtureNotFoundException {
-        Fixture[] fixtures = new Fixture[2];
-        Fixture lastGame = getLastGame(teamName);
-        Fixture nextGame = getNextGame(teamName);
-        if (lastGame == null || nextGame == null) {
-            throw new FixtureNotFoundException();
-        }
-
-        fixtures[0] = lastGame;
-        fixtures[1] = nextGame;
-        return fixtures;
-    }
+//    /**
+//     * Convenience method for getting the three games required for the home header
+//     * @param teamName team to retrieve fixtures fo.
+//     * @return An array of the previous game and the next game.
+//     * @throws FixtureNotFoundException if any data is wrong.
+//     */
+//    public Fixture[] getHomeHeaderGames(String teamName) throws FixtureNotFoundException {
+//        Fixture[] fixtures = new Fixture[2];
+//        Fixture lastGame = getLastGame(teamName);
+//        Fixture nextGame = getNextGame(teamName);
+//        if (lastGame == null || nextGame == null) {
+//            throw new FixtureNotFoundException();
+//        }
+//
+//        fixtures[0] = lastGame;
+//        fixtures[1] = nextGame;
+//        return fixtures;
+//    }
 
     /**
      * Gets the fixtures or results for a specified team.
@@ -256,6 +274,7 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
         fixture.setAwayScore(cursor.getInt(5));
 
         fixture.setWeek(cursor.getString(6));
+        fixture.setStatus(cursor.getInt(7));
         return fixture;
     }
 

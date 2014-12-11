@@ -14,4 +14,10 @@
     <string name="bye_week">BYE</string>
     <string name="at_symbol">\@</string>
 
+    <string name="error_text">We seem to have encountered a problem. Please try again later.</string>
+
+    <!-- Text for when fetching content -->
+    <string name="fetch_schedules">Please be patient while we fetch the latest fixtures and results...</string>
+    <string name="fetch_news">Please be patient while we fetch the latest news stories...</string>
+
 </resources>

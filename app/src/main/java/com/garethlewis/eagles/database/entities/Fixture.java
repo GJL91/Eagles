@@ -14,12 +14,12 @@ public class Fixture {
     private String date;
     private String time;
     private String week;
+    private Integer status;
 
-    public Fixture() {
+    public Fixture() {}
 
-    }
-
-    public Fixture(String homeTeam, String awayTeam, Integer homeScore, Integer awayScore, String date, String time, String week) {
+    public Fixture(String homeTeam, String awayTeam, Integer homeScore, Integer awayScore,
+                   String date, String time, String week, Integer status) {
         this.homeTeam = homeTeam;
         this.awayTeam = awayTeam;
         this.homeScore = homeScore;
@@ -27,6 +27,7 @@ public class Fixture {
         this.date = date;
         this.time = time;
         this.week = week;
+        this.status = status;
     }
 
     public String getWeek() {
@@ -85,6 +86,14 @@ public class Fixture {
         this.time = time;
     }
 
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
     /**
      * Converts the string representation of a date to epoch time for database
      * @param date string to be converted, example: THU, NOV 6 2014 1:00 PM
@@ -95,11 +104,10 @@ public class Fixture {
         try {
             Date parsedDate = formatter.parse(date);
             return parsedDate.getTime();
-        }catch(ParseException e){
-            Log.e("FixtureDateException",date);
+        } catch (ParseException e) {
+            Log.e("FixtureDateException", date);
             return 0;
         }
-
     }
 
     /**
@@ -107,7 +115,7 @@ public class Fixture {
      * @param epochTime epoch time to be converted
      * @return Date string, example:
      */
-    public static String epochToDateString(long epochTime){
+    public static String epochToDateString(long epochTime) {
         Date epochDate = new Date(epochTime);
         SimpleDateFormat formatter = new SimpleDateFormat("EEE, MMM d yyyy h:mm a");
         return formatter.format(epochDate);

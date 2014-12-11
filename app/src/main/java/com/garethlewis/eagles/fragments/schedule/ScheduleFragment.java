@@ -1,7 +1,5 @@
 package com.garethlewis.eagles.fragments.schedule;
 
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -11,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 
 import com.garethlewis.eagles.ParserPackage;
@@ -19,7 +16,8 @@ import com.garethlewis.eagles.R;
 import com.garethlewis.eagles.database.ScheduleSQLiteHelper;
 import com.garethlewis.eagles.database.UpdatedSQLiteHelper;
 import com.garethlewis.eagles.database.entities.Fixture;
-import com.garethlewis.eagles.parsers.ScheduleParser;
+import com.garethlewis.eagles.util.ContentFetcher;
+import com.garethlewis.eagles.util.ScheduleParams;
 
 import java.util.List;
 
@@ -123,26 +121,30 @@ public class ScheduleFragment extends Fragment {
 
         UpdatedSQLiteHelper db = UpdatedSQLiteHelper.getInstance(getActivity());
         if (db.needsUpdate("Schedule")) {
-            ProgressBar progressBar = (ProgressBar) parent.findViewById(R.id.schedule_progress);
-            progressBar.setVisibility(View.VISIBLE);
+            LinearLayout progress = (LinearLayout) parent.findViewById(R.id.schedule_progress);
+            progress.setVisibility(View.VISIBLE);
 
-            ParserPackage parserPackage = new ParserPackage(getActivity(), inflater, container, view, progressBar, false);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                new ScheduleParser().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, parserPackage);
+            if (ContentFetcher.isScheduleSyncing()) {
+                // Do stuff.
             } else {
-                new ScheduleParser().execute(parserPackage);
+                ParserPackage parserPackage = new ParserPackage(getActivity(), inflater, container, view, progress, false);
+                ContentFetcher.fetchSchedules(parserPackage);
             }
 
+            showing = 1;
         } else {
             ScheduleSQLiteHelper scheduleDB = ScheduleSQLiteHelper.getInstance(getActivity());
-            List<Fixture> fixtures = scheduleDB.getFixturesForWeek(1);
+            int week = ScheduleParams.getFirstFixture();
+            if (week == 0) week = 1;
+            weekSpinner.setSelection(week - 1);
 
+            List<Fixture> fixtures = scheduleDB.getFixturesForWeek(week);
             ScheduleViewHelper.displayList(getActivity(), inflater, fixturesList, fixtures, true);
+
+            showing = week;
         }
 
         teamShowing = 0;
-        showing = 1;
-
         return parent;
     }
 

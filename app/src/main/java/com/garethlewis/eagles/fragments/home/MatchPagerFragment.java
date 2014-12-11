@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.garethlewis.eagles.R;
 import com.garethlewis.eagles.database.ScheduleSQLiteHelper;
+import com.garethlewis.eagles.database.StandingsSQLiteHelper;
 import com.garethlewis.eagles.database.entities.Fixture;
 import com.garethlewis.eagles.util.TeamHelper;
 
@@ -36,13 +37,16 @@ public class MatchPagerFragment extends android.support.v4.app.Fragment {
         View view = inflater.inflate(layouts[position], container, false);
 
         if (position == 1) {
-            LinearLayout parent = (LinearLayout) view.findViewById(R.id.home_match_parent);
+            LinearLayout parent = (LinearLayout) view.findViewById(R.id.next_match_parent);
             parent.removeViews(0, 2);
         } else {
             if (position == 0) {
                 ScheduleSQLiteHelper scheduleDB = ScheduleSQLiteHelper.getInstance(getActivity());
                 Fixture lastGame = scheduleDB.getLastGame("Eagles");
 
+                if (lastGame == null) {
+                    return view;
+                }
                 String awayTeam = TeamHelper.getTriCode(lastGame.getAwayTeam());
                 String homeTeam = TeamHelper.getTriCode(lastGame.getHomeTeam());
                 String matchup = awayTeam + " @ " + homeTeam;
@@ -73,9 +77,46 @@ public class MatchPagerFragment extends android.support.v4.app.Fragment {
                 imageView = (ImageView) view.findViewById(R.id.previous_match_home_team_image);
                 imageView.setImageBitmap(bitmap);
             } else {
+                ScheduleSQLiteHelper scheduleDB = ScheduleSQLiteHelper.getInstance(getActivity());
+                Fixture nextGame = scheduleDB.getNextGame("Eagles");
 
+                if (nextGame == null) {
+                    return view;
+                }
 
+                String awayTeam = TeamHelper.getTriCode(nextGame.getAwayTeam());
+                String homeTeam = TeamHelper.getTriCode(nextGame.getHomeTeam());
+                String matchup = awayTeam + " @ " + homeTeam;
+                matchup = matchup.toUpperCase();
 
+                StandingsSQLiteHelper standingsDB = StandingsSQLiteHelper.getInstance(getActivity());
+
+                String record = standingsDB.getRecord(nextGame.getAwayTeam());
+                TextView textView = (TextView) view.findViewById(R.id.next_match_away_team_record);
+                textView.setText(record);
+
+                record = standingsDB.getRecord(nextGame.getHomeTeam());
+                textView = (TextView) view.findViewById(R.id.next_match_home_team_record);
+                textView.setText(record);
+
+                textView = (TextView) view.findViewById(R.id.next_match_matchup_text);
+                textView.setText(matchup);
+
+                textView = (TextView) view.findViewById(R.id.next_match_week_number);
+                textView.setText("WEEK " + nextGame.getWeek());
+
+                textView = (TextView) view.findViewById(R.id.next_match_date_text);
+                textView.setText("" + nextGame.getTime());
+
+                String awayName = nextGame.getAwayTeam().toLowerCase();
+                Bitmap bitmap = TeamHelper.getTeamLogo(awayName);
+                ImageView imageView = (ImageView) view.findViewById(R.id.next_match_away_team_image);
+                imageView.setImageBitmap(bitmap);
+
+                String homeName = nextGame.getHomeTeam().toLowerCase();
+                bitmap = TeamHelper.getTeamLogo(homeName);
+                imageView = (ImageView) view.findViewById(R.id.next_match_home_team_image);
+                imageView.setImageBitmap(bitmap);
             }
 
             final TextView pass = (TextView) view.findViewById(R.id.heading_pass);

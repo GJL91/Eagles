@@ -11,7 +11,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:background="@color/white"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
@@ -49,14 +49,29 @@
             android:layout_height="3dp"
             android:background="@color/off_white" />
 
-        <ProgressBar
-            android:id="@+id/schedule_progress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="?android:attr/progressBarStyleLarge"
-            android:layout_gravity="center"
-            android:paddingTop="40dp"
-            android:visibility="gone" />
+        <LinearLayout
+            android:id="@+id/home_schedule_progress"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical"
+            android:visibility="gone" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/fetch_schedules"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:paddingTop="40dp"/>
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_gravity="center"
+                android:paddingTop="10dp" />
+
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/home_schedule_list"

@@ -4,9 +4,13 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.util.Log;
 
 import com.garethlewis.eagles.database.entities.Standing;
+import com.garethlewis.eagles.util.FileHandler;
+import com.garethlewis.eagles.util.ScheduleParams;
 import com.garethlewis.eagles.util.TeamHelper;
 
 public class MasterDatabase extends SQLiteOpenHelper {
@@ -31,7 +35,9 @@ public class MasterDatabase extends SQLiteOpenHelper {
                 "HomeTeamScore integer null, " +
                 "AwayTeam text not null, " +
                 "AwayTeamScore integer null, " +
-                "Week text not null);";
+                "Week text not null, " +
+                "Status integer not null, " +
+                "Added integer not null);";
 
     private static final String UPDATED_CREATE =
             "CREATE Table LastUpdated (" +
@@ -142,12 +148,22 @@ public class MasterDatabase extends SQLiteOpenHelper {
     public void resetDatabase() {
         SQLiteDatabase db = this.getWritableDatabase();
 
+        ScheduleParams.setFirstFixture(0);
+        ScheduleParams.setLastResult(0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            new FileHandler.writeScheduleParams().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void) null);
+        } else {
+            new FileHandler.writeScheduleParams().execute();
+        }
+
         db.execSQL("DROP TABLE IF EXISTS Media");
         db.execSQL("DROP TABLE IF EXISTS Schedule");
         db.execSQL("DROP TABLE IF EXISTS LastUpdated");
         db.execSQL("DROP TABLE IF EXISTS Standings");
 
         onCreate(db);
+
+
 
 //        db.close();
     }

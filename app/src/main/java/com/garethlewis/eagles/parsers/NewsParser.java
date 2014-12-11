@@ -12,6 +12,7 @@ import com.garethlewis.eagles.database.MediaSQLiteHelper;
 import com.garethlewis.eagles.database.UpdatedSQLiteHelper;
 import com.garethlewis.eagles.database.entities.NewsItem;
 import com.garethlewis.eagles.fragments.news.NewsViewHelper;
+import com.garethlewis.eagles.util.ContentFetcher;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -21,6 +22,7 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,14 +36,16 @@ public class NewsParser extends AsyncTask<ParserPackage, Void, List<NewsItem>>  
 
         list = params[0];
         MediaSQLiteHelper db = MediaSQLiteHelper.getInstance(list.getContext());
-        //db.deleteAllStories();
-
-//        list.getProgress().setVisibility(View.VISIBLE);
 
         List<NewsItem> newsItems = new ArrayList<NewsItem>();
         try {
             String url = "http://www.philadelphiaeagles.com/news/all-news.html";
-            Document doc = Jsoup.connect(url).get();
+            Document doc;
+            try {
+                doc = Jsoup.connect(url).timeout(10000).get();
+            } catch (SocketTimeoutException e) {
+                return null;
+            }
             Elements el = doc.select(".mod-wrp-5").first().child(2).child(0).child(0).children();
 
             int stories = el.size();
@@ -77,28 +81,25 @@ public class NewsParser extends AsyncTask<ParserPackage, Void, List<NewsItem>>  
 
                 // Get the source of the image.
                 if (!spadaro) {
-                    doc = Jsoup.connect(link).get();
-                    try {
-                        e = doc.select(".article-content").first().child(0).child(0);
-
-                        String imgSource = null;
-                        Drawable img = null;
-                        if (e.hasAttr("src")) {
-                            imgSource = e.absUrl("src").trim();
-                        }
-
-                        if (imgSource != null) {
-                            Drawable drawable = getImageFromURL(imgSource);
-                            // Type = 0 since this is an article.
-                            newsItems.add(new NewsItem(link, title, imgSource, date, (short) 0, drawable));
-                        } else {
+//                    doc = Jsoup.connect(link).get();
+//                    try {
+//                        e = doc.select(".article-content").first().child(0).child(0);
+//
+//                        String imgSource = null;
+//                        if (e.hasAttr("src")) {
+//                            imgSource = e.absUrl("src").trim();
+//                        }
+//
+//                        if (imgSource != null) {
+//                            Drawable drawable = getImageFromURL(imgSource);
+//                            // Type = 0 since this is an article.
+//                            newsItems.add(new NewsItem(link, title, imgSource, date, (short) 0, drawable));
+//                        } else {
                             newsItems.add(new NewsItem(link, title, null, date, (short) 0, null));
-                        }
-                    } catch (IndexOutOfBoundsException ex) {
-                        newsItems.add(new NewsItem(link, title, null, date, (short) 0, null));
-                    } catch (IOException ex) {
-                        newsItems.add(new NewsItem(link, title, null, date, (short) 0, null));
-                    }
+//                        }
+//                    } catch (IndexOutOfBoundsException | IOException ex) {
+//                        newsItems.add(new NewsItem(link, title, null, date, (short) 0, null));
+//                    }
                 } else {
                     newsItems.add(new NewsItem(link, title, "spadaro", date, (short) 0, null));
                 }
@@ -113,6 +114,13 @@ public class NewsParser extends AsyncTask<ParserPackage, Void, List<NewsItem>>  
 
     @Override
     protected void onPostExecute(List<NewsItem> newStories) {
+        if (newStories == null) {
+            NewsViewHelper.displayError(list.getInflater(), list.getLinearLayout());
+            ContentFetcher.newsFinished();
+            list.getProgress().setVisibility(View.GONE);
+            return;
+        }
+
         LayoutInflater inflater = list.getInflater();
         LinearLayout linearLayout = list.getLinearLayout();
 
@@ -127,38 +135,17 @@ public class NewsParser extends AsyncTask<ParserPackage, Void, List<NewsItem>>  
         NewsItem[] newsItems = db.getStories();
         NewsViewHelper.displayList(list.getContext(), inflater, linearLayout, newsItems);
 
-//        for (NewsItem n : newsItems) {
-//            FrameLayout view = (FrameLayout) inflater.inflate(R.layout.media_story_item, null, false);
-//
-//            if (n.getImg() != null) {
-//                ((ImageView) view.findViewById(R.id.image_holder)).setImageDrawable(n.getImg());
-//            }
-//
-//            Drawable overlay = null;
-//            if (n.getType() == 0) {
-//                overlay = list.getContext().getResources().getDrawable(R.drawable.item_news_overlay_large_mob);
-//            }
-//
-//            ((ImageView) view.findViewById(R.id.image_overlay)).setImageDrawable(overlay);
-//
-//            ((TextView) view.findViewById(R.id.post_date)).setText(n.getTime());
-//            ((TextView) view.findViewById(R.id.post_title)).setText(n.getTitle());
-//
-//            linearLayout.addView(view);
-//        }
-
         UpdatedSQLiteHelper updatedSQLiteHelper = UpdatedSQLiteHelper.getInstance(list.getContext());
         updatedSQLiteHelper.setUpdated("Media");
 
         list.getProgress().setVisibility(View.GONE);
-        //db.deleteAllStories();
+        ContentFetcher.newsFinished();
     }
 
     private Drawable getImageFromURL(String url) throws IOException {
         try {
             InputStream is = (InputStream) new URL(url).getContent();
-            Drawable d = Drawable.createFromStream(is, null);
-            return d;
+            return Drawable.createFromStream(is, null);
         } catch (MalformedURLException e) {
             Log.e("URL", ""+url);
             e.printStackTrace();

@@ -7,10 +7,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import com.garethlewis.eagles.FileHandler;
+import com.garethlewis.eagles.util.ContentFetcher;
+import com.garethlewis.eagles.util.FileHandler;
 import com.garethlewis.eagles.ParserPackage;
 import com.garethlewis.eagles.R;
-import com.garethlewis.eagles.ScheduleParams;
+import com.garethlewis.eagles.util.ScheduleParams;
 import com.garethlewis.eagles.database.ScheduleSQLiteHelper;
 import com.garethlewis.eagles.database.StandingsSQLiteHelper;
 import com.garethlewis.eagles.database.entities.Fixture;
@@ -22,6 +23,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -55,10 +57,6 @@ public class ScheduleParser extends AsyncTask<ParserPackage, Void, List<Fixture>
         dbs.deleteAllStandings();
 
         String[] allTeams = input.getContext().getResources().getStringArray(R.array.team_nicknames);
-//        String[] spinnerTeams = input.getContext().getResources().getStringArray(R.array.spinnerTeams);
-//        for (int i = 0; i < 32; i++) {
-//            allTeams[i] = spinnerTeams[i + 1];
-//        }
 
         List<Fixture> fixtures = new ArrayList<Fixture>();
 
@@ -66,11 +64,16 @@ public class ScheduleParser extends AsyncTask<ParserPackage, Void, List<Fixture>
         if (start == 0) start = 1;
 
         try {
-            for (int w = 1; w < 18; w++) {
+            for (int w = start; w < 18; w++) {
                 week = "" + w;
                 Log.e("EAGLES", week);
                 String url = getUrl();
-                Document doc = Jsoup.connect(url).get();
+                Document doc;
+                try {
+                    doc = Jsoup.connect(url).timeout(10000).get();
+                } catch (SocketTimeoutException e) {
+                    continue;
+                }
                 Elements tables = doc.select(".schedules-table");
 
                 Elements fullSchedule;
@@ -112,19 +115,26 @@ public class ScheduleParser extends AsyncTask<ParserPackage, Void, List<Fixture>
                         String homeTeam;
                         int awayScore = -1;
                         int homeScore = -1;
+                        int status = 0;
 
                         if (row.children().size() == 5) { // Future fixture.
+                            if (ScheduleParams.getFirstFixture() == 0 || w < ScheduleParams.getFirstFixture()) {
+                                ScheduleParams.setFirstFixture(w);
+                            }
                             homeTeam = row.child(4).text();
                         } else { // Either result or in-progress depending on time.
                             homeTeam = row.child(5).text();
                             awayScore = Integer.parseInt(row.child(2).text());
                             homeScore = Integer.parseInt(row.child(3).text());
-//                            if ("FINAL".equals(time)) { // Result
-//
-//
-//                            } else { // In-progress.
-//
-//                            }
+                            if ("5:32 AM".equals(time)) { // Result
+                                status = 2;
+                                ScheduleParams.setLastResult(w);
+                            } else { // In-progress.
+                                if (ScheduleParams.getFirstFixture() == 0 || w < ScheduleParams.getFirstFixture()) {
+                                    ScheduleParams.setFirstFixture(w);
+                                }
+                                status = 1;
+                            }
                         }
 
                         homeTeam = camelCaseString(homeTeam);
@@ -134,7 +144,7 @@ public class ScheduleParser extends AsyncTask<ParserPackage, Void, List<Fixture>
                         teams.add(awayTeam);
                         gameCount++;
 
-                        Fixture fixture = new Fixture(homeTeam, awayTeam, homeScore, awayScore, date, time, week);
+                        Fixture fixture = new Fixture(homeTeam, awayTeam, homeScore, awayScore, date, time, week, status);
                         fixtures.add(fixture);
                     }
                 }
@@ -143,7 +153,7 @@ public class ScheduleParser extends AsyncTask<ParserPackage, Void, List<Fixture>
                     // There are bye weeks. Need to figure out which teams have not been included in fixtures this week.
                     for (int i = 0; i < 32; i++) {
                         if (!teams.contains(allTeams[i])) {
-                            Fixture fixture = new Fixture(allTeams[i], "", 0, 0, date, "5:32 AM", week);
+                            Fixture fixture = new Fixture(allTeams[i], "", 0, 0, date, "5:32 AM", week, 2);
                             fixtures.add(fixture);
                         }
                     }
@@ -154,184 +164,6 @@ public class ScheduleParser extends AsyncTask<ParserPackage, Void, List<Fixture>
         }
         return fixtures;
     }
-
-//                Elements mainContent = doc.select("div[id$=content]").first().child(1).child(0).children();
-//                if (w > 17) {
-//                    if (mainContent.get(1).text().startsWith("Week")) {
-//                        int nMatches = getNumberOfMatchesForPostseasonWeek(w);
-//                        for (int i = 0; i < nMatches; i++) {
-//                            String homeTeam = "TBC";
-//                            String awayTeam = "TBC";
-//
-//                            String date = "Thu, Jan 1 1970";
-//                            String time = "12:01 AM";
-//
-//                            int homeScore = -1;
-//                            int awayScore = -1;
-//
-//                            Fixture fixture = new Fixture(homeTeam, awayTeam, homeScore, awayScore, date, time, week);
-//                            fixtures.add(fixture);
-//                        }
-//
-//                        continue;
-//                    }
-//                }
-//
-//                String lastDate = "";
-//                List<String> teams = new ArrayList<String>(32);
-//
-//                mainContent = mainContent.get(2).children();
-//                int size = mainContent.size();
-//                for (int i = 0; i < size; i++) {
-//                    Element element = mainContent.get(i);
-//
-//                    String time = element.child(0).text(); // Format HH:mm
-//                    String date = element.child(1).text(); // Format EEE d(th) MMM
-////                    Log.e("EAGLES", "1 " + date);
-//                    date = date.replaceAll("st|nd|rd|th","");
-////                    Log.e("EAGLES", "2 " + date);
-//
-//                    int tmpYear = year;
-//                    String month = date.substring(date.length() - 3);
-//                    if ("jan".equals(month.toLowerCase())) tmpYear++;
-//
-//                    DateFormat format = new SimpleDateFormat("EEE d MMM yyyy HH:mm");
-//                    format.setTimeZone(TimeZone.getTimeZone("EST"));
-//                    try {
-//                        Date tempDate = format.parse(date + " " + tmpYear + " " + time);
-//                        format.setTimeZone(TimeZone.getDefault());
-//                        date = format.format(tempDate);
-//                    } catch (ParseException e) {
-//                        e.printStackTrace();
-//                    }
-//
-////                    Log.e("EAGLES", "3 " + date);
-//                    time = date.substring(date.length() - 5);
-//                    date = date.replace(time, "");
-////                    Log.e("EAGLES", "4 " + date);
-//
-//                    String awayTeam = element.child(2).text();
-//                    String scoreString = element.child(3).text();
-//                    String homeTeam = element.child(4).text();
-//
-//                    int homeScore = -1;
-//                    int awayScore = -1;
-//                    if (!"@".equals(scoreString)) {
-//                        ScheduleParams.setLastResult(w);
-//                        String[] scores = scoreString.split(" - ");
-//                        awayScore = Integer.parseInt(scores[0]);
-//                        homeScore = Integer.parseInt(scores[1]);
-//                    } else {
-//                        if (ScheduleParams.getFirstFixture() == 0 || w < ScheduleParams.getFirstFixture()) {
-//                            ScheduleParams.setFirstFixture(w);
-//                        }
-//                    }
-//
-//                    String dateNumber = date.substring(4, 5);
-//                    try {
-//                        int secondNumber = Integer.parseInt(date.substring(5, 6));
-//                        dateNumber += secondNumber;
-//                    } catch (NumberFormatException e) {
-//                        // There was no second number in the date. Do nothing.
-//                    }
-//
-////                    int tmpYear = year;
-////                    String month = date.substring(date.length() - 3);
-////                    if ("jan".equals(month.toLowerCase())) tmpYear++;
-//
-//                    // Format date to EEE, MMM d yyyy
-//                    date = date.substring(0, 3) + ", " + month + " " + dateNumber + " " + tmpYear;
-//                    lastDate = date;
-//
-//                    time = convertTimeTo12Hour(time);
-//                    if (!isInFuture(date, time)) {
-//                        time = "5:32 AM";
-//                    }
-//
-//                    teams.add(homeTeam);
-//                    teams.add(awayTeam);
-//
-//                    Fixture fixture = new Fixture(homeTeam, awayTeam, homeScore, awayScore, date, time, week);
-//                    fixtures.add(fixture);
-//                }
-//
-//                if (size != 16) {
-//                    // There are bye weeks. Need to figure out which teams have not been included in fixtures this week.
-//                    for (int i = 0; i < 32; i++) {
-//                        if (!teams.contains(allTeams[i])) {
-//                            Fixture fixture = new Fixture(allTeams[i], "", 0, 0, lastDate, "5:32 AM", week);
-//                            fixtures.add(fixture);
-//                        }
-//                    }
-//                }
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return fixtures;
-//    }
-////                Elements tableBody = doc.select(".tablehead").first().child(0).children();
-////
-////                int size = tableBody.size();
-////
-////                // Get initial date.
-////                date = tableBody.get(1).child(0).text() + " " + year;
-////
-////                for (int i = 2; i < size; i++) {
-////                    Element element = tableBody.get(i);
-////                    if (!element.hasClass("stathead") && !element.hasClass("colhead")) {
-////                        String matchup = element.child(0).text();
-////                        //                    Log.e("EAGLES", matchup);
-////                        if (matchup.contains(",")) { // Bye week or Result
-////                            if (matchup.contains(":")) { // Bye week
-////                                String[] teams = matchup.split(",");
-////                                teams[0] = teams[0].substring(6);
-////
-////                                for (String t : teams) {
-////                                    Fixture fixture = new Fixture(t.trim(), "", 0, 0, date, "5:32 AM", week);
-////                                    fixtures.add(fixture);
-////                                }
-////
-////                            } else { // Result
-////                                ScheduleParams.setLastResult(w);
-////                                String[] parts = matchup.split(",");
-////
-////                                String pattern = "(\\D*)(\\d+)(.*)";
-////                                String homeTeam = parts[0].replaceAll(pattern, "$1").trim();
-////                                int homeScore = Integer.parseInt(parts[0].replaceAll(pattern, "$2").trim());
-////                                String awayTeam = parts[1].replaceAll(pattern, "$1").trim();
-////                                int awayScore = Integer.parseInt(parts[1].replaceAll(pattern, "$2").trim());
-////
-////                                Fixture fixture = new Fixture(homeTeam, awayTeam, homeScore, awayScore, date, "5:32 AM", week);
-////                                fixtures.add(fixture);
-////                            }
-////                        } else {  // Fixture is in the future
-////                            if (ScheduleParams.getFirstFixture() == 0 || w < ScheduleParams.getFirstFixture()) {
-////                                ScheduleParams.setFirstFixture(w);
-////                            }
-////                            String[] parts = matchup.split(" at ");
-////                            String homeTeam = parts[1];
-////                            String awayTeam = parts[0];
-////
-////                            String time = element.child(1).text();
-////
-////                            Fixture fixture = new Fixture(homeTeam, awayTeam, -1, -1, date, time, week);
-////                            fixtures.add(fixture);
-////                        }
-////                    } else { // Likely a date, check before updating
-////                        if (element.hasClass("colhead")) {
-////                            date = element.child(0).text() + " " + year;
-////                        }
-////                    }
-////                }
-////            }
-////        } catch (IOException e) {
-////            e.printStackTrace();
-////        }
-////
-////        return fixtures;
-////    }
 
     @Override
     protected void onPostExecute(List<Fixture> fixtures) {
@@ -349,7 +181,9 @@ public class ScheduleParser extends AsyncTask<ParserPackage, Void, List<Fixture>
 
         StandingsSQLiteHelper standingsDB = StandingsSQLiteHelper.getInstance(context);
         standingsDB.setContext(context);
-        standingsDB.updateStandings(fixtures);
+        List<Fixture> added = standingsDB.updateStandings(fixtures);
+
+        db.setAdded(added);
 
         LayoutInflater inflater = input.getInflater();
 
@@ -361,133 +195,11 @@ public class ScheduleParser extends AsyncTask<ParserPackage, Void, List<Fixture>
 
         ScheduleViewHelper.displayList(context, inflater, input.getLinearLayout(), fixtures, true);
 
-
-//        int i = 0;
-//        Resources resources = context.getResources();
-//        for (Fixture f : fixtures) {
-//            if ("".equals(f.getAwayTeam())) {
-//                // Bye Week for homeTeam
-//                FrameLayout view = (FrameLayout) inflater.inflate(R.layout.bye_week_fixture, null, false);
-//
-//                TextView textView = (TextView) view.findViewById(R.id.home_team_name);
-//                textView.setText(f.getHomeTeam().toUpperCase());
-//
-//                textView = (TextView) view.findViewById(R.id.week_number);
-//                textView.setText("WEEK " + f.getWeek());
-//
-//                String homeName = f.getHomeTeam().toLowerCase().replace(" ", "_").replace(".", "");
-//                int teamIndex = getTeamIndex(homeName);
-//                Bitmap bitmap;
-//                if (logos[teamIndex] == null) {
-//                    int homeImage = context.getResources().getIdentifier(homeName, "drawable", context.getPackageName());
-//
-//                    BitmapFactory.Options options = new BitmapFactory.Options();
-//                    options.inSampleSize = 4;
-//                    bitmap = BitmapFactory.decodeResource(context.getResources(), homeImage, options);
-//
-//                    logos[teamIndex] = bitmap;
-//                } else {
-//                    bitmap = logos[teamIndex];
-//                }
-//                ImageView imageView = (ImageView) view.findViewById(R.id.home_team_image);
-//                imageView.setImageBitmap(bitmap);
-//
-//                input.getLinearLayout().addView(view);
-//                i++;
-//                Log.e("EAGLES", "" + i);
-//
-//                continue;
-//            }
-//
-//            FrameLayout view = (FrameLayout) inflater.inflate(R.layout.fixture_item, null, false);
-//
-//            TextView textView = (TextView) view.findViewById(R.id.away_team_name);
-//            textView.setText(f.getAwayTeam().toUpperCase());
-//
-//            textView = (TextView) view.findViewById(R.id.home_team_name);
-//            textView.setText(f.getHomeTeam().toUpperCase());
-//
-//            textView = (TextView) view.findViewById(R.id.away_team_score);
-//            textView.setText("" + f.getAwayScore());
-//
-//            textView = (TextView) view.findViewById(R.id.home_team_score);
-//            textView.setText("" + f.getHomeScore());
-//
-//            textView = (TextView) view.findViewById(R.id.date_text);
-//            textView.setText(formatDateString(f.getDate()));
-//
-//            textView = (TextView) view.findViewById(R.id.week_number);
-//            textView.setText("WEEK " + f.getWeek());
-//
-//            String time = f.getTime();
-//            if ("5:32 AM".equals(time)) time = "Final";
-//            textView = (TextView) view.findViewById(R.id.game_time);
-//            textView.setText(time);
-//
-//            String awayName = f.getAwayTeam().toLowerCase().replace(" ", "_").replace(".", "");
-//            int teamIndex = getTeamIndex(awayName);
-//            Bitmap bitmap;
-//            if (logos[teamIndex] == null) {
-//                int awayImage = context.getResources().getIdentifier(awayName, "drawable", context.getPackageName());
-//
-//                BitmapFactory.Options options = new BitmapFactory.Options();
-//                options.inSampleSize = 4;
-//                bitmap = BitmapFactory.decodeResource(context.getResources(), awayImage, options);
-//
-//
-////                logo = context.getResources().getDrawable(awayImage);
-//                logos[teamIndex] = bitmap;
-//            } else {
-//                bitmap = logos[teamIndex];
-//            }
-//            ImageView imageView = (ImageView) view.findViewById(R.id.away_team_image);
-//            imageView.setImageBitmap(bitmap);
-//
-//            String homeName = f.getHomeTeam().toLowerCase().replace(" ", "_").replace(".", "");
-//            teamIndex = getTeamIndex(homeName);
-////            int homeImage = context.getResources().getIdentifier(homeName, "drawable", context.getPackageName());
-//            if (logos[teamIndex] == null) {
-//                int homeImage = context.getResources().getIdentifier(homeName, "drawable", context.getPackageName());
-//
-//                BitmapFactory.Options options = new BitmapFactory.Options();
-//                options.inSampleSize = 4;
-//                bitmap = BitmapFactory.decodeResource(context.getResources(), homeImage, options);
-//
-//                logos[teamIndex] = bitmap;
-//            } else {
-//                bitmap = logos[teamIndex];
-//            }
-//            imageView = (ImageView) view.findViewById(R.id.home_team_image);
-//            imageView.setImageBitmap(bitmap);
-
-//            View view = ScheduleViewHelper.displayList(context, inflater, f, true);
-//
-//            input.getLinearLayout().addView(view);
-//            i++;
-//            Log.e("EAGLES", "" + i);
-//        }
-
         input.getProgress().setVisibility(View.GONE);
+        ContentFetcher.scheduleFinished();
     }
 
     private String getUrl() {
-//        switch (week) {
-//            case "18":
-//                return baseUrl + year + "/wild-card-play-offs";
-//            case "19":
-//                return baseUrl + year + "/divisional-play-offs";
-//            case "20":
-//                return baseUrl + year + "/conference-championships";
-//            case "21":
-//                return baseUrl + year + "/other";
-//            case "22":
-//                return baseUrl + year + "/super-bowl";
-//            default:
-//                break;
-//        }
-//
-////        return baseUrl + year + typeString + type + weekString + week;
-//        return baseUrl + year + weekString + week;
         if (Integer.parseInt(week) > 17) {
             return baseUrl + year + "/POST";
         }
@@ -540,56 +252,4 @@ public class ScheduleParser extends AsyncTask<ParserPackage, Void, List<Fixture>
                 return 0;
         }
     }
-
-//    private String formatDateString(String date) {
-//        String tmp = date.substring(0, date.length() - 5).trim();
-//        String[] parts = tmp.split(" ");
-//
-//        String output = "";
-//        for (String s : parts) {
-//            output += s.toUpperCase().replace(s.substring(1), s.substring(1).toLowerCase());
-////            output += s.toLowerCase().replace("" + s.charAt(0), ("" + s.charAt(0)).toUpperCase());
-//            output += " ";
-//        }
-//
-//        return output.trim();
-//    }
-//
-//    private int getTeamIndex(String name) {
-//        switch (name) {
-//            case "arizona": return 0;
-//            case "atlanta": return 1;
-//            case "baltimore": return 2;
-//            case "buffalo": return 3;
-//            case "carolina": return 4;
-//            case "chicago": return 5;
-//            case "cincinnati": return 6;
-//            case "cleveland": return 7;
-//            case "dallas": return 8;
-//            case "denver": return 9;
-//            case "detroit": return 10;
-//            case "green_bay": return 11;
-//            case "houston": return 12;
-//            case "indianapolis": return 13;
-//            case "jacksonville": return 14;
-//            case "kansas_city": return 15;
-//            case "miami": return 16;
-//            case "minnesota": return 17;
-//            case "new_england": return 18;
-//            case "new_orleans": return 19;
-//            case "ny_giants": return 20;
-//            case "ny_jets": return 21;
-//            case "oakland": return 22;
-//            case "philadelphia": return 23;
-//            case "pittsburgh": return 24;
-//            case "st_louis": return 25;
-//            case "san_diego": return 26;
-//            case "san_francisco": return 27;
-//            case "seattle": return 28;
-//            case "tampa_bay": return 29;
-//            case "tennessee": return 30;
-//            case "washington": return 31;
-//            default: return -1;
-//        }
-//    }
 }

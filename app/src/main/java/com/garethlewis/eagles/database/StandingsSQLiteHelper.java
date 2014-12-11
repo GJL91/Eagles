@@ -10,6 +10,7 @@ import com.garethlewis.eagles.database.entities.Fixture;
 import com.garethlewis.eagles.database.entities.Standing;
 import com.garethlewis.eagles.util.TeamHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class StandingsSQLiteHelper extends MasterDatabase {
@@ -35,17 +36,19 @@ public class StandingsSQLiteHelper extends MasterDatabase {
 
     public boolean deleteAllStandings() {
         SQLiteDatabase dbw = this.getWritableDatabase();
-        boolean success = (dbw.delete("Standings", "1", null) > 0);
-
-
-        return success;
+        return (dbw.delete("Standings", "1", null) > 0);
     }
 
-    public boolean updateStandings(List<Fixture> fixtures) {
+    public List<Fixture> updateStandings(List<Fixture> fixtures) {
         SQLiteDatabase db = this.getWritableDatabase();
         Standing[] standings = getExistingStandings(db);
+        List<Fixture> addedToStandings = new ArrayList<Fixture>();
 
         for (Fixture f : fixtures) {
+            if (f.getStatus() != 2) {
+                continue;
+            }
+
             String team = f.getHomeTeam().toLowerCase(); //.replace(" ", "_").replace(".", "");
             int home = TeamHelper.getTeamIndexFromNick(team);
             team = f.getAwayTeam().toLowerCase(); //.replace(" ", "_").replace(".", "");
@@ -77,6 +80,8 @@ public class StandingsSQLiteHelper extends MasterDatabase {
             standings[home].addPointsAgainst(awayScore);
             standings[away].addPointsFor(awayScore);
             standings[away].addPointsAgainst(homeScore);
+
+            addedToStandings.add(f);
         }
 
         for (int i = 0; i < standings.length; i++) {
@@ -97,11 +102,11 @@ public class StandingsSQLiteHelper extends MasterDatabase {
 
             boolean success = (db.replace("Standings", null, contentValues) != -1);
             if (!success) {
-                return false;
+                return null;
             }
         }
 
-        return true;
+        return addedToStandings;
     }
 
     private Standing[] getExistingStandings(SQLiteDatabase db) {

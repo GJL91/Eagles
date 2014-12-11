@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 
 public class ParserPackage {
 
@@ -12,13 +11,13 @@ public class ParserPackage {
     private LayoutInflater inflater;
     private ViewGroup container;
     private LinearLayout linearLayout;
-    private ProgressBar progress;
+    private LinearLayout progress;
 
     /** Whether the ScheduleParser should display only the Eagles Schedule */
     private boolean mode;
 
     public ParserPackage(Context context, LayoutInflater inflater, ViewGroup container,
-                         LinearLayout linearLayout, ProgressBar progress, boolean mode) {
+                         LinearLayout linearLayout, LinearLayout progress, boolean mode) {
         this.context = context;
         this.inflater = inflater;
         this.container = container;
@@ -43,7 +42,7 @@ public class ParserPackage {
         return linearLayout;
     }
 
-    public ProgressBar getProgress() {
+    public LinearLayout getProgress() {
         return progress;
     }
 

@@ -1,4 +1,4 @@
-package com.garethlewis.eagles;
+package com.garethlewis.eagles.util;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -6,6 +6,8 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.Log;
+
+import com.garethlewis.eagles.R;
 
 import java.io.BufferedReader;
 import java.io.File;

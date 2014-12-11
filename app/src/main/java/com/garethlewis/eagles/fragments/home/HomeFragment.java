@@ -1,6 +1,5 @@
 package com.garethlewis.eagles.fragments.home;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -11,7 +10,6 @@ import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,18 +31,14 @@ public class HomeFragment extends Fragment {
     private boolean blurred = false;
     private boolean changeOnFinish = false;
 
-    private FragmentActivity fragmentActivity;
+    public HomeContentPagerAdapter homeContentPagerAdapter;
 
-    @Override
-    public void onAttach(Activity activity) {
-        fragmentActivity = (FragmentActivity) activity;
-        super.onAttach(activity);
-    }
-
+//    private FragmentActivity fragmentActivity;
+//
 //    @Override
-//    public void onDestroy() {
-//        int i = 1;
-//        super.onDestroy();
+//    public void onAttach(Activity activity) {
+//        fragmentActivity = (FragmentActivity) activity;
+//        super.onAttach(activity);
 //    }
 
     @Override
@@ -80,55 +74,15 @@ public class HomeFragment extends Fragment {
 
         ViewPager contentViewPager = (ViewPager) root.findViewById(R.id.placeholder_content);
         HomeContentPagerAdapter mContentPagerAdapter = new HomeContentPagerAdapter(getChildFragmentManager());
+        this.homeContentPagerAdapter = mContentPagerAdapter;
         contentViewPager.setAdapter(mContentPagerAdapter);
 
         final TabPageIndicator tabPageIndicator = (TabPageIndicator) root.findViewById(R.id.tab_indicator);
         tabPageIndicator.setInflater(inflater);
         tabPageIndicator.setViewPager(contentViewPager, 0);
-//        tabPageIndicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-//            @Override
-//            public void onPageScrolled(int i, float v, int i2) {
-//
-//            }
-//
-//            @Override
-//            public void onPageSelected(int i) {
-//            }
-//
-//            @Override
-//            public void onPageScrollStateChanged(int i) {
-//
-//            }
-//        });
-
         contentViewPager.setOffscreenPageLimit(2);
 
         setMatchBackground();
-
-
-
-
-
-
-
-//        CirclePageIndicator cIndicator = (CirclePageIndicator) root.findViewById(R.id.circle_indicator);
-//        cIndicator.setViewPager(mViewPager);
-
-
-
-
-
-
-
-
-
-
-
-//        TabPageIndicator tabPageIndicator = (TabPageIndicator) root.findViewById(R.id.indicator);
-//        tabPageIndicator.setViewPager(contentViewPager);
-//        tabPageIndicator.setVisibility(View.VISIBLE);
-
-
 
         return root;
     }

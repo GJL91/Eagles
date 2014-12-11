@@ -13,13 +13,7 @@ import com.garethlewis.eagles.database.entities.NewsItem;
 
 public class NewsViewHelper {
 
-    private static Context context;
-    private static LayoutInflater inflater;
-
-    public static void displayList(Context c, LayoutInflater i, LinearLayout parent, NewsItem[] newsItems) {
-        context = c;
-        inflater = i;
-
+    public static void displayList(Context context, LayoutInflater inflater, LinearLayout parent, NewsItem[] newsItems) {
         for (NewsItem n : newsItems) {
             FrameLayout view = (FrameLayout) inflater.inflate(R.layout.media_story_item, null, false);
 
@@ -38,12 +32,11 @@ public class NewsViewHelper {
             ((TextView) view.findViewById(R.id.post_title)).setText(n.getTitle());
 
             parent.addView(view);
-
-
-
-//            View fixtureView = setupViewForFixture(f, viewAll);
-//            parent.addView(fixtureView);
         }
     }
 
+    public static void displayError(LayoutInflater inflater, LinearLayout parent) {
+        LinearLayout view = (LinearLayout) inflater.inflate(R.layout.news_error_item, null, false);
+        parent.addView(view);
+    }
 }

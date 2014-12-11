@@ -1,13 +1,10 @@
 package com.garethlewis.eagles.fragments.home;
 
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.garethlewis.eagles.ParserPackage;
@@ -20,8 +17,7 @@ import com.garethlewis.eagles.database.entities.Fixture;
 import com.garethlewis.eagles.database.entities.NewsItem;
 import com.garethlewis.eagles.fragments.news.NewsViewHelper;
 import com.garethlewis.eagles.fragments.schedule.ScheduleViewHelper;
-import com.garethlewis.eagles.parsers.NewsParser;
-import com.garethlewis.eagles.parsers.ScheduleParser;
+import com.garethlewis.eagles.util.ContentFetcher;
 
 import java.util.List;
 
@@ -33,6 +29,8 @@ public class HomeContentFragment extends android.support.v4.app.Fragment {
             R.layout.fragment_home_schedule,
             R.layout.fragment_home_twitter
     };
+
+    private View view;
 
     public HomeContentFragment() { }
 
@@ -46,26 +44,15 @@ public class HomeContentFragment extends android.support.v4.app.Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(layout[position], container, false);
 
+        this.view = view;
         if (position == 0) {
             LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.home_media_list);
 
             UpdatedSQLiteHelper db = UpdatedSQLiteHelper.getInstance(getActivity());
             if (db.needsUpdate("Media")) {
-                ProgressBar progress = (ProgressBar) view.findViewById(R.id.media_progress);
-                progress.setVisibility(View.VISIBLE);
-
-                ParserPackage parserPackage = new ParserPackage(getActivity(), inflater, container, linearLayout, progress, false);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    new NewsParser().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, parserPackage);
-                } else {
-                    new NewsParser().execute(parserPackage);
-                }
-
+                doNewsFetch(inflater, container);
             } else {
-                MediaSQLiteHelper mediaDB = MediaSQLiteHelper.getInstance(getActivity());
-                NewsItem[] newsItems = mediaDB.getStories();
-
-                NewsViewHelper.displayList(getActivity(), inflater, linearLayout, newsItems);
+                displayNews(inflater, linearLayout);
             }
 
         } else {
@@ -76,34 +63,69 @@ public class HomeContentFragment extends android.support.v4.app.Fragment {
                 if (linearLayout != null) {
                     UpdatedSQLiteHelper db = UpdatedSQLiteHelper.getInstance(getActivity());
                     if (db.needsUpdate("Schedule")) {
-                        ProgressBar progressBar = (ProgressBar) view.findViewById(R.id.schedule_progress);
-                        progressBar.setVisibility(View.VISIBLE);
+                        LinearLayout progress = (LinearLayout) view.findViewById(R.id.home_schedule_progress);
 
-                        ParserPackage parserPackage = new ParserPackage(getActivity(), inflater, container, linearLayout, progressBar, true);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                            new ScheduleParser().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, parserPackage);
+                        if (ContentFetcher.isScheduleSyncing()) {
+                            // Wait for schedule syncing to complete, then display the schedules.
+                            // Display the progress bar until that point.
+                            progress.setVisibility(View.VISIBLE);
+
+                            // Need an async task to wait and poll the ContentFetcher as otherwise the ui thread will hang.
+
+
                         } else {
-                            new ScheduleParser().execute(parserPackage);
+                            ParserPackage parserPackage = new ParserPackage(getActivity(), inflater, container, linearLayout, progress, true);
+                            ContentFetcher.fetchSchedules(parserPackage);
                         }
-
                     } else {
-                        TextView recordView = (TextView) view.findViewById(R.id.record_text);
-                        StandingsSQLiteHelper standingsDB = StandingsSQLiteHelper.getInstance(getActivity());
-                        String record = standingsDB.getRecord("Eagles");
-                        recordView.setText(record);
-
-                        ScheduleSQLiteHelper scheduleDB = ScheduleSQLiteHelper.getInstance(getActivity());
-                        List<Fixture> fixtures = scheduleDB.getFixturesForTeam("Eagles");
-
-                        ScheduleViewHelper.displayList(getActivity(), inflater, linearLayout, fixtures, false);
+                        displaySchedule(inflater, view, linearLayout);
                     }
                 }
-
-            } else {
-                // Do stuff to get tweets here.
             }
+//            else {
+                // Do stuff to get tweets here.
+//            }
         }
 
         return view;
     }
+
+    private void displayNews(LayoutInflater inflater, LinearLayout linearLayout) {
+        MediaSQLiteHelper mediaDB = MediaSQLiteHelper.getInstance(getActivity());
+        NewsItem[] newsItems = mediaDB.getStories();
+
+        NewsViewHelper.displayList(getActivity(), inflater, linearLayout, newsItems);
+    }
+
+    private void displaySchedule(LayoutInflater inflater, View view, LinearLayout linearLayout) {
+        TextView recordView = (TextView) view.findViewById(R.id.record_text);
+        StandingsSQLiteHelper standingsDB = StandingsSQLiteHelper.getInstance(getActivity());
+        String record = standingsDB.getRecord("Eagles");
+        recordView.setText(record);
+
+        ScheduleSQLiteHelper scheduleDB = ScheduleSQLiteHelper.getInstance(getActivity());
+        List<Fixture> fixtures = scheduleDB.getFixturesForTeam("Eagles");
+
+        ScheduleViewHelper.displayList(getActivity(), inflater, linearLayout, fixtures, false);
+    }
+
+    public void doNewsFetch(LayoutInflater inflater) {
+        doNewsFetch(inflater, null);
+    }
+
+    public void doNewsFetch(LayoutInflater inflater, ViewGroup container) {
+        View view = this.view;
+        LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.home_media_list);
+
+        LinearLayout progress = (LinearLayout) view.findViewById(R.id.home_media_progress);
+
+        if (ContentFetcher.isNewsSyncing()) {
+
+        } else {
+            ParserPackage parserPackage = new ParserPackage(getActivity(), inflater, container, linearLayout, progress, false);
+            ContentFetcher.fetchNews(parserPackage);
+        }
+
+    }
+
 }

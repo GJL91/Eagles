@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
 
-import com.garethlewis.eagles.FileHandler;
+import com.garethlewis.eagles.util.FileHandler;
 import com.garethlewis.eagles.database.entities.NewsItem;
 
 import java.util.ArrayList;
