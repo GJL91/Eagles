@@ -117,6 +117,11 @@ public class MasterDatabase extends SQLiteOpenHelper {
         contentValues.put("Name", "Standings");
         contentValues.put("Date", 0);
         db.insert("LastUpdated", null, contentValues);
+
+        contentValues = new ContentValues();
+        contentValues.put("Name", "Twitter");
+        contentValues.put("Date", 0);
+        db.insert("LastUpdated", null, contentValues);
     }
 
     private void insertInitialStandings(SQLiteDatabase db) {
@@ -150,6 +155,7 @@ public class MasterDatabase extends SQLiteOpenHelper {
 
         ScheduleParams.setFirstFixture(0);
         ScheduleParams.setLastResult(0);
+        ScheduleParams.setNextGameTime(0);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             new FileHandler.writeScheduleParams().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void) null);
         } else {

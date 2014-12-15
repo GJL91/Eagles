@@ -170,6 +170,13 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
         return lastGame;
     }
 
+    public boolean gameInProgress() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String where = COLUMN_STATUS + " = 1";
+        Cursor cursor = db.query(TABLE_SCHEDULE, null, where, null, null, null, null);
+        return cursor.moveToFirst();
+    }
+
 //    /**
 //     * Convenience method for getting the three games required for the home header
 //     * @param teamName team to retrieve fixtures fo.

@@ -5,7 +5,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-public class ParserPackage {
+public class FetcherPackage {
 
     private Context context;
     private LayoutInflater inflater;
@@ -13,11 +13,11 @@ public class ParserPackage {
     private LinearLayout linearLayout;
     private LinearLayout progress;
 
-    /** Whether the ScheduleParser should display only the Eagles Schedule */
+    /** Whether the ScheduleFetcher should display only the Eagles Schedule */
     private boolean mode;
 
-    public ParserPackage(Context context, LayoutInflater inflater, ViewGroup container,
-                         LinearLayout linearLayout, LinearLayout progress, boolean mode) {
+    public FetcherPackage(Context context, LayoutInflater inflater, ViewGroup container,
+                          LinearLayout linearLayout, LinearLayout progress, boolean mode) {
         this.context = context;
         this.inflater = inflater;
         this.container = container;

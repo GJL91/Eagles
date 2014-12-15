@@ -103,7 +103,8 @@ public class FileHandler {
                 FileOutputStream outputStream = context.openFileOutput("schedule_parameters.dat", Context.MODE_PRIVATE);
 
                 String string = "LastResultWeek = " + ScheduleParams.getLastResult() + "\n";
-                string = string + "FirstFixtureWeek = " + ScheduleParams.getFirstFixture();
+                string = string + "FirstFixtureWeek = " + ScheduleParams.getFirstFixture() + "\n";
+                string = string + "NextGameTime = " + ScheduleParams.getNextGameTime();
 
                 outputStream.write(string.getBytes());
                 outputStream.close();
@@ -130,6 +131,9 @@ public class FileHandler {
 
                 line = bufferedReader.readLine();
                 ScheduleParams.setFirstFixture(Integer.parseInt(line.split(" ")[2]));
+
+                line = bufferedReader.readLine();
+                ScheduleParams.setNextGameTime(Long.parseLong(line.split(" ")[2]));
             } catch (IOException e) {
                 e.printStackTrace();
             }

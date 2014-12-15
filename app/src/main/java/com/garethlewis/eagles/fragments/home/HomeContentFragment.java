@@ -1,5 +1,6 @@
 package com.garethlewis.eagles.fragments.home;
 
+import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.garethlewis.eagles.ParserPackage;
+import com.garethlewis.eagles.FetcherPackage;
 import com.garethlewis.eagles.R;
 import com.garethlewis.eagles.database.MediaSQLiteHelper;
 import com.garethlewis.eagles.database.ScheduleSQLiteHelper;
@@ -18,10 +19,12 @@ import com.garethlewis.eagles.database.entities.NewsItem;
 import com.garethlewis.eagles.fragments.news.NewsViewHelper;
 import com.garethlewis.eagles.fragments.schedule.ScheduleViewHelper;
 import com.garethlewis.eagles.util.ContentFetcher;
+import com.garethlewis.eagles.waiters.BaseWaiter;
+import com.garethlewis.eagles.waiters.ScheduleWaiter;
 
 import java.util.List;
 
-public class HomeContentFragment extends android.support.v4.app.Fragment {
+public class HomeContentFragment extends Fragment {
     public static final String ARG_SECTION_NUMBER = "section_number";
     private int position = 0;
     private int layout[] = new int[] {
@@ -63,28 +66,21 @@ public class HomeContentFragment extends android.support.v4.app.Fragment {
                 if (linearLayout != null) {
                     UpdatedSQLiteHelper db = UpdatedSQLiteHelper.getInstance(getActivity());
                     if (db.needsUpdate("Schedule")) {
-                        LinearLayout progress = (LinearLayout) view.findViewById(R.id.home_schedule_progress);
-
-                        if (ContentFetcher.isScheduleSyncing()) {
-                            // Wait for schedule syncing to complete, then display the schedules.
-                            // Display the progress bar until that point.
-                            progress.setVisibility(View.VISIBLE);
-
-                            // Need an async task to wait and poll the ContentFetcher as otherwise the ui thread will hang.
-
-
-                        } else {
-                            ParserPackage parserPackage = new ParserPackage(getActivity(), inflater, container, linearLayout, progress, true);
-                            ContentFetcher.fetchSchedules(parserPackage);
-                        }
+                        doScheduleFetch(inflater, container);
                     } else {
                         displaySchedule(inflater, view, linearLayout);
                     }
                 }
+            } else {
+                LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.home_twitter_list);
+
+                if (linearLayout != null) {
+                    UpdatedSQLiteHelper db = UpdatedSQLiteHelper.getInstance(getActivity());
+                    if (db.needsUpdate("Twitter")) {
+                        doTwitterFetch(inflater, container);
+                    }
+                }
             }
-//            else {
-                // Do stuff to get tweets here.
-//            }
         }
 
         return view;
@@ -109,11 +105,20 @@ public class HomeContentFragment extends android.support.v4.app.Fragment {
         ScheduleViewHelper.displayList(getActivity(), inflater, linearLayout, fixtures, false);
     }
 
-    public void doNewsFetch(LayoutInflater inflater) {
+    public void refreshNews(LayoutInflater inflater) {
+        View view = this.view;
+        LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.home_media_list);
+
+        linearLayout.removeAllViews();
+
         doNewsFetch(inflater, null);
     }
 
-    public void doNewsFetch(LayoutInflater inflater, ViewGroup container) {
+//    public void doNewsFetch(LayoutInflater inflater) {
+//        doNewsFetch(inflater, null);
+//    }
+
+    private void doNewsFetch(LayoutInflater inflater, ViewGroup container) {
         View view = this.view;
         LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.home_media_list);
 
@@ -122,10 +127,59 @@ public class HomeContentFragment extends android.support.v4.app.Fragment {
         if (ContentFetcher.isNewsSyncing()) {
 
         } else {
-            ParserPackage parserPackage = new ParserPackage(getActivity(), inflater, container, linearLayout, progress, false);
-            ContentFetcher.fetchNews(parserPackage);
+            FetcherPackage fetcherPackage = new FetcherPackage(getActivity(), inflater, container, linearLayout, progress, false);
+            ContentFetcher.fetchNews(fetcherPackage);
         }
 
+    }
+
+    public void refreshSchedule(LayoutInflater inflater) {
+        View view = this.view;
+        LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.home_schedule_list);
+
+        linearLayout.removeAllViews();
+
+        doScheduleFetch(inflater, null);
+    }
+
+    private void doScheduleFetch(LayoutInflater inflater, ViewGroup container) {
+        View view = this.view;
+        LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.home_schedule_list);
+
+        LinearLayout progress = (LinearLayout) view.findViewById(R.id.home_schedule_progress);
+
+        if (ContentFetcher.isScheduleSyncing()) {
+            // Wait for schedule syncing to complete, then display the schedules.
+            // Need an async task to wait and poll the ContentFetcher as otherwise the ui thread will hang.
+            BaseWaiter waiter = new ScheduleWaiter(getActivity(), inflater, view, linearLayout, progress, null, false);
+            waiter.startWaiting();
+        } else {
+            FetcherPackage fetcherPackage = new FetcherPackage(getActivity(), inflater, container, linearLayout, progress, true);
+            ContentFetcher.fetchSchedules(fetcherPackage);
+        }
+    }
+
+    public void refreshTwitter(LayoutInflater inflater) {
+        View view = this.view;
+        LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.home_twitter_list);
+
+        linearLayout.removeAllViews();
+
+        doTwitterFetch(inflater, null);
+    }
+
+    private void doTwitterFetch(LayoutInflater inflater, ViewGroup container) {
+        View view = this.view;
+        LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.home_twitter_list);
+
+        LinearLayout progress = (LinearLayout) view.findViewById(R.id.home_twitter_progress);
+
+        if (ContentFetcher.isTwitterSyncing()) {
+            // Wait
+        } else {
+            FetcherPackage fetcherPackage = new FetcherPackage(getActivity(), inflater, container, linearLayout, progress, false);
+            ContentFetcher.fetchTwitter(fetcherPackage);
+        }
     }
 
 }

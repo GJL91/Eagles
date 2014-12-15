@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.garethlewis.eagles.util.ScheduleParams;
+
 import java.util.Date;
 
 public class UpdatedSQLiteHelper extends MasterDatabase {
@@ -59,10 +61,20 @@ public class UpdatedSQLiteHelper extends MasterDatabase {
 
     private int getTimeLimit(String table) {
         switch (table) {
-            case "Schedule": return 259200000;
+            case "Schedule": scheduleUpdateDelay();
             case "Media": return 300000;
+            case "Twitter": return 10000;
             default: return 3600000;
         }
+    }
+
+    private int scheduleUpdateDelay() {
+        ScheduleSQLiteHelper db = ScheduleSQLiteHelper.getInstance(getContext());
+        if (ScheduleParams.getNextGameTime() < new Date().getTime() || db.gameInProgress()) {
+            return 60000;
+        }
+
+        return 259200000; // Default amount of 3 days.
     }
 
 }

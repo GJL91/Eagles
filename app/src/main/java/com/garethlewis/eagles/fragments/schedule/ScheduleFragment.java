@@ -11,13 +11,15 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
-import com.garethlewis.eagles.ParserPackage;
+import com.garethlewis.eagles.FetcherPackage;
 import com.garethlewis.eagles.R;
 import com.garethlewis.eagles.database.ScheduleSQLiteHelper;
 import com.garethlewis.eagles.database.UpdatedSQLiteHelper;
 import com.garethlewis.eagles.database.entities.Fixture;
 import com.garethlewis.eagles.util.ContentFetcher;
 import com.garethlewis.eagles.util.ScheduleParams;
+import com.garethlewis.eagles.waiters.BaseWaiter;
+import com.garethlewis.eagles.waiters.ScheduleWaiter;
 
 import java.util.List;
 
@@ -125,10 +127,11 @@ public class ScheduleFragment extends Fragment {
             progress.setVisibility(View.VISIBLE);
 
             if (ContentFetcher.isScheduleSyncing()) {
-                // Do stuff.
+                BaseWaiter waiter = new ScheduleWaiter(getActivity(), inflater, parent, view, progress, weekSpinner, true);
+                waiter.startWaiting();
             } else {
-                ParserPackage parserPackage = new ParserPackage(getActivity(), inflater, container, view, progress, false);
-                ContentFetcher.fetchSchedules(parserPackage);
+                FetcherPackage fetcherPackage = new FetcherPackage(getActivity(), inflater, container, view, progress, false);
+                ContentFetcher.fetchSchedules(fetcherPackage);
             }
 
             showing = 1;

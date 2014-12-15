@@ -19,15 +19,15 @@ android {
 
     buildTypes {
         release {
-            runProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//            runProguard false
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:support-v4:21.0.2'
-//    compile project(':library')
+    compile 'com.android.support:support-v4:21.0.3'
     compile files('libs/jsoup-1.8.1.jar')
+    compile files('libs/twitter4j-core-4.0.2.jar')
 }

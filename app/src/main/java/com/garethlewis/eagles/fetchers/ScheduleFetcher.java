@@ -1,4 +1,4 @@
-package com.garethlewis.eagles.parsers;
+package com.garethlewis.eagles.fetchers;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -7,9 +7,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import com.garethlewis.eagles.FetcherPackage;
 import com.garethlewis.eagles.util.ContentFetcher;
 import com.garethlewis.eagles.util.FileHandler;
-import com.garethlewis.eagles.ParserPackage;
 import com.garethlewis.eagles.R;
 import com.garethlewis.eagles.util.ScheduleParams;
 import com.garethlewis.eagles.database.ScheduleSQLiteHelper;
@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class ScheduleParser extends AsyncTask<ParserPackage, Void, List<Fixture>> {
+public class ScheduleFetcher extends AsyncTask<FetcherPackage, Void, List<Fixture>> {
 
 ////    private static final String baseUrl = "http://espn.go.com/nfl/schedule/_/year/";
 //    private static final String baseUrl = "http://www1.skysports.com/nfl/fixtures-results/";
@@ -41,20 +41,20 @@ public class ScheduleParser extends AsyncTask<ParserPackage, Void, List<Fixture>
 
 //    private String date;
 
-    private ParserPackage input;
+    private FetcherPackage input;
 
     @Override
-    protected List<Fixture> doInBackground(ParserPackage... parserPackages) {
+    protected List<Fixture> doInBackground(FetcherPackage... fetcherPackages) {
 
         Log.e("EAGLES", "GETTING SCHEDULES");
 
-        this.input = parserPackages[0];
+        this.input = fetcherPackages[0];
 
-        ScheduleSQLiteHelper db = ScheduleSQLiteHelper.getInstance(input.getContext());
-        db.deleteAllFixtures();
-
-        StandingsSQLiteHelper dbs = StandingsSQLiteHelper.getInstance(input.getContext());
-        dbs.deleteAllStandings();
+//        ScheduleSQLiteHelper db = ScheduleSQLiteHelper.getInstance(input.getContext());
+//        db.deleteAllFixtures();
+//
+//        StandingsSQLiteHelper dbs = StandingsSQLiteHelper.getInstance(input.getContext());
+//        dbs.deleteAllStandings();
 
         String[] allTeams = input.getContext().getResources().getStringArray(R.array.team_nicknames);
 
@@ -120,6 +120,11 @@ public class ScheduleParser extends AsyncTask<ParserPackage, Void, List<Fixture>
                         if (row.children().size() == 5) { // Future fixture.
                             if (ScheduleParams.getFirstFixture() == 0 || w < ScheduleParams.getFirstFixture()) {
                                 ScheduleParams.setFirstFixture(w);
+                                long epoch = Fixture.dateStringToEpoch(date + " " + time);
+                                if (ScheduleParams.getNextGameTime() < epoch) {
+                                    ScheduleParams.setNextGameTime(epoch);
+                                }
+
                             }
                             homeTeam = row.child(4).text();
                         } else { // Either result or in-progress depending on time.

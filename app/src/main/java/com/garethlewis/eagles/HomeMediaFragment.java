@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import com.garethlewis.eagles.parsers.NewsParser;
+import com.garethlewis.eagles.fetchers.NewsFetcher;
 
 public class HomeMediaFragment extends Fragment {
 
@@ -21,11 +21,11 @@ public class HomeMediaFragment extends Fragment {
 //        ProgressBar spinner = (ProgressBar) getActivity().findViewById(R.id.media_progress);
 //        spinner.setVisibility(View.VISIBLE);
 
-        ParserPackage parserPackage = new ParserPackage(getActivity(), inflater, container, linearLayout, null, false);
+        FetcherPackage fetcherPackage = new FetcherPackage(getActivity(), inflater, container, linearLayout, null, false);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            new NewsParser().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, parserPackage);
+            new NewsFetcher().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, fetcherPackage);
         } else {
-            new NewsParser().execute(parserPackage);
+            new NewsFetcher().execute(fetcherPackage);
         }
 
         return view;

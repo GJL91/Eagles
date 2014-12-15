@@ -1,5 +1,7 @@
 package com.garethlewis.eagles;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,6 +17,7 @@ import android.widget.LinearLayout;
 
 import com.garethlewis.eagles.database.MasterDatabase;
 import com.garethlewis.eagles.fragments.NewsFragment;
+import com.garethlewis.eagles.fragments.SettingsFragment;
 import com.garethlewis.eagles.fragments.home.HomeFragment;
 import com.garethlewis.eagles.fragments.schedule.ScheduleFragment;
 import com.garethlewis.eagles.fragments.standings.StandingsFragment;
@@ -90,9 +93,10 @@ public class MainActivity extends FragmentActivity
                 fragment = new StandingsFragment();
                 fragmentTag = "Fragment_Standings";
                 break;
-//                case 5:
-//                    fragment = new SettingsFragment();
-//                    break;
+            case 5:
+                fragment = new SettingsFragment();
+                fragmentTag = "Fragment_Settings";
+                break;
             default:
                 break;
         }
@@ -116,7 +120,54 @@ public class MainActivity extends FragmentActivity
     }
 
     public void refresh(View view) {
+        HomeFragment fragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag("Fragment_Home");
+        fragment.homeContentPagerAdapter.homeContentFragments[0].refreshNews(getLayoutInflater());
+        fragment.homeContentPagerAdapter.homeContentFragments[1].refreshSchedule(getLayoutInflater());
+        fragment.homeContentPagerAdapter.homeContentFragments[2].refreshTwitter(getLayoutInflater());
+    }
 
+    public void clearData(View view) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setMessage("Do you really want to clear all data?");
+        dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                MasterDatabase db = new MasterDatabase(getApplicationContext());
+                db.resetDatabase();
+//                refetchData();
+            }
+        });
+
+        dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Do nothing.
+            }
+        });
+
+        dialog.setCancelable(false);
+        dialog.show();
+    }
+
+    public void refetchData() {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setMessage("Data cleared, gather now?");
+        dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                refresh(null);
+            }
+        });
+
+        dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Do nothing.
+            }
+        });
+
+        dialog.setCancelable(false);
+        dialog.show();
     }
 
     public void fetchNews(View view) {
@@ -127,7 +178,7 @@ public class MainActivity extends FragmentActivity
         }
 
         HomeFragment fragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag("Fragment_Home");
-        fragment.homeContentPagerAdapter.homeContentFragments[0].doNewsFetch(getLayoutInflater());
+        fragment.homeContentPagerAdapter.homeContentFragments[0].refreshNews(getLayoutInflater());
     }
 
     @Override

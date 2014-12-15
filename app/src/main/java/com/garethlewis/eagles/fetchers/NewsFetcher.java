@@ -1,13 +1,12 @@
-package com.garethlewis.eagles.parsers;
+package com.garethlewis.eagles.fetchers;
 
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import com.garethlewis.eagles.ParserPackage;
+import com.garethlewis.eagles.FetcherPackage;
 import com.garethlewis.eagles.database.MediaSQLiteHelper;
 import com.garethlewis.eagles.database.UpdatedSQLiteHelper;
 import com.garethlewis.eagles.database.entities.NewsItem;
@@ -20,19 +19,16 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NewsParser extends AsyncTask<ParserPackage, Void, List<NewsItem>>  {
+public class NewsFetcher extends AsyncTask<FetcherPackage, Void, List<NewsItem>>  {
 
-    private ParserPackage list;
+    private FetcherPackage list;
 
     @Override
-    protected List<NewsItem> doInBackground(ParserPackage... params) {
+    protected List<NewsItem> doInBackground(FetcherPackage... params) {
 
         list = params[0];
         MediaSQLiteHelper db = MediaSQLiteHelper.getInstance(list.getContext());
@@ -142,19 +138,19 @@ public class NewsParser extends AsyncTask<ParserPackage, Void, List<NewsItem>>  
         ContentFetcher.newsFinished();
     }
 
-    private Drawable getImageFromURL(String url) throws IOException {
-        try {
-            InputStream is = (InputStream) new URL(url).getContent();
-            return Drawable.createFromStream(is, null);
-        } catch (MalformedURLException e) {
-            Log.e("URL", ""+url);
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        throw new IOException();
-    }
+//    private Drawable getImageFromURL(String url) throws IOException {
+//        try {
+//            InputStream is = (InputStream) new URL(url).getContent();
+//            return Drawable.createFromStream(is, null);
+//        } catch (MalformedURLException e) {
+//            Log.e("URL", ""+url);
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        throw new IOException();
+//    }
 }
 
 
