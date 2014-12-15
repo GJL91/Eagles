@@ -18,10 +18,9 @@ public class NewsWaiter extends BaseWaiter {
     private LinearLayout linearLayout;
     private LinearLayout progress;
 
-    public NewsWaiter(Context context, LayoutInflater inflater, View view, LinearLayout linearLayout, LinearLayout progress) {
+    public NewsWaiter(Context context, LayoutInflater inflater, LinearLayout linearLayout, LinearLayout progress) {
         this.context = context;
         this.inflater = inflater;
-        this.view = view;
         this.linearLayout = linearLayout;
         this.progress = progress;
     }
