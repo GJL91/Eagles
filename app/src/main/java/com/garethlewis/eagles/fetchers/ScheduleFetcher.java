@@ -7,7 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import com.garethlewis.eagles.FetcherPackage;
+import com.garethlewis.eagles.util.FetcherPackage;
 import com.garethlewis.eagles.util.ContentFetcher;
 import com.garethlewis.eagles.util.FileHandler;
 import com.garethlewis.eagles.R;
@@ -138,6 +138,7 @@ public class ScheduleFetcher extends AsyncTask<FetcherPackage, Void, List<Fixtur
                                 if (ScheduleParams.getFirstFixture() == 0 || w < ScheduleParams.getFirstFixture()) {
                                     ScheduleParams.setFirstFixture(w);
                                 }
+                                time = time.replace(" PM", "").replace(" AM", "");
                                 status = 1;
                             }
                         }
@@ -185,7 +186,6 @@ public class ScheduleFetcher extends AsyncTask<FetcherPackage, Void, List<Fixtur
         db.insertManyFixtures(fixtures);
 
         StandingsSQLiteHelper standingsDB = StandingsSQLiteHelper.getInstance(context);
-        standingsDB.setContext(context);
         List<Fixture> added = standingsDB.updateStandings(fixtures);
 
         db.setAdded(added);

@@ -1,4 +1,4 @@
-package com.garethlewis.eagles;
+package com.garethlewis.eagles.fragments;
 
 
 import android.app.Activity;
@@ -22,6 +22,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.garethlewis.eagles.R;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.

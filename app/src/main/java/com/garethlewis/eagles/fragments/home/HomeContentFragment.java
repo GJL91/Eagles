@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.garethlewis.eagles.FetcherPackage;
+import com.garethlewis.eagles.util.FetcherPackage;
 import com.garethlewis.eagles.R;
 import com.garethlewis.eagles.database.MediaSQLiteHelper;
 import com.garethlewis.eagles.database.ScheduleSQLiteHelper;

@@ -1,4 +1,4 @@
-package com.garethlewis.eagles;
+package com.garethlewis.eagles.util;
 
 import android.content.Context;
 import android.view.LayoutInflater;

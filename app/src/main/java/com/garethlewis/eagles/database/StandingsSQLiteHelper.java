@@ -17,10 +17,11 @@ public class StandingsSQLiteHelper extends MasterDatabase {
 
     private static StandingsSQLiteHelper sInstance;
 
-    private Context context;
+    private static Context context;
 
     public static StandingsSQLiteHelper getInstance(Context context) {
         if (sInstance == null) {
+            StandingsSQLiteHelper.context = context;
             sInstance = new StandingsSQLiteHelper(context.getApplicationContext());
         }
         return sInstance;
@@ -28,10 +29,6 @@ public class StandingsSQLiteHelper extends MasterDatabase {
 
     private StandingsSQLiteHelper(Context context) {
         super(context);
-    }
-
-    public void setContext(Context context) {
-        this.context = context;
     }
 
     public boolean deleteAllStandings() {
@@ -45,7 +42,9 @@ public class StandingsSQLiteHelper extends MasterDatabase {
         List<Fixture> addedToStandings = new ArrayList<Fixture>();
 
         for (Fixture f : fixtures) {
-            if (f.getStatus() != 2) {
+            ScheduleSQLiteHelper scheduleDB = ScheduleSQLiteHelper.getInstance(context);
+            boolean isAdded = scheduleDB.getAdded(f.getHomeTeam(), f.getAwayTeam(), f.getWeek());
+            if (f.getStatus() != 2 || isAdded) {
                 continue;
             }
 

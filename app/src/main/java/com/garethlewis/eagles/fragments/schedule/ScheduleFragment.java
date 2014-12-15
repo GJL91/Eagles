@@ -11,7 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
-import com.garethlewis.eagles.FetcherPackage;
+import com.garethlewis.eagles.util.FetcherPackage;
 import com.garethlewis.eagles.R;
 import com.garethlewis.eagles.database.ScheduleSQLiteHelper;
 import com.garethlewis.eagles.database.UpdatedSQLiteHelper;

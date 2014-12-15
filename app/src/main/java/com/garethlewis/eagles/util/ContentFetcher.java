@@ -4,7 +4,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.view.View;
 
-import com.garethlewis.eagles.FetcherPackage;
 import com.garethlewis.eagles.fetchers.NewsFetcher;
 import com.garethlewis.eagles.fetchers.ScheduleFetcher;
 import com.garethlewis.eagles.fetchers.TweetFetcher;

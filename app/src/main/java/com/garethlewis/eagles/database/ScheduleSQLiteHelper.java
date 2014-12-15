@@ -44,13 +44,25 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
         return (dbw.delete("Schedule", "1", null) > 0);
     }
 
+    public boolean getAdded(String home, String away, String week) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT Added FROM Schedule WHERE (HomeTeam = ? AND AwayTeam = ? AND Week = ?);", new String[] {home, away, week});
+
+        if (cursor.moveToFirst()) {
+            String added = cursor.getString(0);
+            return "1".equals(added);
+        }
+
+        return false;
+    }
+
     public boolean setAdded(List<Fixture> fixtures) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String whereClause = "HomeTeam = ? AND AwayTeam = ? AND Week = ?";
+        String whereClause = "(HomeTeam = ? AND AwayTeam = ? AND Week = ?)";
 
         for (Fixture f : fixtures) {
             ContentValues contentValues = new ContentValues();
-            contentValues.put("Added", 1);
+            contentValues.put(COLUMN_ADDED, 1);
 
             String[] terms = new String[] { f.getHomeTeam(), f.getAwayTeam(), f.getWeek() };
             boolean success = (db.update(TABLE_SCHEDULE, contentValues, whereClause, terms) > 0);
@@ -64,6 +76,10 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
     public boolean insertManyFixtures(List<Fixture> fixtures) {
         SQLiteDatabase db = this.getWritableDatabase();
         for (Fixture f : fixtures) {
+            boolean isAdded = getAdded(f.getHomeTeam(), f.getAwayTeam(), f.getWeek());
+            if (isAdded) {
+                continue;
+            }
             ContentValues contentValues = new ContentValues();
 
             String time = f.getTime();

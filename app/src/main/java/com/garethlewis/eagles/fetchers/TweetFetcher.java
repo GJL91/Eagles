@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.garethlewis.eagles.FetcherPackage;
+import com.garethlewis.eagles.util.FetcherPackage;
 import com.garethlewis.eagles.R;
 import com.garethlewis.eagles.database.UpdatedSQLiteHelper;
 import com.garethlewis.eagles.util.ContentFetcher;

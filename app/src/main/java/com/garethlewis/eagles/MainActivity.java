@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.garethlewis.eagles.database.MasterDatabase;
+import com.garethlewis.eagles.fragments.NavigationDrawerFragment;
 import com.garethlewis.eagles.fragments.NewsFragment;
 import com.garethlewis.eagles.fragments.SettingsFragment;
 import com.garethlewis.eagles.fragments.home.HomeFragment;
