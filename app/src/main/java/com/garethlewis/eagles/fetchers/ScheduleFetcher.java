@@ -6,16 +6,17 @@ import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.TextView;
 
-import com.garethlewis.eagles.util.FetcherPackage;
-import com.garethlewis.eagles.util.ContentFetcher;
-import com.garethlewis.eagles.util.FileHandler;
 import com.garethlewis.eagles.R;
-import com.garethlewis.eagles.util.ScheduleParams;
 import com.garethlewis.eagles.database.ScheduleSQLiteHelper;
 import com.garethlewis.eagles.database.StandingsSQLiteHelper;
 import com.garethlewis.eagles.database.entities.Fixture;
 import com.garethlewis.eagles.fragments.schedule.ScheduleViewHelper;
+import com.garethlewis.eagles.util.ContentFetcher;
+import com.garethlewis.eagles.util.FetcherPackage;
+import com.garethlewis.eagles.util.FileHandler;
+import com.garethlewis.eagles.util.ScheduleParams;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -196,6 +197,12 @@ public class ScheduleFetcher extends AsyncTask<FetcherPackage, Void, List<Fixtur
             fixtures = db.getFixturesForTeam("Eagles");
         } else {
             fixtures = db.getFixturesForWeek(1);
+        }
+
+        TextView recordView = (TextView) this.input.getOtherView();
+        if (recordView != null) {
+            String record = standingsDB.getRecord("Eagles");
+            recordView.setText(record);
         }
 
         ScheduleViewHelper.displayList(context, inflater, input.getLinearLayout(), fixtures, true);

@@ -2,6 +2,7 @@ package com.garethlewis.eagles.util;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
@@ -12,18 +13,20 @@ public class FetcherPackage {
     private ViewGroup container;
     private LinearLayout linearLayout;
     private LinearLayout progress;
+    private View otherView;
 
     /** Whether the ScheduleFetcher should display only the Eagles Schedule */
     private boolean mode;
 
     public FetcherPackage(Context context, LayoutInflater inflater, ViewGroup container,
-                          LinearLayout linearLayout, LinearLayout progress, boolean mode) {
+                          LinearLayout linearLayout, LinearLayout progress, boolean mode, View otherView) {
         this.context = context;
         this.inflater = inflater;
         this.container = container;
         this.linearLayout = linearLayout;
         this.progress = progress;
         this.mode = mode;
+        this.otherView = otherView;
     }
 
     public Context getContext() {
@@ -48,5 +51,9 @@ public class FetcherPackage {
 
     public boolean getMode() {
         return mode;
+    }
+
+    public View getOtherView() {
+        return otherView;
     }
 }

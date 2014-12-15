@@ -1,14 +1,14 @@
 package com.garethlewis.eagles.fragments.home;
 
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.garethlewis.eagles.util.FetcherPackage;
 import com.garethlewis.eagles.R;
 import com.garethlewis.eagles.database.MediaSQLiteHelper;
 import com.garethlewis.eagles.database.ScheduleSQLiteHelper;
@@ -19,6 +19,7 @@ import com.garethlewis.eagles.database.entities.NewsItem;
 import com.garethlewis.eagles.fragments.news.NewsViewHelper;
 import com.garethlewis.eagles.fragments.schedule.ScheduleViewHelper;
 import com.garethlewis.eagles.util.ContentFetcher;
+import com.garethlewis.eagles.util.FetcherPackage;
 import com.garethlewis.eagles.waiters.BaseWaiter;
 import com.garethlewis.eagles.waiters.ScheduleWaiter;
 
@@ -127,7 +128,7 @@ public class HomeContentFragment extends Fragment {
         if (ContentFetcher.isNewsSyncing()) {
 
         } else {
-            FetcherPackage fetcherPackage = new FetcherPackage(getActivity(), inflater, container, linearLayout, progress, false);
+            FetcherPackage fetcherPackage = new FetcherPackage(getActivity(), inflater, container, linearLayout, progress, false, null);
             ContentFetcher.fetchNews(fetcherPackage);
         }
 
@@ -154,7 +155,9 @@ public class HomeContentFragment extends Fragment {
             BaseWaiter waiter = new ScheduleWaiter(getActivity(), inflater, view, linearLayout, progress, null, false);
             waiter.startWaiting();
         } else {
-            FetcherPackage fetcherPackage = new FetcherPackage(getActivity(), inflater, container, linearLayout, progress, true);
+            ViewParent parent = linearLayout.getParent();
+            View recordView = view.findViewById(R.id.record_text);
+            FetcherPackage fetcherPackage = new FetcherPackage(getActivity(), inflater, container, linearLayout, progress, true, recordView);
             ContentFetcher.fetchSchedules(fetcherPackage);
         }
     }
@@ -177,7 +180,7 @@ public class HomeContentFragment extends Fragment {
         if (ContentFetcher.isTwitterSyncing()) {
             // Wait
         } else {
-            FetcherPackage fetcherPackage = new FetcherPackage(getActivity(), inflater, container, linearLayout, progress, false);
+            FetcherPackage fetcherPackage = new FetcherPackage(getActivity(), inflater, container, linearLayout, progress, false, null);
             ContentFetcher.fetchTwitter(fetcherPackage);
         }
     }

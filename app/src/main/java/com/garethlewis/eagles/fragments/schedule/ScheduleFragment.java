@@ -130,7 +130,7 @@ public class ScheduleFragment extends Fragment {
                 BaseWaiter waiter = new ScheduleWaiter(getActivity(), inflater, parent, view, progress, weekSpinner, true);
                 waiter.startWaiting();
             } else {
-                FetcherPackage fetcherPackage = new FetcherPackage(getActivity(), inflater, container, view, progress, false);
+                FetcherPackage fetcherPackage = new FetcherPackage(getActivity(), inflater, container, view, progress, false, null);
                 ContentFetcher.fetchSchedules(fetcherPackage);
             }
 
