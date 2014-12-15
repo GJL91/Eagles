@@ -17,8 +17,8 @@ import android.widget.LinearLayout;
 
 import com.garethlewis.eagles.database.MasterDatabase;
 import com.garethlewis.eagles.fragments.NavigationDrawerFragment;
-import com.garethlewis.eagles.fragments.NewsFragment;
-import com.garethlewis.eagles.fragments.SettingsFragment;
+import com.garethlewis.eagles.fragments.news.NewsFragment;
+import com.garethlewis.eagles.fragments.settings.SettingsFragment;
 import com.garethlewis.eagles.fragments.home.HomeFragment;
 import com.garethlewis.eagles.fragments.schedule.ScheduleFragment;
 import com.garethlewis.eagles.fragments.standings.StandingsFragment;

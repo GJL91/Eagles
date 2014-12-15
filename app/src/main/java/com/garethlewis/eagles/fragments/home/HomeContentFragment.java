@@ -5,7 +5,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -21,6 +20,7 @@ import com.garethlewis.eagles.fragments.schedule.ScheduleViewHelper;
 import com.garethlewis.eagles.util.ContentFetcher;
 import com.garethlewis.eagles.util.FetcherPackage;
 import com.garethlewis.eagles.waiters.BaseWaiter;
+import com.garethlewis.eagles.waiters.NewsWaiter;
 import com.garethlewis.eagles.waiters.ScheduleWaiter;
 
 import java.util.List;
@@ -126,7 +126,8 @@ public class HomeContentFragment extends Fragment {
         LinearLayout progress = (LinearLayout) view.findViewById(R.id.home_media_progress);
 
         if (ContentFetcher.isNewsSyncing()) {
-
+            BaseWaiter waiter = new NewsWaiter(getActivity(), inflater, view, linearLayout, progress);
+            waiter.startWaiting();
         } else {
             FetcherPackage fetcherPackage = new FetcherPackage(getActivity(), inflater, container, linearLayout, progress, false, null);
             ContentFetcher.fetchNews(fetcherPackage);
@@ -155,7 +156,6 @@ public class HomeContentFragment extends Fragment {
             BaseWaiter waiter = new ScheduleWaiter(getActivity(), inflater, view, linearLayout, progress, null, false);
             waiter.startWaiting();
         } else {
-            ViewParent parent = linearLayout.getParent();
             View recordView = view.findViewById(R.id.record_text);
             FetcherPackage fetcherPackage = new FetcherPackage(getActivity(), inflater, container, linearLayout, progress, true, recordView);
             ContentFetcher.fetchSchedules(fetcherPackage);
@@ -177,9 +177,7 @@ public class HomeContentFragment extends Fragment {
 
         LinearLayout progress = (LinearLayout) view.findViewById(R.id.home_twitter_progress);
 
-        if (ContentFetcher.isTwitterSyncing()) {
-            // Wait
-        } else {
+        if (!ContentFetcher.isTwitterSyncing()) { // Only place that fetches tweets. If syncing is taking place, it's come from here.
             FetcherPackage fetcherPackage = new FetcherPackage(getActivity(), inflater, container, linearLayout, progress, false, null);
             ContentFetcher.fetchTwitter(fetcherPackage);
         }
