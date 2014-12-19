@@ -115,10 +115,6 @@ public class HomeContentFragment extends Fragment {
         doNewsFetch(inflater, null);
     }
 
-//    public void doNewsFetch(LayoutInflater inflater) {
-//        doNewsFetch(inflater, null);
-//    }
-
     private void doNewsFetch(LayoutInflater inflater, ViewGroup container) {
         View view = this.view;
         LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.home_media_list);
@@ -126,7 +122,7 @@ public class HomeContentFragment extends Fragment {
         LinearLayout progress = (LinearLayout) view.findViewById(R.id.home_media_progress);
 
         if (ContentFetcher.isNewsSyncing()) {
-            BaseWaiter waiter = new NewsWaiter(getActivity(), inflater, view, linearLayout, progress);
+            BaseWaiter waiter = new NewsWaiter(getActivity(), inflater, linearLayout, progress);
             waiter.startWaiting();
         } else {
             FetcherPackage fetcherPackage = new FetcherPackage(getActivity(), inflater, container, linearLayout, progress, false, null);
