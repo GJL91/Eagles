@@ -63,7 +63,6 @@ public class UpdatedSQLiteHelper extends MasterDatabase {
         switch (table) {
             case "Schedule": scheduleUpdateDelay();
             case "Media": return 300000;
-            case "Twitter": return 10000;
             default: return 3600000;
         }
     }

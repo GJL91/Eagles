@@ -1,4 +1,4 @@
-package com.garethlewis.eagles.database.entities;
+package com.garethlewis.eagles.entities;
 
 public class Standing implements Comparable<Standing>{
 

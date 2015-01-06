@@ -9,7 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.garethlewis.eagles.R;
-import com.garethlewis.eagles.database.entities.NewsItem;
+import com.garethlewis.eagles.entities.NewsItem;
 
 public class NewsViewHelper {
 

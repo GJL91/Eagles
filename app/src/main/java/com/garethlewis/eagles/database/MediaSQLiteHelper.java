@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
 
 import com.garethlewis.eagles.util.FileHandler;
-import com.garethlewis.eagles.database.entities.NewsItem;
+import com.garethlewis.eagles.entities.NewsItem;
 
 import java.util.ArrayList;
 import java.util.List;

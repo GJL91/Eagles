@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.garethlewis.eagles.database.MediaSQLiteHelper;
-import com.garethlewis.eagles.database.entities.NewsItem;
+import com.garethlewis.eagles.entities.NewsItem;
 import com.garethlewis.eagles.fragments.news.NewsViewHelper;
 import com.garethlewis.eagles.util.ContentFetcher;
 

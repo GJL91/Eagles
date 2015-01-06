@@ -8,7 +8,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
 
-import com.garethlewis.eagles.database.entities.Standing;
+import com.garethlewis.eagles.entities.Standing;
 import com.garethlewis.eagles.util.FileHandler;
 import com.garethlewis.eagles.util.ScheduleParams;
 import com.garethlewis.eagles.util.TeamHelper;

@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.garethlewis.eagles.adapters.TwitterListAdapter;
+
 public class FetcherPackage {
 
     private Context context;
@@ -17,6 +19,8 @@ public class FetcherPackage {
 
     /** Whether the ScheduleFetcher should display only the Eagles Schedule */
     private boolean mode;
+
+    private TwitterListAdapter twitterListAdapter;
 
     public FetcherPackage(Context context, LayoutInflater inflater, ViewGroup container,
                           LinearLayout linearLayout, LinearLayout progress, boolean mode, View otherView) {
@@ -55,5 +59,13 @@ public class FetcherPackage {
 
     public View getOtherView() {
         return otherView;
+    }
+
+    public TwitterListAdapter getTwitterAdapter() {
+        return twitterListAdapter;
+    }
+
+    public void setTwitterAdapter(TwitterListAdapter twitterListAdapter) {
+        this.twitterListAdapter = twitterListAdapter;
     }
 }

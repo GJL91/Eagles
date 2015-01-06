@@ -6,8 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.garethlewis.eagles.database.entities.Fixture;
-import com.garethlewis.eagles.database.entities.Standing;
+import com.garethlewis.eagles.entities.Fixture;
+import com.garethlewis.eagles.entities.Standing;
 import com.garethlewis.eagles.util.TeamHelper;
 
 import java.util.ArrayList;

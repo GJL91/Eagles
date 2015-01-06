@@ -15,7 +15,7 @@ import com.garethlewis.eagles.util.FetcherPackage;
 import com.garethlewis.eagles.R;
 import com.garethlewis.eagles.database.ScheduleSQLiteHelper;
 import com.garethlewis.eagles.database.UpdatedSQLiteHelper;
-import com.garethlewis.eagles.database.entities.Fixture;
+import com.garethlewis.eagles.entities.Fixture;
 import com.garethlewis.eagles.util.ContentFetcher;
 import com.garethlewis.eagles.util.ScheduleParams;
 import com.garethlewis.eagles.waiters.BaseWaiter;

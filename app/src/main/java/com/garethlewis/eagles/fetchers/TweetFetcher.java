@@ -3,22 +3,18 @@ package com.garethlewis.eagles.fetchers;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import com.garethlewis.eagles.util.FetcherPackage;
 import com.garethlewis.eagles.R;
+import com.garethlewis.eagles.adapters.TwitterListAdapter;
 import com.garethlewis.eagles.database.UpdatedSQLiteHelper;
 import com.garethlewis.eagles.util.ContentFetcher;
+import com.garethlewis.eagles.util.FetcherPackage;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.DateFormat;
 import java.util.List;
 
 import twitter4j.Query;
@@ -70,8 +66,6 @@ public class TweetFetcher extends AsyncTask<FetcherPackage, Void, List<Status>> 
             String imageUrl = user.getOriginalProfileImageURL();
             img = getImageFromURL(imageUrl);
 
-
-
             QueryResult result = twitter.search(query);
             return result.getTweets();
         } catch (TwitterException e) {
@@ -83,29 +77,34 @@ public class TweetFetcher extends AsyncTask<FetcherPackage, Void, List<Status>> 
 
     @Override
     protected void onPostExecute(List<twitter4j.Status> tweets) {
-        LayoutInflater inflater = fetcherPackage.getInflater();
-        LinearLayout parent = fetcherPackage.getLinearLayout();
-        int layout = R.layout.tweet_item;
+//        LayoutInflater inflater = fetcherPackage.getInflater();
+//        LinearLayout parent = fetcherPackage.getLinearLayout();
+        TwitterListAdapter adapter = fetcherPackage.getTwitterAdapter();
+//        ListView list = fetcherPackage.getListView();
+//        int layout = R.layout.tweet_item;
 
         if (img == null) {
             img = fetcherPackage.getContext().getResources().getDrawable(R.drawable.philadelphia);
         }
 
+        adapter.setImage(img);
+
         for (twitter4j.Status tweet : tweets) {
-            View view = inflater.inflate(layout, null, false);
-
-            ImageView imageView = (ImageView) view.findViewById(R.id.tweet_image);
-            imageView.setImageDrawable(img);
-
-            DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-            String time = dateFormat.format(tweet.getCreatedAt());
-            TextView textView = (TextView) view.findViewById(R.id.tweet_time);
-            textView.setText(time);
-
-            textView = (TextView) view.findViewById(R.id.tweet_content);
-            textView.setText(tweet.getText());
-
-            parent.addView(view);
+            adapter.addTweet(tweet);
+//            View view = inflater.inflate(layout, null, false);
+//
+//            ImageView imageView = (ImageView) view.findViewById(R.id.tweet_image);
+//            imageView.setImageDrawable(img);
+//
+//            DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+//            String time = dateFormat.format(tweet.getCreatedAt());
+//            TextView textView = (TextView) view.findViewById(R.id.tweet_time);
+//            textView.setText(time);
+//
+//            textView = (TextView) view.findViewById(R.id.tweet_content);
+//            textView.setText(tweet.getText());
+//
+//            parent.addView(view);
         }
 
         UpdatedSQLiteHelper updatedSQLiteHelper = UpdatedSQLiteHelper.getInstance(fetcherPackage.getContext());

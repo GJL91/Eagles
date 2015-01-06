@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.garethlewis.eagles.R;
 import com.garethlewis.eagles.util.TeamHelper;
 import com.garethlewis.eagles.database.StandingsSQLiteHelper;
-import com.garethlewis.eagles.database.entities.Standing;
+import com.garethlewis.eagles.entities.Standing;
 
 import java.util.Arrays;
 

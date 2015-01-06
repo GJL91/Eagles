@@ -10,7 +10,7 @@ import android.widget.LinearLayout;
 import com.garethlewis.eagles.R;
 import com.garethlewis.eagles.database.MediaSQLiteHelper;
 import com.garethlewis.eagles.database.UpdatedSQLiteHelper;
-import com.garethlewis.eagles.database.entities.NewsItem;
+import com.garethlewis.eagles.entities.NewsItem;
 import com.garethlewis.eagles.util.ContentFetcher;
 import com.garethlewis.eagles.util.FetcherPackage;
 import com.garethlewis.eagles.waiters.BaseWaiter;
