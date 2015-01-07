@@ -1,13 +1,15 @@
 package com.garethlewis.eagles.fetchers;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 
 import com.garethlewis.eagles.R;
 import com.garethlewis.eagles.adapters.TwitterListAdapter;
-import com.garethlewis.eagles.database.UpdatedSQLiteHelper;
 import com.garethlewis.eagles.util.ContentFetcher;
 import com.garethlewis.eagles.util.FetcherPackage;
 
@@ -32,9 +34,19 @@ public class TweetFetcher extends AsyncTask<FetcherPackage, Void, List<Status>> 
     private FetcherPackage fetcherPackage;
     private Drawable img = null;
 
+    private boolean internet = true;
+
     @Override
     protected List<twitter4j.Status> doInBackground(FetcherPackage... params) {
         this.fetcherPackage = params[0];
+
+        ConnectivityManager cm = (ConnectivityManager) fetcherPackage.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        internet = activeNetwork != null && activeNetwork.isConnected();
+
+        if (!internet) {
+            return null;
+        }
 
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setApplicationOnlyAuthEnabled(true)
@@ -53,15 +65,11 @@ public class TweetFetcher extends AsyncTask<FetcherPackage, Void, List<Status>> 
               .setOAuth2AccessToken(token.getAccessToken());
 
             twitter = new TwitterFactory(cb.build()).getInstance();
-        } catch (TwitterException e) {
-            Log.e("EAGLES", "Twitter exception thrown, are keys wrong?");
-        }
 
-        String username = "Eagles";
-        Query query = new Query("from:" + username);
-        query.setCount(25);
+            String username = "Eagles";
+            Query query = new Query("from:" + username);
+            query.setCount(25);
 
-        try {
             User user = twitter.showUser(username);
             String imageUrl = user.getOriginalProfileImageURL();
             img = getImageFromURL(imageUrl);
@@ -69,7 +77,7 @@ public class TweetFetcher extends AsyncTask<FetcherPackage, Void, List<Status>> 
             QueryResult result = twitter.search(query);
             return result.getTweets();
         } catch (TwitterException e) {
-            // Do nothing.
+            Log.e("EAGLES", "Twitter exception thrown, are keys wrong?");
         }
 
         return null;
@@ -77,41 +85,29 @@ public class TweetFetcher extends AsyncTask<FetcherPackage, Void, List<Status>> 
 
     @Override
     protected void onPostExecute(List<twitter4j.Status> tweets) {
-//        LayoutInflater inflater = fetcherPackage.getInflater();
-//        LinearLayout parent = fetcherPackage.getLinearLayout();
         TwitterListAdapter adapter = fetcherPackage.getTwitterAdapter();
-//        ListView list = fetcherPackage.getListView();
-//        int layout = R.layout.tweet_item;
+
+        if (tweets == null) {
+            if (internet) {
+                adapter.addError();
+            } else {
+                adapter.addInternetError();
+            }
+
+            finish();
+            return;
+        }
 
         if (img == null) {
             img = fetcherPackage.getContext().getResources().getDrawable(R.drawable.philadelphia);
         }
-
         adapter.setImage(img);
 
         for (twitter4j.Status tweet : tweets) {
             adapter.addTweet(tweet);
-//            View view = inflater.inflate(layout, null, false);
-//
-//            ImageView imageView = (ImageView) view.findViewById(R.id.tweet_image);
-//            imageView.setImageDrawable(img);
-//
-//            DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-//            String time = dateFormat.format(tweet.getCreatedAt());
-//            TextView textView = (TextView) view.findViewById(R.id.tweet_time);
-//            textView.setText(time);
-//
-//            textView = (TextView) view.findViewById(R.id.tweet_content);
-//            textView.setText(tweet.getText());
-//
-//            parent.addView(view);
         }
 
-        UpdatedSQLiteHelper updatedSQLiteHelper = UpdatedSQLiteHelper.getInstance(fetcherPackage.getContext());
-        updatedSQLiteHelper.setUpdated("Twitter");
-
-        fetcherPackage.getProgress().setVisibility(View.GONE);
-        ContentFetcher.twitterFinished();
+        finish();
     }
 
     private Drawable getImageFromURL(String url) {
@@ -126,4 +122,10 @@ public class TweetFetcher extends AsyncTask<FetcherPackage, Void, List<Status>> 
         }
         return null;
     }
+
+    private void finish() {
+        fetcherPackage.getProgress().setVisibility(View.GONE);
+        ContentFetcher.twitterFinished();
+    }
+
 }

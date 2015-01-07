@@ -17,10 +17,10 @@ import android.widget.LinearLayout;
 
 import com.garethlewis.eagles.database.MasterDatabase;
 import com.garethlewis.eagles.fragments.NavigationDrawerFragment;
-import com.garethlewis.eagles.fragments.news.NewsFragment;
-import com.garethlewis.eagles.fragments.settings.SettingsFragment;
 import com.garethlewis.eagles.fragments.home.HomeFragment;
+import com.garethlewis.eagles.fragments.news.NewsFragment;
 import com.garethlewis.eagles.fragments.schedule.ScheduleFragment;
+import com.garethlewis.eagles.fragments.settings.SettingsFragment;
 import com.garethlewis.eagles.fragments.standings.StandingsFragment;
 import com.garethlewis.eagles.util.FileHandler;
 import com.garethlewis.eagles.util.TeamHelper;
@@ -180,6 +180,23 @@ public class MainActivity extends FragmentActivity
 
         HomeFragment fragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag("Fragment_Home");
         fragment.homeContentPagerAdapter.homeContentFragments[0].refreshNews(getLayoutInflater());
+    }
+
+    public void fetchSchedules(View view) {
+        // TODO: Update for schedule.
+        LinearLayout list = (LinearLayout) findViewById(R.id.home_media_list);
+        View errorView = findViewById(R.id.news_error);
+        if (errorView != null) {
+            list.removeView(errorView);
+        }
+
+        HomeFragment fragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag("Fragment_Home");
+        fragment.homeContentPagerAdapter.homeContentFragments[1].refreshSchedule(getLayoutInflater());
+    }
+
+    public void fetchTwitter(View view) {
+        HomeFragment fragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag("Fragment_Home");
+        fragment.homeContentPagerAdapter.homeContentFragments[2].refreshTwitter(getLayoutInflater());
     }
 
     @Override

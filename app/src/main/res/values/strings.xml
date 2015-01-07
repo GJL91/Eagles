@@ -18,15 +18,16 @@
     <string name="twitter_image">Profile picture for the Eagles Twitter feed.</string>
 
     <string name="clear_text">Clear Data</string>
-    <string name="error_text">We seem to have encountered a problem. Please try again later.</string>
+    <string name="internet_error_text">There seems to be a problem with your internet connection.\nPlease try again later.</string>
+    <string name="error_text">We seem to have encountered a problem.\nPlease try again later.</string>
 
     <string name="news_headline">LATEST NEWS</string>
     <string name="schedule_headline">REGULAR SEASON</string>
     <string name="twitter_headline">LATEST TWEETS</string>
 
     <!-- Text for when fetching content -->
-    <string name="fetch_schedules">Please be patient while we fetch the latest fixtures and results...</string>
-    <string name="fetch_news">Please be patient while we fetch the latest news stories...</string>
-    <string name="fetch_twitter">Please be patient while we fetch the latest tweets...</string>
+    <string name="fetch_schedules">Please be patient while we fetch the latest fixtures and results&#8230;</string>
+    <string name="fetch_news">Please be patient while we fetch the latest news stories&#8230;</string>
+    <string name="fetch_twitter">Please be patient while we fetch the latest tweets&#8230;</string>
 
 </resources>

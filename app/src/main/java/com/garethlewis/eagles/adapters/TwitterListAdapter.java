@@ -21,6 +21,9 @@ public class TwitterListAdapter extends BaseAdapter {
     private List<Status> tweets;
     private Drawable img;
 
+    private boolean error = false;
+    private boolean internet = true;
+
     public TwitterListAdapter(Context context, List<Status> tweets) {
         this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.tweets = tweets;
@@ -34,6 +37,8 @@ public class TwitterListAdapter extends BaseAdapter {
 
     public void clearItems() {
         tweets.clear();
+        error = false;
+        internet = true;
         notifyDataSetChanged();
     }
 
@@ -41,7 +46,28 @@ public class TwitterListAdapter extends BaseAdapter {
         this.img = img;
     }
 
+    public void addError() {
+        tweets.clear();
+        tweets.add(null);
+        error = true;
+        internet = true;
+        notifyDataSetChanged();
+    }
+
+    public void addInternetError() {
+        tweets.clear();
+        tweets.add(null);
+        internet = false;
+        error = true;
+        notifyDataSetChanged();
+    }
+
     public void addTweet(Status status) {
+        if (error) {
+            tweets.clear();
+            error = false;
+            internet = true;
+        }
         tweets.add(status);
         notifyDataSetChanged();
     }
@@ -62,17 +88,41 @@ public class TwitterListAdapter extends BaseAdapter {
     }
 
     @Override
+    public int getViewTypeCount() {
+        return 3;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (error) {
+            return internet ? 1 : 2;
+        }
+        return 0;
+
+//        return futureFixturePositions.contains(position) ? TYPE_FUTURE : TYPE_RESULT;
+    }
+
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder;
+        int type = getItemViewType(position);
 
         if (convertView == null) {
             viewHolder = new ViewHolder();
 
-            convertView = inflater.inflate(R.layout.tweet_item, parent, false);
+            if (type == 0) {
+                convertView = inflater.inflate(R.layout.tweet_item, parent, false);
 
-            viewHolder.tweetImage = (ImageView) convertView.findViewById(R.id.tweet_image);
-            viewHolder.tweetTime = (TextView) convertView.findViewById(R.id.tweet_time);
-            viewHolder.tweetContent = (TextView) convertView.findViewById(R.id.tweet_content);
+                viewHolder.tweetImage = (ImageView) convertView.findViewById(R.id.tweet_image);
+                viewHolder.tweetTime = (TextView) convertView.findViewById(R.id.tweet_time);
+                viewHolder.tweetContent = (TextView) convertView.findViewById(R.id.tweet_content);
+            } else {
+                if (type == 1) {
+                    convertView = inflater.inflate(R.layout.tweet_error_item, parent, false);
+                } else {
+                    convertView = inflater.inflate(R.layout.tweet_internet_error_item, parent, false);
+                }
+            }
 
             convertView.setTag(viewHolder);
         } else {
@@ -81,13 +131,15 @@ public class TwitterListAdapter extends BaseAdapter {
 
         Status status = tweets.get(position);
 
-        viewHolder.tweetImage.setImageDrawable(img);
+        if (status != null) {
+            viewHolder.tweetImage.setImageDrawable(img);
 
-        DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-        String time = dateFormat.format(status.getCreatedAt());
-        viewHolder.tweetTime.setText(time);
+            DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+            String time = dateFormat.format(status.getCreatedAt());
+            viewHolder.tweetTime.setText(time);
 
-        viewHolder.tweetContent.setText(status.getText());
+            viewHolder.tweetContent.setText(status.getText());
+        }
 
         return convertView;
     }
