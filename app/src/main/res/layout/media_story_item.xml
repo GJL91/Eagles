@@ -4,9 +4,7 @@
     android:layout_width="fill_parent"
     android:layout_height="235dp"
     android:paddingTop="0dp"
-    android:paddingBottom="15dp"
-    android:paddingStart="15dp"
-    android:paddingEnd="15dp">
+    android:paddingBottom="5dp">
 
         <ImageView
             android:id="@+id/image_holder"
@@ -20,7 +18,7 @@
             android:layout_width="fill_parent"
             android:layout_height="220dp"
             android:scaleType="fitXY"
-            android:src="@drawable/item_news_overlay_large_mob" />
+            android:src="@drawable/item_news_overlay_large_mob_white" />
 
         <LinearLayout
             android:layout_width="wrap_content"

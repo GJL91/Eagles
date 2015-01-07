@@ -66,7 +66,7 @@ public class FileHandler {
     public static Drawable getDrawableFromFile(String filename) {
         if (filename == null) {
             // Set filename to the path to the default image
-            return null;
+            return context.getResources().getDrawable(R.drawable.thumbnail_news);
         } else {
             if ("spadaro".equals(filename)) {
                 return context.getResources().getDrawable(R.drawable.spadaro_app_tbn);

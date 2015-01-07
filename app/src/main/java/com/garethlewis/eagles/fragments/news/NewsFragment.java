@@ -6,8 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 
 import com.garethlewis.eagles.R;
+import com.garethlewis.eagles.adapters.NewsListAdapter;
 import com.garethlewis.eagles.database.MediaSQLiteHelper;
 import com.garethlewis.eagles.database.UpdatedSQLiteHelper;
 import com.garethlewis.eagles.entities.NewsItem;
@@ -16,56 +18,53 @@ import com.garethlewis.eagles.util.FetcherPackage;
 import com.garethlewis.eagles.waiters.BaseWaiter;
 import com.garethlewis.eagles.waiters.NewsWaiter;
 
-public class NewsFragment extends Fragment {
+import java.util.ArrayList;
 
+public class NewsFragment extends Fragment {
     private View view;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.news_main, container, false);
+        this.view = inflater.inflate(R.layout.news_main, container, false);
 
-        LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.news_media_list);
+        ListView list = (ListView) view.findViewById(R.id.news_media_list);
+        NewsListAdapter adapter = new NewsListAdapter(getActivity(), new ArrayList<NewsItem>());
+        list.setAdapter(adapter);
 
         UpdatedSQLiteHelper db = UpdatedSQLiteHelper.getInstance(getActivity());
         if (db.needsUpdate("Media")) {
-            doNewsFetch(inflater, container);
+            doNewsFetch(inflater, container, adapter);
         } else {
-            displayNews(inflater, linearLayout);
+            displayNews(adapter);
         }
 
         return view;
     }
 
     public void refreshNews(LayoutInflater inflater) {
-        View view = this.view;
-        LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.news_media_list);
+        ListView list = (ListView) view.findViewById(R.id.news_media_list);
+        ((NewsListAdapter) list.getAdapter()).clearItems();
 
-        linearLayout.removeAllViews();
-
-        doNewsFetch(inflater, null);
+        doNewsFetch(inflater, null, null);
     }
 
-    private void doNewsFetch(LayoutInflater inflater, ViewGroup container) {
-        View view = this.view;
-        LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.news_media_list);
-
+    private void doNewsFetch(LayoutInflater inflater, ViewGroup container, NewsListAdapter adapter) {
         LinearLayout progress = (LinearLayout) view.findViewById(R.id.news_media_progress);
 
         if (ContentFetcher.isNewsSyncing()) {
-            BaseWaiter waiter = new NewsWaiter(getActivity(), inflater, linearLayout, progress);
+            BaseWaiter waiter = new NewsWaiter(getActivity(), adapter, progress);
             waiter.startWaiting();
         } else {
-            FetcherPackage fetcherPackage = new FetcherPackage(getActivity(), inflater, container, linearLayout, progress, false, null);
+            FetcherPackage fetcherPackage = new FetcherPackage(getActivity(), inflater, container, null, progress, false, null);
+            fetcherPackage.setNewsAdapter(adapter);
             ContentFetcher.fetchNews(fetcherPackage);
         }
-
     }
 
-    private void displayNews(LayoutInflater inflater, LinearLayout linearLayout) {
+    private void displayNews(NewsListAdapter adapter) {
         MediaSQLiteHelper mediaDB = MediaSQLiteHelper.getInstance(getActivity());
         NewsItem[] newsItems = mediaDB.getStories();
 
-        NewsViewHelper.displayList(getActivity(), inflater, linearLayout, newsItems);
+        NewsViewHelper.displayList(adapter, newsItems);
     }
-
 }

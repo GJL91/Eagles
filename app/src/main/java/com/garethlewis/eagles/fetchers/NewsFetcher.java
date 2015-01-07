@@ -1,17 +1,19 @@
 package com.garethlewis.eagles.fetchers;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.LinearLayout;
 
-import com.garethlewis.eagles.util.FetcherPackage;
+import com.garethlewis.eagles.adapters.NewsListAdapter;
 import com.garethlewis.eagles.database.MediaSQLiteHelper;
 import com.garethlewis.eagles.database.UpdatedSQLiteHelper;
 import com.garethlewis.eagles.entities.NewsItem;
 import com.garethlewis.eagles.fragments.news.NewsViewHelper;
 import com.garethlewis.eagles.util.ContentFetcher;
+import com.garethlewis.eagles.util.FetcherPackage;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -25,15 +27,26 @@ import java.util.List;
 
 public class NewsFetcher extends AsyncTask<FetcherPackage, Void, List<NewsItem>>  {
 
-    private FetcherPackage list;
+    private FetcherPackage fetcherPackage;
+
+    private boolean internet = true;
 
     @Override
     protected List<NewsItem> doInBackground(FetcherPackage... params) {
 
-        list = params[0];
-        MediaSQLiteHelper db = MediaSQLiteHelper.getInstance(list.getContext());
+        fetcherPackage = params[0];
 
-        List<NewsItem> newsItems = new ArrayList<NewsItem>();
+        ConnectivityManager cm = (ConnectivityManager) fetcherPackage.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        internet = activeNetwork != null && activeNetwork.isConnected();
+
+        if (!internet) {
+            return null;
+        }
+
+        MediaSQLiteHelper db = MediaSQLiteHelper.getInstance(fetcherPackage.getContext());
+
+        List<NewsItem> newsItems = new ArrayList<>();
         try {
             String url = "http://www.philadelphiaeagles.com/news/all-news.html";
             Document doc;
@@ -110,17 +123,20 @@ public class NewsFetcher extends AsyncTask<FetcherPackage, Void, List<NewsItem>>
 
     @Override
     protected void onPostExecute(List<NewsItem> newStories) {
+        NewsListAdapter adapter = fetcherPackage.getNewsAdapter();
+
         if (newStories == null) {
-            NewsViewHelper.displayError(list.getInflater(), list.getLinearLayout());
-            ContentFetcher.newsFinished();
-            list.getProgress().setVisibility(View.GONE);
+            if (internet) {
+                NewsViewHelper.displayError(adapter);
+            } else {
+                NewsViewHelper.displayInternetError(adapter);
+            }
+
+            finish();
             return;
         }
 
-        LayoutInflater inflater = list.getInflater();
-        LinearLayout linearLayout = list.getLinearLayout();
-
-        MediaSQLiteHelper db = MediaSQLiteHelper.getInstance(list.getContext());
+        MediaSQLiteHelper db = MediaSQLiteHelper.getInstance(fetcherPackage.getContext());
 
         db.deleteOldStories(newStories.size());
 
@@ -129,12 +145,16 @@ public class NewsFetcher extends AsyncTask<FetcherPackage, Void, List<NewsItem>>
         }
 
         NewsItem[] newsItems = db.getStories();
-        NewsViewHelper.displayList(list.getContext(), inflater, linearLayout, newsItems);
+        NewsViewHelper.displayList(adapter, newsItems);
 
-        UpdatedSQLiteHelper updatedSQLiteHelper = UpdatedSQLiteHelper.getInstance(list.getContext());
+        UpdatedSQLiteHelper updatedSQLiteHelper = UpdatedSQLiteHelper.getInstance(fetcherPackage.getContext());
         updatedSQLiteHelper.setUpdated("Media");
 
-        list.getProgress().setVisibility(View.GONE);
+        finish();
+    }
+
+    private void finish() {
+        fetcherPackage.getProgress().setVisibility(View.GONE);
         ContentFetcher.newsFinished();
     }
 

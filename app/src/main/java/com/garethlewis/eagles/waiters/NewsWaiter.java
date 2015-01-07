@@ -1,10 +1,10 @@
 package com.garethlewis.eagles.waiters;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.garethlewis.eagles.adapters.NewsListAdapter;
 import com.garethlewis.eagles.database.MediaSQLiteHelper;
 import com.garethlewis.eagles.entities.NewsItem;
 import com.garethlewis.eagles.fragments.news.NewsViewHelper;
@@ -13,15 +13,12 @@ import com.garethlewis.eagles.util.ContentFetcher;
 public class NewsWaiter extends BaseWaiter {
 
     private Context context;
-    private LayoutInflater inflater;
-    private View view;
-    private LinearLayout linearLayout;
+    private NewsListAdapter adapter;
     private LinearLayout progress;
 
-    public NewsWaiter(Context context, LayoutInflater inflater, LinearLayout linearLayout, LinearLayout progress) {
+    public NewsWaiter(Context context, NewsListAdapter adapter, LinearLayout progress) {
         this.context = context;
-        this.inflater = inflater;
-        this.linearLayout = linearLayout;
+        this.adapter = adapter;
         this.progress = progress;
     }
 
@@ -36,7 +33,7 @@ public class NewsWaiter extends BaseWaiter {
         MediaSQLiteHelper mediaDB = MediaSQLiteHelper.getInstance(context);
         NewsItem[] newsItems = mediaDB.getStories();
 
-        NewsViewHelper.displayList(context, inflater, linearLayout, newsItems);
+        NewsViewHelper.displayList(adapter, newsItems);
         progress.setVisibility(View.GONE);
     }
 
