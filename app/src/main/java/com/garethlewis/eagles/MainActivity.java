@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
-import android.widget.LinearLayout;
 
 import com.garethlewis.eagles.database.MasterDatabase;
 import com.garethlewis.eagles.fragments.NavigationDrawerFragment;
@@ -117,13 +116,13 @@ public class MainActivity extends FragmentActivity
 
     public void openMenu(View view) {
         DrawerLayout menu = (DrawerLayout) findViewById(R.id.drawer_layout);
-        menu.openDrawer(Gravity.LEFT);
+        menu.openDrawer(Gravity.START);
     }
 
     public void refresh(View view) {
         HomeFragment fragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag("Fragment_Home");
-        fragment.homeContentPagerAdapter.homeContentFragments[0].refreshNews(getLayoutInflater());
-        fragment.homeContentPagerAdapter.homeContentFragments[1].refreshSchedule(getLayoutInflater());
+        fragment.homeContentPagerAdapter.homeContentFragments[0].refreshNews();
+//        fragment.homeContentPagerAdapter.homeContentFragments[1].refreshSchedule();
         fragment.homeContentPagerAdapter.homeContentFragments[2].refreshTwitter(getLayoutInflater());
     }
 
@@ -135,7 +134,6 @@ public class MainActivity extends FragmentActivity
             public void onClick(DialogInterface dialog, int which) {
                 MasterDatabase db = new MasterDatabase(getApplicationContext());
                 db.resetDatabase();
-//                refetchData();
             }
         });
 
@@ -150,48 +148,48 @@ public class MainActivity extends FragmentActivity
         dialog.show();
     }
 
-    public void refetchData() {
-        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        dialog.setMessage("Data cleared, gather now?");
-        dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                refresh(null);
-            }
-        });
-
-        dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // Do nothing.
-            }
-        });
-
-        dialog.setCancelable(false);
-        dialog.show();
-    }
+//    public void refetchData() {
+//        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+//        dialog.setMessage("Data cleared, gather now?");
+//        dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                refresh(null);
+//            }
+//        });
+//
+//        dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                // Do nothing.
+//            }
+//        });
+//
+//        dialog.setCancelable(false);
+//        dialog.show();
+//    }
 
     public void fetchNews(View view) {
-        LinearLayout list = (LinearLayout) findViewById(R.id.home_media_list);
-        View errorView = findViewById(R.id.news_error);
-        if (errorView != null) {
-            list.removeView(errorView);
-        }
+//        ListView list = (ListView) findViewById(R.id.home_media_list);
+//        View errorView = findViewById(R.id.news_error);
+//        if (errorView != null) {
+//            list.removeView(errorView);
+//        }
 
         HomeFragment fragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag("Fragment_Home");
-        fragment.homeContentPagerAdapter.homeContentFragments[0].refreshNews(getLayoutInflater());
+        fragment.homeContentPagerAdapter.homeContentFragments[0].refreshNews();
     }
 
     public void fetchSchedules(View view) {
         // TODO: Update for schedule.
-        LinearLayout list = (LinearLayout) findViewById(R.id.home_media_list);
-        View errorView = findViewById(R.id.news_error);
-        if (errorView != null) {
-            list.removeView(errorView);
-        }
+//        LinearLayout list = (LinearLayout) findViewById(R.id.home_media_list);
+//        View errorView = findViewById(R.id.news_error);
+//        if (errorView != null) {
+//            list.removeView(errorView);
+//        }
 
         HomeFragment fragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag("Fragment_Home");
-        fragment.homeContentPagerAdapter.homeContentFragments[1].refreshSchedule(getLayoutInflater());
+        fragment.homeContentPagerAdapter.homeContentFragments[1].refreshSchedule();
     }
 
     public void fetchTwitter(View view) {

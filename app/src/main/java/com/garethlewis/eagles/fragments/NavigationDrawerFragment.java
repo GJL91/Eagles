@@ -7,7 +7,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
@@ -21,9 +21,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.garethlewis.eagles.R;
+
+//import android.support.v7.app.ActionBarDrawerToggle;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -59,7 +60,7 @@ public class NavigationDrawerFragment extends Fragment {
     private View mFragmentContainerView;
 
     private int mCurrentSelectedPosition = 1;
-    private boolean mFromSavedInstanceState;
+//    private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
     public NavigationDrawerFragment() {
@@ -76,7 +77,7 @@ public class NavigationDrawerFragment extends Fragment {
 
         if (savedInstanceState != null) {
             mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
-            mFromSavedInstanceState = true;
+//            mFromSavedInstanceState = true;
         }
 
         // Select either the default item (0) or the last selected item.
@@ -97,8 +98,6 @@ public class NavigationDrawerFragment extends Fragment {
         ImageView imageView = new ImageView(getActivity().getApplicationContext());
         imageView.setImageDrawable(getResources().getDrawable(R.drawable.logo_list_header));
 
-        TextView divider = new TextView(getActivity().getApplicationContext());
-
         mDrawerListView = (ListView) inflater.inflate(
                 R.layout.fragment_navigation_drawer, container, false);
         mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -111,7 +110,7 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerListView.addHeaderView(imageView, null,false);
 
         String[] headings = getResources().getStringArray(R.array.sectionHeadings);
-        mDrawerListView.setAdapter(new ArrayAdapter<String>(
+        mDrawerListView.setAdapter(new ArrayAdapter<>(
                 getActivity().getApplicationContext(),
                 R.layout.drawer_list_item,
                 R.id.text1,
@@ -145,10 +144,10 @@ public class NavigationDrawerFragment extends Fragment {
 
         // ActionBarDrawerToggle ties together the the proper interactions
         // between the navigation drawer and the action bar app icon.
+        // R.drawable.ic_drawer,             /* nav drawer image to replace 'Up' caret */ --3rd
         mDrawerToggle = new ActionBarDrawerToggle(
                 getActivity(),                    /* host Activity */
                 mDrawerLayout,                    /* DrawerLayout object */
-                R.drawable.ic_drawer,             /* nav drawer image to replace 'Up' caret */
                 R.string.navigation_drawer_open,  /* "open drawer" description for accessibility */
                 R.string.navigation_drawer_close  /* "close drawer" description for accessibility */
         ) {

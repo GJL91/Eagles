@@ -211,7 +211,7 @@ public class ScheduleViewHelper {
         String output = "";
         for (String s : parts) {
             String temp = s.toUpperCase();
-            output += temp.replace(temp.substring(1), s.substring(1).toLowerCase());;
+            output += temp.replace(temp.substring(1), s.substring(1).toLowerCase());
             output += " ";
         }
 

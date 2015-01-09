@@ -55,8 +55,7 @@ public class MediaSQLiteHelper extends MasterDatabase {
 
         contentValues.put("Image", source);
 
-        boolean success = (db.insert("Media", null, contentValues) != -1);
-        return success;
+        return (db.insert("Media", null, contentValues) != -1);
     }
 
     public boolean containsStory(String title) {
@@ -67,11 +66,10 @@ public class MediaSQLiteHelper extends MasterDatabase {
         return contained;
     }
 
-    public boolean deleteStory(String title) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        boolean success = (db.delete("Media", "Title = ? ", new String[] { title }) != 0);
-        return success;
-    }
+//    public boolean deleteStory(String title) {
+//        SQLiteDatabase db = this.getWritableDatabase();
+//        return (db.delete("Media", "Title = ? ", new String[] { title }) != 0);
+//    }
 
     /**
      * Deletes a number of old entries from the database
@@ -83,8 +81,8 @@ public class MediaSQLiteHelper extends MasterDatabase {
         SQLiteDatabase dbw = this.getWritableDatabase();
         Cursor res = db.rawQuery("SELECT * FROM Media", null);
         res.moveToFirst();
-        List<String> titles = new ArrayList<String>();
-        List<String> imgs = new ArrayList<String>();
+        List<String> titles = new ArrayList<>();
+        List<String> imgs = new ArrayList<>();
         int i = 0;
         while (i < count && !res.isAfterLast()) {
             titles.add(res.getString(res.getColumnIndex("Title")).replace("[apos]", "'"));
@@ -109,35 +107,35 @@ public class MediaSQLiteHelper extends MasterDatabase {
         res.close();
     }
 
-    public boolean deleteAllStories() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.rawQuery("SELECT * FROM Media", null);
-        res.moveToFirst();
-
-        List<String> imgNames = new ArrayList<String>();
-
-        int imageIndex = res.getColumnIndex("Image");
-        int idIndex = res.getColumnIndex("Post_ID");
-
-        for (int i = 0; i < res.getCount(); i++) {
-            String source = res.getString(imageIndex);
-            if (source != null && !"spadaro".equals(source)) {
-                imgNames.add(res.getString(idIndex));
-            }
-            res.moveToNext();
-        }
-
-        for (String img : imgNames) {
-            FileHandler.deleteFile(img);
-        }
-
-        SQLiteDatabase dbw = this.getWritableDatabase();
-        boolean success = (dbw.delete("Media", "1", null) > 0);
-
-        res.close();
-
-        return success;
-    }
+//    public boolean deleteAllStories() {
+//        SQLiteDatabase db = this.getReadableDatabase();
+//        Cursor res = db.rawQuery("SELECT * FROM Media", null);
+//        res.moveToFirst();
+//
+//        List<String> imgNames = new ArrayList<String>();
+//
+//        int imageIndex = res.getColumnIndex("Image");
+//        int idIndex = res.getColumnIndex("Post_ID");
+//
+//        for (int i = 0; i < res.getCount(); i++) {
+//            String source = res.getString(imageIndex);
+//            if (source != null && !"spadaro".equals(source)) {
+//                imgNames.add(res.getString(idIndex));
+//            }
+//            res.moveToNext();
+//        }
+//
+//        for (String img : imgNames) {
+//            FileHandler.deleteFile(img);
+//        }
+//
+//        SQLiteDatabase dbw = this.getWritableDatabase();
+//        boolean success = (dbw.delete("Media", "1", null) > 0);
+//
+//        res.close();
+//
+//        return success;
+//    }
 
     public NewsItem[] getStories() {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -146,13 +144,13 @@ public class MediaSQLiteHelper extends MasterDatabase {
 
         NewsItem[] newsItems = new NewsItem[res.getCount()];
         for (int i = 0; i < newsItems.length; i++) {
-            String id = res.getString(res.getColumnIndex("Post_ID"));
+//            String id = res.getString(res.getColumnIndex("Post_ID"));
             String title = res.getString(res.getColumnIndex("Title")).replace("[apos]", "'");
             String link = res.getString(res.getColumnIndex("Link")).replace("[apos]", "'");
             String time = res.getString(res.getColumnIndex("Time")).replace("[apos]", "'");
             String source = res.getString(res.getColumnIndex("Image"));
 
-            Drawable d = null;
+            Drawable d;
             d = FileHandler.getDrawableFromFile(source);
 
             newsItems[i] = new NewsItem(link, title, source, time, (short) 0, d);

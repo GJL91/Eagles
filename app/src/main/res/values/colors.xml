@@ -7,6 +7,11 @@
     <color name="white">#FFFFFFFF</color>
     <color name="off_white">#FFE6E6E6</color>
 
+    <color name="red">#FFC93437</color>
+    <color name="blue">#FF375BF1</color>
+    <color name="yellow">#FFF7D23E</color>
+    <color name="green">#FF34A350</color>
+
     <color name="transparent">#00000000</color>
     <color name="translucent_black">#55000000</color>
     <color name="translucent_black_dark">#CC000000</color>

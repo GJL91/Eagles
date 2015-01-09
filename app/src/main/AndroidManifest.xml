@@ -13,7 +13,8 @@
         android:allowBackup="true"
         android:icon="@drawable/app_icon"
         android:theme="@style/AppTheme"
-        android:largeHeap="true">
+        android:largeHeap="true"
+        android:supportsRtl="false">
 
         <activity
             android:name=".MainActivity"

@@ -1,5 +1,7 @@
 package com.garethlewis.eagles.entities;
 
+import android.support.annotation.Nullable;
+
 public class Standing implements Comparable<Standing>{
 
     private String name;
@@ -239,7 +241,7 @@ public class Standing implements Comparable<Standing>{
     }
 
     @Override
-    public int compareTo(Standing other) {
+    public int compareTo(@Nullable Standing other) {
         if (other == null) return 1;
 
         float myPct = (float) (this.wins + (this.ties / 2)) / (float) (this.wins + this.losses + this.ties);

@@ -30,4 +30,11 @@
     <string name="fetch_news">Please be patient while we fetch the latest news stories&#8230;</string>
     <string name="fetch_twitter">Please be patient while we fetch the latest tweets&#8230;</string>
 
+    <integer-array name="google_colors">
+        <item>@color/red</item>
+        <item>@color/blue</item>
+        <item>@color/yellow</item>
+        <item>@color/green</item>
+    </integer-array>
+
 </resources>

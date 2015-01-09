@@ -56,6 +56,7 @@ public class NewsListAdapter extends BaseAdapter {
 
     public void addNewsStory(NewsItem newsItem) {
         newsItems.add(newsItem);
+        notifyDataSetChanged();
     }
 
     @Override

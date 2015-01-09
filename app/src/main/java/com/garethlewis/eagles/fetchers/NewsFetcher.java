@@ -4,13 +4,15 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.View;
 
 import com.garethlewis.eagles.adapters.NewsListAdapter;
 import com.garethlewis.eagles.database.MediaSQLiteHelper;
 import com.garethlewis.eagles.database.UpdatedSQLiteHelper;
 import com.garethlewis.eagles.entities.NewsItem;
+import com.garethlewis.eagles.fragments.home.HomeContentFragment;
+import com.garethlewis.eagles.fragments.news.NewsFragment;
 import com.garethlewis.eagles.fragments.news.NewsViewHelper;
 import com.garethlewis.eagles.util.ContentFetcher;
 import com.garethlewis.eagles.util.FetcherPackage;
@@ -125,6 +127,8 @@ public class NewsFetcher extends AsyncTask<FetcherPackage, Void, List<NewsItem>>
     protected void onPostExecute(List<NewsItem> newStories) {
         NewsListAdapter adapter = fetcherPackage.getNewsAdapter();
 
+        Log.e("EAGLES", "Adapter = " + adapter);
+
         if (newStories == null) {
             if (internet) {
                 NewsViewHelper.displayError(adapter);
@@ -154,7 +158,14 @@ public class NewsFetcher extends AsyncTask<FetcherPackage, Void, List<NewsItem>>
     }
 
     private void finish() {
-        fetcherPackage.getProgress().setVisibility(View.GONE);
+        Fragment source = fetcherPackage.getSource();
+        if (source instanceof NewsFragment) {
+            ((NewsFragment) source).finished();
+        } else {
+            ((HomeContentFragment) source).finished();
+        }
+
+//        fetcherPackage.getProgress().setVisibility(View.GONE);
         ContentFetcher.newsFinished();
     }
 

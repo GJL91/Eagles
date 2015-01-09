@@ -1,6 +1,7 @@
 package com.garethlewis.eagles.util;
 
 import android.content.Context;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,8 @@ public class FetcherPackage {
 
     /** Whether the ScheduleFetcher should display only the Eagles Schedule */
     private boolean mode;
+
+    private Fragment source;
 
     private NewsListAdapter newsListAdapter;
     private TwitterListAdapter twitterListAdapter;
@@ -77,5 +80,13 @@ public class FetcherPackage {
 
     public void setTwitterAdapter(TwitterListAdapter twitterListAdapter) {
         this.twitterListAdapter = twitterListAdapter;
+    }
+
+    public Fragment getSource() {
+        return source;
+    }
+
+    public void setSource(Fragment source) {
+        this.source = source;
     }
 }

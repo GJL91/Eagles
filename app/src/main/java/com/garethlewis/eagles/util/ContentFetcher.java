@@ -75,7 +75,7 @@ public class ContentFetcher {
         }
 
         syncing[1] = true;
-        fetcherPackage.getProgress().setVisibility(View.VISIBLE);
+//        fetcherPackage.getProgress().setVisibility(View.VISIBLE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             new NewsFetcher().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, fetcherPackage);
         } else {
