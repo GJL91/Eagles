@@ -2,21 +2,15 @@ package com.garethlewis.eagles.util;
 
 import android.content.Context;
 import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
+import com.garethlewis.eagles.adapters.FixtureListAdapter;
 import com.garethlewis.eagles.adapters.NewsListAdapter;
 import com.garethlewis.eagles.adapters.TwitterListAdapter;
 
 public class FetcherPackage {
 
     private Context context;
-    private LayoutInflater inflater;
-    private ViewGroup container;
-    private LinearLayout linearLayout;
-    private LinearLayout progress;
     private View otherView;
 
     /** Whether the ScheduleFetcher should display only the Eagles Schedule */
@@ -25,37 +19,17 @@ public class FetcherPackage {
     private Fragment source;
 
     private NewsListAdapter newsListAdapter;
+    private FixtureListAdapter fixtureListAdapter;
     private TwitterListAdapter twitterListAdapter;
 
-    public FetcherPackage(Context context, LayoutInflater inflater, ViewGroup container,
-                          LinearLayout linearLayout, LinearLayout progress, boolean mode, View otherView) {
+    public FetcherPackage(Context context, boolean mode, View otherView) {
         this.context = context;
-        this.inflater = inflater;
-        this.container = container;
-        this.linearLayout = linearLayout;
-        this.progress = progress;
         this.mode = mode;
         this.otherView = otherView;
     }
 
     public Context getContext() {
         return context;
-    }
-
-    public LayoutInflater getInflater() {
-        return inflater;
-    }
-
-    public ViewGroup getContainer() {
-        return container;
-    }
-
-    public LinearLayout getLinearLayout() {
-        return linearLayout;
-    }
-
-    public LinearLayout getProgress() {
-        return progress;
     }
 
     public boolean getMode() {
@@ -72,6 +46,14 @@ public class FetcherPackage {
 
     public void setNewsAdapter(NewsListAdapter newsListAdapter) {
         this.newsListAdapter = newsListAdapter;
+    }
+
+    public FixtureListAdapter getScheduleAdapter() {
+        return fixtureListAdapter;
+    }
+
+    public void setScheduleAdapter(FixtureListAdapter scheduleAdapter) {
+        this.fixtureListAdapter = scheduleAdapter;
     }
 
     public TwitterListAdapter getTwitterAdapter() {

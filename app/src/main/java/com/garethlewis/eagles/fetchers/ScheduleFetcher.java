@@ -2,20 +2,20 @@ package com.garethlewis.eagles.fetchers;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Build;
+import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.TextView;
 
 import com.garethlewis.eagles.R;
+import com.garethlewis.eagles.database.ScheduleParamsSQLiteHelper;
 import com.garethlewis.eagles.database.ScheduleSQLiteHelper;
 import com.garethlewis.eagles.database.StandingsSQLiteHelper;
 import com.garethlewis.eagles.entities.Fixture;
+import com.garethlewis.eagles.fragments.home.HomeContentFragment;
+import com.garethlewis.eagles.fragments.schedule.ScheduleFragment;
 import com.garethlewis.eagles.fragments.schedule.ScheduleViewHelper;
 import com.garethlewis.eagles.util.ContentFetcher;
 import com.garethlewis.eagles.util.FetcherPackage;
-import com.garethlewis.eagles.util.FileHandler;
 import com.garethlewis.eagles.util.ScheduleParams;
 
 import org.jsoup.Jsoup;
@@ -26,7 +26,6 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class ScheduleFetcher extends AsyncTask<FetcherPackage, Void, List<Fixture>> {
@@ -42,14 +41,14 @@ public class ScheduleFetcher extends AsyncTask<FetcherPackage, Void, List<Fixtur
 
 //    private String date;
 
-    private FetcherPackage input;
+    private FetcherPackage fetcherPackage;
 
     @Override
     protected List<Fixture> doInBackground(FetcherPackage... fetcherPackages) {
 
         Log.e("EAGLES", "GETTING SCHEDULES");
 
-        this.input = fetcherPackages[0];
+        this.fetcherPackage = fetcherPackages[0];
 
 //        ScheduleSQLiteHelper db = ScheduleSQLiteHelper.getInstance(input.getContext());
 //        db.deleteAllFixtures();
@@ -57,9 +56,9 @@ public class ScheduleFetcher extends AsyncTask<FetcherPackage, Void, List<Fixtur
 //        StandingsSQLiteHelper dbs = StandingsSQLiteHelper.getInstance(input.getContext());
 //        dbs.deleteAllStandings();
 
-        String[] allTeams = input.getContext().getResources().getStringArray(R.array.team_nicknames);
+        String[] allTeams = fetcherPackage.getContext().getResources().getStringArray(R.array.team_nicknames);
 
-        List<Fixture> fixtures = new ArrayList<Fixture>();
+        List<Fixture> fixtures = new ArrayList<>();
 
         int start = ScheduleParams.getFirstFixture();
         if (start == 0) start = 1;
@@ -84,7 +83,7 @@ public class ScheduleFetcher extends AsyncTask<FetcherPackage, Void, List<Fixtur
                     fullSchedule = tables.first().children();
                 }
 
-                List<String> teams = new ArrayList<String>(32);
+                List<String> teams = new ArrayList<>(32);
                 int gameCount = 0;
 
                 String date = "";
@@ -174,13 +173,15 @@ public class ScheduleFetcher extends AsyncTask<FetcherPackage, Void, List<Fixtur
 
     @Override
     protected void onPostExecute(List<Fixture> fixtures) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            new FileHandler.writeScheduleParams().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void) null);
-        } else {
-            new FileHandler.writeScheduleParams().execute();
+        if (ScheduleParams.getFirstFixture() == 0) {
+            ScheduleParams.setFirstFixture(ScheduleParams.getLastResult());
+            ScheduleParams.setNextGameTime(Long.MAX_VALUE);
         }
 
-        Context context = input.getContext();
+        Context context = fetcherPackage.getContext();
+        ScheduleParamsSQLiteHelper paramsDB = ScheduleParamsSQLiteHelper.getInstance(context);
+        paramsDB.setParams();
+
         ScheduleSQLiteHelper db = ScheduleSQLiteHelper.getInstance(context);
         db.setContext(context);
 
@@ -191,23 +192,26 @@ public class ScheduleFetcher extends AsyncTask<FetcherPackage, Void, List<Fixtur
 
         db.setAdded(added);
 
-        LayoutInflater inflater = input.getInflater();
-
-        if (input.getMode()) {
+        if (fetcherPackage.getMode()) {
             fixtures = db.getFixturesForTeam("Eagles");
         } else {
             fixtures = db.getFixturesForWeek(1);
         }
 
-        TextView recordView = (TextView) this.input.getOtherView();
+        TextView recordView = (TextView) this.fetcherPackage.getOtherView();
         if (recordView != null) {
             String record = standingsDB.getRecord("Eagles");
             recordView.setText(record);
         }
 
-        ScheduleViewHelper.displayList(context, inflater, input.getLinearLayout(), fixtures, true);
+        ScheduleViewHelper.displayList(fetcherPackage.getScheduleAdapter(), fixtures, true);
 
-        input.getProgress().setVisibility(View.GONE);
+        Fragment source = fetcherPackage.getSource();
+        if (source instanceof ScheduleFragment) {
+            ((ScheduleFragment) source).finished();
+        } else {
+            ((HomeContentFragment) source).finished();
+        }
         ContentFetcher.scheduleFinished();
     }
 
@@ -231,37 +235,37 @@ public class ScheduleFetcher extends AsyncTask<FetcherPackage, Void, List<Fixtur
         return output.trim();
     }
 
-    private String convertTimeTo12Hour(String time) {
-        int hour = Integer.parseInt(time.substring(0,2));
-        if (hour > 12) {
-            hour -= 12;
-            return hour + time.substring(2) + " PM";
-        }
-
-        return time + " AM";
-    }
-
-    private boolean isInFuture(String date, String time) {
-        long epoch = Fixture.dateStringToEpoch(date + " " + time);
-        long now = new Date().getTime();
-
-        return (Long.compare(epoch, now) > 0);
-    }
-
-    private int getNumberOfMatchesForPostseasonWeek(int week) {
-        switch (week) {
-            case 18:
-                return 4;
-            case 19:
-                return 4;
-            case 20:
-                return 2;
-            case 21:
-                return 1;
-            case 22:
-                return 1;
-            default:
-                return 0;
-        }
-    }
+//    private String convertTimeTo12Hour(String time) {
+//        int hour = Integer.parseInt(time.substring(0,2));
+//        if (hour > 12) {
+//            hour -= 12;
+//            return hour + time.substring(2) + " PM";
+//        }
+//
+//        return time + " AM";
+//    }
+//
+//    private boolean isInFuture(String date, String time) {
+//        long epoch = Fixture.dateStringToEpoch(date + " " + time);
+//        long now = new Date().getTime();
+//
+//        return (Long.compare(epoch, now) > 0);
+//    }
+//
+//    private int getNumberOfMatchesForPostseasonWeek(int week) {
+//        switch (week) {
+//            case 18:
+//                return 4;
+//            case 19:
+//                return 4;
+//            case 20:
+//                return 2;
+//            case 21:
+//                return 1;
+//            case 22:
+//                return 1;
+//            default:
+//                return 0;
+//        }
+//    }
 }

@@ -7,7 +7,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -23,10 +22,12 @@ import com.garethlewis.eagles.database.UpdatedSQLiteHelper;
 import com.garethlewis.eagles.entities.Fixture;
 import com.garethlewis.eagles.entities.NewsItem;
 import com.garethlewis.eagles.fragments.news.NewsViewHelper;
+import com.garethlewis.eagles.fragments.schedule.ScheduleViewHelper;
 import com.garethlewis.eagles.util.ContentFetcher;
 import com.garethlewis.eagles.util.FetcherPackage;
 import com.garethlewis.eagles.waiters.BaseWaiter;
 import com.garethlewis.eagles.waiters.NewsWaiter;
+import com.garethlewis.eagles.waiters.ScheduleWaiter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +64,7 @@ public class HomeContentFragment extends Fragment {
 
         this.view = view;
         if (position == 0) {
+            // News stuff
 
             pullLayout = (PullRefreshLayout) view.findViewById(R.id.home_media_swipe_container);
             pullLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
@@ -71,7 +73,7 @@ public class HomeContentFragment extends Fragment {
                     refreshNews();
                 }
             });
-            pullLayout.setRefreshStyle(PullRefreshLayout.STYLE_RING);
+//            pullLayout.setRefreshStyle(PullRefreshLayout.STYLE_RING);
 
             ListView list = (ListView) view.findViewById(R.id.home_media_list);
             list.setOnTouchListener(new View.OnTouchListener() {
@@ -87,32 +89,72 @@ public class HomeContentFragment extends Fragment {
             adapter = new NewsListAdapter(getActivity(), new ArrayList<NewsItem>());
             list.setAdapter(adapter);
 
+            displayNews();
+
             UpdatedSQLiteHelper db = UpdatedSQLiteHelper.getInstance(getActivity());
             if (db.needsUpdate("Media")) {
                 doNewsFetch();
-            } else {
-                displayNews();
             }
 
         } else {
             if (position == 1) {
                 // Schedule stuff.
+
+                pullLayout = (PullRefreshLayout) view.findViewById(R.id.home_schedule_swipe_container);
+                pullLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        refreshSchedule();
+                    }
+                });
+
                 ListView list = (ListView) view.findViewById(R.id.home_schedule_list);
+                list.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        return refreshing;
+                    }
+                });
 
-                if (list != null) {
-//                    UpdatedSQLiteHelper db = UpdatedSQLiteHelper.getInstance(getActivity());
-//                    if (db.needsUpdate("Schedule")) {
-//                        doScheduleFetch(inflater, container);
-//                    } else {
-                        displaySchedule(list);
-//                    }
+                View header = inflater.inflate(R.layout.home_schedule_header, list, false);
+                list.addHeaderView(header);
+
+                adapter = new FixtureListAdapter(getActivity(), new ArrayList<Fixture>());
+                list.setAdapter(adapter);
+
+                displaySchedule();
+
+                UpdatedSQLiteHelper db = UpdatedSQLiteHelper.getInstance(getActivity());
+                if (db.needsUpdate("Schedule")) {
+                    doScheduleFetch();
                 }
+
             } else {
-                ListView list = (ListView) view.findViewById(R.id.home_twitter_list);
+                // Twitter stuff.
 
-                if (list != null) {
-                    doTwitterFetch(inflater, container);
-                }
+                pullLayout = (PullRefreshLayout) view.findViewById(R.id.home_twitter_swipe_container);
+                pullLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        refreshTwitter();
+                    }
+                });
+
+                ListView list = (ListView) view.findViewById(R.id.home_twitter_list);
+                list.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        return refreshing;
+                    }
+                });
+
+                View header = inflater.inflate(R.layout.twitter_list_header, list, false);
+                list.addHeaderView(header);
+
+                adapter = new TwitterListAdapter(getActivity(), new ArrayList<Status>());
+                list.setAdapter(adapter);
+
+                doTwitterFetch();
             }
         }
 
@@ -125,17 +167,13 @@ public class HomeContentFragment extends Fragment {
     }
 
     private void displayNews() {
-        ListView list = (ListView) view.findViewById(R.id.home_media_list);
-        NewsListAdapter adapter = new NewsListAdapter(getActivity(), new ArrayList<NewsItem>());
-        list.setAdapter(adapter);
-
         MediaSQLiteHelper mediaDB = MediaSQLiteHelper.getInstance(getActivity());
         NewsItem[] newsItems = mediaDB.getStories();
 
-        NewsViewHelper.displayList(adapter, newsItems);
+        NewsViewHelper.displayList((NewsListAdapter) adapter, newsItems);
     }
 
-    private void displaySchedule(ListView list) {
+    private void displaySchedule() {
         TextView recordView = (TextView) view.findViewById(R.id.record_text);
         StandingsSQLiteHelper standingsDB = StandingsSQLiteHelper.getInstance(getActivity());
         String record = standingsDB.getRecord("Eagles");
@@ -144,33 +182,8 @@ public class HomeContentFragment extends Fragment {
         ScheduleSQLiteHelper scheduleDB = ScheduleSQLiteHelper.getInstance(getActivity());
         List<Fixture> fixtures = scheduleDB.getFixturesForTeam("Eagles");
 
-        FixtureListAdapter adapter = new FixtureListAdapter(getActivity(), new ArrayList<Fixture>());
-        list.setAdapter(adapter);
-
-        for (Fixture fixture : fixtures) {
-            if ("".equals(fixture.getAwayTeam())) {
-                adapter.addByeFixture(fixture);
-            } else {
-                if (fixture.getHomeScore() == -1) {
-                    adapter.addFutureFixture(fixture);
-                } else {
-                    adapter.addResultFixture(fixture);
-                }
-            }
-        }
+        ScheduleViewHelper.displayList((FixtureListAdapter) adapter, fixtures, false);
     }
-
-//    private void displaySchedule(LayoutInflater inflater, View view, LinearLayout linearLayout) {
-//        TextView recordView = (TextView) view.findViewById(R.id.record_text);
-//        StandingsSQLiteHelper standingsDB = StandingsSQLiteHelper.getInstance(getActivity());
-//        String record = standingsDB.getRecord("Eagles");
-//        recordView.setText(record);
-//
-//        ScheduleSQLiteHelper scheduleDB = ScheduleSQLiteHelper.getInstance(getActivity());
-//        List<Fixture> fixtures = scheduleDB.getFixturesForTeam("Eagles");
-//
-//        ScheduleViewHelper.displayList(getActivity(), inflater, linearLayout, fixtures, false);
-//    }
 
     public void refreshNews() {
         doNewsFetch();
@@ -184,7 +197,7 @@ public class HomeContentFragment extends Fragment {
                 BaseWaiter waiter = new NewsWaiter(getActivity(), (NewsListAdapter) adapter, this);
                 waiter.startWaiting();
             } else {
-                FetcherPackage fetcherPackage = new FetcherPackage(getActivity(), null, null, null, null, false, null);
+                FetcherPackage fetcherPackage = new FetcherPackage(getActivity(), false, null);
                 fetcherPackage.setSource(this);
                 fetcherPackage.setNewsAdapter((NewsListAdapter) adapter);
                 ContentFetcher.fetchNews(fetcherPackage);
@@ -193,54 +206,50 @@ public class HomeContentFragment extends Fragment {
     }
 
     public void refreshSchedule() {
-        View view = this.view;
-        ListView list = (ListView) view.findViewById(R.id.home_schedule_list);
-
-        ((FixtureListAdapter) list.getAdapter()).clearItems();
-
-//        doScheduleFetch(inflater, null);
+        doScheduleFetch();
     }
 
-//    private void doScheduleFetch(LayoutInflater inflater, ViewGroup container) {
+    private void doScheduleFetch() {
+        if (!refreshing) {
+            refreshing = true;
+            pullLayout.setRefreshing(true);
+
+            View view = this.view;
+
+            if (ContentFetcher.isScheduleSyncing()) {
+                // Wait for schedule syncing to complete, then display the schedules.
+                // Need an async task to wait and poll the ContentFetcher as otherwise the ui thread will hang.
+                BaseWaiter waiter = new ScheduleWaiter(getActivity(), view, (FixtureListAdapter) adapter, null, false);
+                waiter.startWaiting();
+            } else {
+                View recordView = view.findViewById(R.id.record_text);
+                FetcherPackage fetcherPackage = new FetcherPackage(getActivity(), true, recordView);
+                fetcherPackage.setSource(this);
+                fetcherPackage.setScheduleAdapter((FixtureListAdapter) adapter);
+                ContentFetcher.fetchSchedules(fetcherPackage);
+            }
+        }
+    }
+
+    public void refreshTwitter() {
 //        View view = this.view;
-//        LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.home_schedule_list);
+//        ListView list = (ListView) view.findViewById(R.id.home_twitter_list);
 //
-//        LinearLayout progress = (LinearLayout) view.findViewById(R.id.home_schedule_progress);
-//
-//        if (ContentFetcher.isScheduleSyncing()) {
-//            // Wait for schedule syncing to complete, then display the schedules.
-//            // Need an async task to wait and poll the ContentFetcher as otherwise the ui thread will hang.
-//            BaseWaiter waiter = new ScheduleWaiter(getActivity(), inflater, view, linearLayout, progress, null, false);
-//            waiter.startWaiting();
-//        } else {
-//            View recordView = view.findViewById(R.id.record_text);
-//            FetcherPackage fetcherPackage = new FetcherPackage(getActivity(), inflater, container, linearLayout, progress, true, recordView);
-//            ContentFetcher.fetchSchedules(fetcherPackage);
-//        }
-//    }
+//        ((TwitterListAdapter) list.getAdapter()).clearItems();
 
-    public void refreshTwitter(LayoutInflater inflater) {
-        View view = this.view;
-        ListView list = (ListView) view.findViewById(R.id.home_twitter_list);
-
-        ((TwitterListAdapter) list.getAdapter()).clearItems();
-
-        doTwitterFetch(inflater, null);
+        doTwitterFetch();
     }
 
-    private void doTwitterFetch(LayoutInflater inflater, ViewGroup container) {
-        View view = this.view;
-        ListView list = (ListView) view.findViewById(R.id.home_twitter_list);
-
-        TwitterListAdapter adapter = new TwitterListAdapter(getActivity(), new ArrayList<Status>());
-        list.setAdapter(adapter);
-
-        LinearLayout progress = (LinearLayout) view.findViewById(R.id.home_twitter_progress);
-
-        if (!ContentFetcher.isTwitterSyncing()) { // Only place that fetches tweets. If syncing is taking place, it's come from here.
-            FetcherPackage fetcherPackage = new FetcherPackage(getActivity(), inflater, container, null, progress, false, null);
-            fetcherPackage.setTwitterAdapter(adapter);
-            ContentFetcher.fetchTwitter(fetcherPackage);
+    private void doTwitterFetch() {
+        if (!refreshing) {
+            refreshing = true;
+            pullLayout.setRefreshing(true);
+            if (!ContentFetcher.isTwitterSyncing()) { // Only place that fetches tweets. If syncing is taking place, it's come from here.
+                FetcherPackage fetcherPackage = new FetcherPackage(getActivity(), false, null);
+                fetcherPackage.setSource(this);
+                fetcherPackage.setTwitterAdapter((TwitterListAdapter) adapter);
+                ContentFetcher.fetchTwitter(fetcherPackage);
+            }
         }
     }
 

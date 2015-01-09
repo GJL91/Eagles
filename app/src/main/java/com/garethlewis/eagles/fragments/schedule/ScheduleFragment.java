@@ -8,24 +8,26 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.Spinner;
 
-import com.garethlewis.eagles.util.FetcherPackage;
 import com.garethlewis.eagles.R;
+import com.garethlewis.eagles.adapters.FixtureListAdapter;
 import com.garethlewis.eagles.database.ScheduleSQLiteHelper;
 import com.garethlewis.eagles.database.UpdatedSQLiteHelper;
 import com.garethlewis.eagles.entities.Fixture;
 import com.garethlewis.eagles.util.ContentFetcher;
+import com.garethlewis.eagles.util.FetcherPackage;
 import com.garethlewis.eagles.util.ScheduleParams;
 import com.garethlewis.eagles.waiters.BaseWaiter;
 import com.garethlewis.eagles.waiters.ScheduleWaiter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ScheduleFragment extends Fragment {
 
-    private LinearLayout fixturesList;
+    private FixtureListAdapter adapter;
     private int showing = 1;
     private int teamShowing = 0;
     private boolean programmatic = false;
@@ -61,7 +63,7 @@ public class ScheduleFragment extends Fragment {
                         teamShowing = 0;
                         showing = position + 1;
 
-                        fixturesList.removeAllViews();
+                        adapter.clearItems();
                         ScheduleSQLiteHelper db = ScheduleSQLiteHelper.getInstance(getActivity());
 
                         final List<Fixture> fixtures;
@@ -71,7 +73,7 @@ public class ScheduleFragment extends Fragment {
                             fixtures = db.getFixturesForWeek(position + 1);
                         }
 
-                        ScheduleViewHelper.displayList(getActivity(), inflater, fixturesList, fixtures, true);
+                        ScheduleViewHelper.displayList(adapter, fixtures, true);
 
                         teamSpinner.setEnabled(true);
                     }
@@ -97,7 +99,7 @@ public class ScheduleFragment extends Fragment {
                         teamShowing = position;
                         showing = 1;
 
-                        fixturesList.removeAllViews();
+                        adapter.clearItems();
                         ScheduleSQLiteHelper db = ScheduleSQLiteHelper.getInstance(getActivity());
 
                         final List<Fixture> fixtures;
@@ -107,7 +109,7 @@ public class ScheduleFragment extends Fragment {
                             fixtures = db.getFixturesForTeam(position - 1);
                         }
 
-                        ScheduleViewHelper.displayList(getActivity(), inflater, fixturesList, fixtures, false);
+                        ScheduleViewHelper.displayList(adapter, fixtures, false);
 
                         weekSpinner.setEnabled(true);
                     }
@@ -118,19 +120,19 @@ public class ScheduleFragment extends Fragment {
             public void onNothingSelected(AdapterView<?> parent) { }
         });
 
-        LinearLayout view = (LinearLayout) parent.findViewById(R.id.fixtures_list);
-        fixturesList = view;
+        ListView list = (ListView) parent.findViewById(R.id.fixtures_list);
+        adapter = new FixtureListAdapter(getActivity(), new ArrayList<Fixture>());
+        list.setAdapter(adapter);
 
         UpdatedSQLiteHelper db = UpdatedSQLiteHelper.getInstance(getActivity());
         if (db.needsUpdate("Schedule")) {
-            LinearLayout progress = (LinearLayout) parent.findViewById(R.id.schedule_progress);
-            progress.setVisibility(View.VISIBLE);
-
             if (ContentFetcher.isScheduleSyncing()) {
-                BaseWaiter waiter = new ScheduleWaiter(getActivity(), inflater, parent, view, progress, weekSpinner, true);
+                BaseWaiter waiter = new ScheduleWaiter(getActivity(), null, adapter, weekSpinner, true);
                 waiter.startWaiting();
             } else {
-                FetcherPackage fetcherPackage = new FetcherPackage(getActivity(), inflater, container, view, progress, false, null);
+                FetcherPackage fetcherPackage = new FetcherPackage(getActivity(), false, null);
+                fetcherPackage.setSource(this);
+                fetcherPackage.setScheduleAdapter(adapter);
                 ContentFetcher.fetchSchedules(fetcherPackage);
             }
 
@@ -142,13 +144,18 @@ public class ScheduleFragment extends Fragment {
             weekSpinner.setSelection(week - 1);
 
             List<Fixture> fixtures = scheduleDB.getFixturesForWeek(week);
-            ScheduleViewHelper.displayList(getActivity(), inflater, fixturesList, fixtures, true);
+            ScheduleViewHelper.displayList(adapter, fixtures, true);
 
             showing = week;
         }
 
         teamShowing = 0;
         return parent;
+    }
+
+    public void finished() {
+        // refreshing = false;
+        // pullLayout.setRefreshing(false);
     }
 
 }

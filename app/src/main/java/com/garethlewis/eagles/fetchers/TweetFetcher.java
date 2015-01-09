@@ -6,10 +6,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.view.View;
 
 import com.garethlewis.eagles.R;
 import com.garethlewis.eagles.adapters.TwitterListAdapter;
+import com.garethlewis.eagles.fragments.home.HomeContentFragment;
 import com.garethlewis.eagles.util.ContentFetcher;
 import com.garethlewis.eagles.util.FetcherPackage;
 
@@ -87,6 +87,8 @@ public class TweetFetcher extends AsyncTask<FetcherPackage, Void, List<Status>> 
     protected void onPostExecute(List<twitter4j.Status> tweets) {
         TwitterListAdapter adapter = fetcherPackage.getTwitterAdapter();
 
+        adapter.clearItems();
+
         if (tweets == null) {
             if (internet) {
                 adapter.addError();
@@ -124,7 +126,7 @@ public class TweetFetcher extends AsyncTask<FetcherPackage, Void, List<Status>> 
     }
 
     private void finish() {
-        fetcherPackage.getProgress().setVisibility(View.GONE);
+        ((HomeContentFragment) fetcherPackage.getSource()).finished();
         ContentFetcher.twitterFinished();
     }
 

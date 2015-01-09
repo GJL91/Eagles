@@ -37,4 +37,7 @@
         <item>@color/green</item>
     </integer-array>
 
+    <string name="away_logo_description">Away team logo</string>
+    <string name="home_logo_description">Home team logo</string>
+
 </resources>

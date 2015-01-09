@@ -45,11 +45,11 @@ public class NewsFragment extends Fragment {
         adapter = new NewsListAdapter(getActivity(), new ArrayList<NewsItem>());
         list.setAdapter(adapter);
 
+        displayNews();
+
         UpdatedSQLiteHelper db = UpdatedSQLiteHelper.getInstance(getActivity());
         if (db.needsUpdate("Media")) {
             doNewsFetch();
-        } else {
-            displayNews();
         }
 
         return view;
@@ -69,11 +69,12 @@ public class NewsFragment extends Fragment {
     private void doNewsFetch() {
         if (!refreshing) {
             refreshing = true;
+            pullLayout.setRefreshing(true);
             if (ContentFetcher.isNewsSyncing()) {
                 BaseWaiter waiter = new NewsWaiter(getActivity(), adapter, this);
                 waiter.startWaiting();
             } else {
-                FetcherPackage fetcherPackage = new FetcherPackage(getActivity(), null, null, null, null, false, null);
+                FetcherPackage fetcherPackage = new FetcherPackage(getActivity(), false, null);
                 fetcherPackage.setSource(this);
                 fetcherPackage.setNewsAdapter(adapter);
                 ContentFetcher.fetchNews(fetcherPackage);

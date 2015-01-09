@@ -30,6 +30,8 @@ public class FixtureListAdapter extends BaseAdapter {
     private Context context;
     private LayoutInflater inflater;
 
+    private boolean mode;
+
     public FixtureListAdapter(Context context, ArrayList<Fixture> fixtures) {
         this.context = context;
         this.fixtures = fixtures;
@@ -43,6 +45,10 @@ public class FixtureListAdapter extends BaseAdapter {
         fixtures.clear();
         byeWeekPositions.clear();
         futureFixturePositions.clear();
+    }
+
+    public void setMode(boolean mode) {
+        this.mode = mode;
     }
 
     private static class ViewHolder {
@@ -193,7 +199,11 @@ public class FixtureListAdapter extends BaseAdapter {
             }
         }
 
-        viewHolder.week.setText("WEEK " + fixture.getWeek());
+        if (!mode) {
+            viewHolder.week.setText("WEEK " + fixture.getWeek());
+        } else {
+            viewHolder.week.setText("");
+        }
 
         viewHolder.homeTeamName.setText(fixture.getHomeTeam());
         Bitmap bitmap = TeamHelper.getTeamLogo(fixture.getHomeTeam().toLowerCase());

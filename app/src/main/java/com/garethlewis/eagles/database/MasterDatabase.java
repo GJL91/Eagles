@@ -4,13 +4,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.util.Log;
 
 import com.garethlewis.eagles.entities.Standing;
-import com.garethlewis.eagles.util.FileHandler;
-import com.garethlewis.eagles.util.ScheduleParams;
 import com.garethlewis.eagles.util.TeamHelper;
 
 public class MasterDatabase extends SQLiteOpenHelper {
@@ -58,6 +54,12 @@ public class MasterDatabase extends SQLiteOpenHelper {
                 "PointsAgainst INTEGER NOT NULL, " +
                 "Streak INTEGER NOT NULL);";
 
+    private static final String SCHEDULE_PARAMS_CREATE =
+            "CREATE Table ScheduleParams (" +
+                    "LastResultWeek INTEGER NOT NULL, " +
+                    "FirstFixtureWeek INTEGER NOT NULL, " +
+                    "NextGameTime INTEGER NOT NULL);";
+
     private Context context;
 
     public MasterDatabase(Context context) {
@@ -78,9 +80,11 @@ public class MasterDatabase extends SQLiteOpenHelper {
         db.execSQL(SCHEDULE_CREATE);
         db.execSQL(UPDATED_CREATE);
         db.execSQL(STANDINGS_CREATE);
+        db.execSQL(SCHEDULE_PARAMS_CREATE);
 
         insertInitialUpdates(db);
         insertInitialStandings(db);
+        insertScheduleParams(db);
 
 //        Cursor cursor = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
 //        while (cursor.moveToNext()) {
@@ -96,6 +100,7 @@ public class MasterDatabase extends SQLiteOpenHelper {
             db.execSQL("DROP TABLE IF EXISTS Schedule");
             db.execSQL("DROP TABLE IF EXISTS LastUpdated");
             db.execSQL("DROP TABLE IF EXISTS Standings");
+            db.execSQL("DROP TABLE IF EXISTS ScheduleParams");
 
             DATABASE_VERSION = newVersion;
             onCreate(db);
@@ -150,22 +155,36 @@ public class MasterDatabase extends SQLiteOpenHelper {
 
     }
 
+    private void insertScheduleParams(SQLiteDatabase db) {
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put("LastResultWeek","0");
+        contentValues.put("FirstFixtureWeek","0");
+        contentValues.put("NextGameTime","0");
+
+        db.insert("ScheduleParams", null, contentValues);
+
+        ScheduleParamsSQLiteHelper paramsDB = ScheduleParamsSQLiteHelper.getInstance(context);
+        paramsDB.readParams();
+    }
+
     public void resetDatabase() {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        ScheduleParams.setFirstFixture(0);
-        ScheduleParams.setLastResult(0);
-        ScheduleParams.setNextGameTime(0);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            new FileHandler.writeScheduleParams().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void) null);
-        } else {
-            new FileHandler.writeScheduleParams().execute();
-        }
+//        ScheduleParams.setFirstFixture(0);
+//        ScheduleParams.setLastResult(0);
+//        ScheduleParams.setNextGameTime(0);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+//            new FileHandler.writeScheduleParams().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void) null);
+//        } else {
+//            new FileHandler.writeScheduleParams().execute();
+//        }
 
         db.execSQL("DROP TABLE IF EXISTS Media");
         db.execSQL("DROP TABLE IF EXISTS Schedule");
         db.execSQL("DROP TABLE IF EXISTS LastUpdated");
         db.execSQL("DROP TABLE IF EXISTS Standings");
+        db.execSQL("DROP TABLE IF EXISTS ScheduleParams");
 
         onCreate(db);
 

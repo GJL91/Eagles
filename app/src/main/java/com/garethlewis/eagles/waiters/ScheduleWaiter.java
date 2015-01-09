@@ -1,13 +1,12 @@
 package com.garethlewis.eagles.waiters;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.garethlewis.eagles.R;
+import com.garethlewis.eagles.adapters.FixtureListAdapter;
 import com.garethlewis.eagles.database.ScheduleSQLiteHelper;
 import com.garethlewis.eagles.database.StandingsSQLiteHelper;
 import com.garethlewis.eagles.entities.Fixture;
@@ -20,26 +19,21 @@ import java.util.List;
 public class ScheduleWaiter extends BaseWaiter {
 
     private Context context;
-    private LayoutInflater inflater;
     private View view;
-    private LinearLayout linearLayout;
-    private LinearLayout progress;
+    private FixtureListAdapter adapter;
     private Spinner spinner;
     private boolean mode;
 
-    public ScheduleWaiter(Context context, LayoutInflater inflater, View view, LinearLayout linearLayout, LinearLayout progress, Spinner spinner, boolean mode) {
+    public ScheduleWaiter(Context context, View view, FixtureListAdapter adapter, Spinner spinner, boolean mode) {
         this.context = context;
-        this.inflater = inflater;
         this.view = view;
-        this.linearLayout = linearLayout;
-        this.progress = progress;
+        this.adapter = adapter;
         this.spinner = spinner;
         this.mode = mode;
     }
 
     @Override
     public void startWaiting() {
-        progress.setVisibility(View.VISIBLE);
         waitTask(ContentFetcher.SCHEDULE);
     }
 
@@ -51,6 +45,7 @@ public class ScheduleWaiter extends BaseWaiter {
             String record = standingsDB.getRecord("Eagles");
             recordView.setText(record);
         }
+
         ScheduleSQLiteHelper scheduleDB = ScheduleSQLiteHelper.getInstance(context);
         List<Fixture> fixtures;
         if (mode) {
@@ -62,7 +57,6 @@ public class ScheduleWaiter extends BaseWaiter {
             fixtures = scheduleDB.getFixturesForTeam("Eagles");
         }
 
-        ScheduleViewHelper.displayList(context, inflater, linearLayout, fixtures, mode);
-        progress.setVisibility(View.GONE);
+        ScheduleViewHelper.displayList(adapter, fixtures, mode);
     }
 }

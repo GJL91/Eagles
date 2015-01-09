@@ -1,72 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!--<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"-->
-    <!--android:layout_width="fill_parent"-->
-    <!--android:layout_height="fill_parent"-->
-    <!--android:id="@+id/scrollView"-->
-    <!--android:layout_gravity="center_horizontal|top"-->
-    <!--android:scrollbars="none">-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/off_white"
+    android:paddingStart="10dp"
+    android:paddingEnd="10dp"
+    android:orientation="vertical">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="@color/off_white"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        android:orientation="vertical">
-
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="30dp"
-            android:gravity="center"
-            android:textSize="18sp"
-            android:textColor="@color/black"
-            android:layout_marginBottom="4dp"
-            android:background="@color/white"
-            android:text="@string/twitter_headline"/>
-
-        <LinearLayout
-            android:id="@+id/home_twitter_progress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@color/white"
-            android:visibility="gone" >
-
-            <ProgressBar
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="?android:attr/progressBarStyleLarge"
-                android:layout_gravity="center"
-                android:paddingTop="20dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/fetch_twitter"
-                android:textSize="20sp"
-                android:gravity="center"
-                android:paddingTop="20dp"
-                android:paddingBottom="10dp"/>
-
-        </LinearLayout>
-
-        <!--<LinearLayout-->
-            <!--android:id="@+id/home_twitter_list"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:orientation="vertical"-->
-            <!--android:background="@color/off_white"-->
-            <!--android:paddingBottom="8dp" />-->
+    <com.baoyz.widget.PullRefreshLayout
+        android:id="@+id/home_twitter_swipe_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <ListView
             android:id="@+id/home_twitter_list"
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
             android:background="@color/off_white"
-            android:divider="@null"
-            android:dividerHeight="0dp" />
+            android:divider="@color/off_white"
+            android:dividerHeight="3dp"
+            android:scrollbars="none"
+            android:overScrollMode="never"/>
 
-    </LinearLayout>
+    </com.baoyz.widget.PullRefreshLayout>
 
-<!--</ScrollView>-->
+</LinearLayout>

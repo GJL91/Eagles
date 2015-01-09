@@ -2,7 +2,6 @@ package com.garethlewis.eagles.util;
 
 import android.os.AsyncTask;
 import android.os.Build;
-import android.view.View;
 
 import com.garethlewis.eagles.fetchers.NewsFetcher;
 import com.garethlewis.eagles.fetchers.ScheduleFetcher;
@@ -61,7 +60,6 @@ public class ContentFetcher {
         }
 
         syncing[0] = true;
-        fetcherPackage.getProgress().setVisibility(View.VISIBLE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             new ScheduleFetcher().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, fetcherPackage);
         } else {
@@ -75,7 +73,6 @@ public class ContentFetcher {
         }
 
         syncing[1] = true;
-//        fetcherPackage.getProgress().setVisibility(View.VISIBLE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             new NewsFetcher().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, fetcherPackage);
         } else {
@@ -89,17 +86,10 @@ public class ContentFetcher {
         }
 
         syncing[TWITTER] = true;
-        fetcherPackage.getProgress().setVisibility(View.VISIBLE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             new TweetFetcher().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, fetcherPackage);
         } else {
             new TweetFetcher().execute(fetcherPackage);
         }
     }
-
-//    /* Methods for creating tasks to wait for fetching to finish. */
-//
-//    public static void waitSchedule(LayoutInflater inflater, View view, LinearLayout linearLayout, LinearLayout progress) {
-//
-//    }
 }

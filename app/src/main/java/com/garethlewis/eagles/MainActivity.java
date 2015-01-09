@@ -2,8 +2,6 @@ package com.garethlewis.eagles;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -15,6 +13,7 @@ import android.view.Menu;
 import android.view.View;
 
 import com.garethlewis.eagles.database.MasterDatabase;
+import com.garethlewis.eagles.database.ScheduleParamsSQLiteHelper;
 import com.garethlewis.eagles.fragments.NavigationDrawerFragment;
 import com.garethlewis.eagles.fragments.home.HomeFragment;
 import com.garethlewis.eagles.fragments.news.NewsFragment;
@@ -43,13 +42,10 @@ public class MainActivity extends FragmentActivity
 
         TeamHelper.setupTeams(this);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            new FileHandler.readScheduleParams().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void) null);
-        } else {
-            new FileHandler.readScheduleParams().execute();
-        }
-
 //        db.resetDatabase();
+
+        ScheduleParamsSQLiteHelper paramsDB = ScheduleParamsSQLiteHelper.getInstance(this);
+        paramsDB.readParams();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -122,8 +118,8 @@ public class MainActivity extends FragmentActivity
     public void refresh(View view) {
         HomeFragment fragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag("Fragment_Home");
         fragment.homeContentPagerAdapter.homeContentFragments[0].refreshNews();
-//        fragment.homeContentPagerAdapter.homeContentFragments[1].refreshSchedule();
-        fragment.homeContentPagerAdapter.homeContentFragments[2].refreshTwitter(getLayoutInflater());
+        fragment.homeContentPagerAdapter.homeContentFragments[1].refreshSchedule();
+        fragment.homeContentPagerAdapter.homeContentFragments[2].refreshTwitter();
     }
 
     public void clearData(View view) {
@@ -182,11 +178,6 @@ public class MainActivity extends FragmentActivity
 
     public void fetchSchedules(View view) {
         // TODO: Update for schedule.
-//        LinearLayout list = (LinearLayout) findViewById(R.id.home_media_list);
-//        View errorView = findViewById(R.id.news_error);
-//        if (errorView != null) {
-//            list.removeView(errorView);
-//        }
 
         HomeFragment fragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag("Fragment_Home");
         fragment.homeContentPagerAdapter.homeContentFragments[1].refreshSchedule();
@@ -194,7 +185,7 @@ public class MainActivity extends FragmentActivity
 
     public void fetchTwitter(View view) {
         HomeFragment fragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag("Fragment_Home");
-        fragment.homeContentPagerAdapter.homeContentFragments[2].refreshTwitter(getLayoutInflater());
+        fragment.homeContentPagerAdapter.homeContentFragments[2].refreshTwitter();
     }
 
     @Override
