@@ -8,77 +8,20 @@
     android:paddingRight="10dp"
     android:orientation="vertical">
 
-    <LinearLayout
+    <com.baoyz.widget.PullRefreshLayout
+        android:id="@+id/schedule_swipe_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="match_parent">
 
-        <Spinner
-            android:id="@+id/team_spinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+        <ListView
+            android:id="@+id/fixtures_list"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="@color/off_white"
+            android:paddingBottom="8dp"
+            android:divider="@color/off_white"
+            android:dividerHeight="3dp"/>
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
-        <Spinner
-            android:id="@+id/week_spinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="end"/>
-
-    </LinearLayout>
-
-    <ListView
-        android:id="@+id/fixtures_list"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="@color/off_white"
-        android:paddingBottom="8dp"
-        android:divider="@color/off_white"
-        android:dividerHeight="3dp"/>
-
-    <!--<ScrollView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:scrollbars="none">-->
-
-        <!--<LinearLayout-->
-            <!--android:id="@+id/fixtures_list"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:orientation="vertical"-->
-            <!--android:background="@color/off_white"-->
-            <!--android:paddingBottom="8dp">-->
-
-            <!--<LinearLayout-->
-                <!--android:id="@+id/schedule_progress"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:orientation="vertical"-->
-                <!--android:visibility="gone" >-->
-
-                <!--<TextView-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text="@string/fetch_schedules"-->
-                    <!--android:textSize="20sp"-->
-                    <!--android:gravity="center"-->
-                    <!--android:paddingTop="40dp"/>-->
-
-                <!--<ProgressBar-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--style="?android:attr/progressBarStyleLarge"-->
-                    <!--android:layout_gravity="center"-->
-                    <!--android:paddingTop="10dp" />-->
-
-            <!--</LinearLayout>-->
-
-        <!--</LinearLayout>-->
-
-    <!--</ScrollView>-->
+    </com.baoyz.widget.PullRefreshLayout>
 
 </LinearLayout>

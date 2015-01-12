@@ -60,6 +60,14 @@ public class MainActivity extends FragmentActivity
     }
 
     @Override
+    protected void onResume() {
+        if (fragmentDisplayed != 0) {
+            displayFragment(0);
+        }
+        super.onResume();
+    }
+
+    @Override
     public void onNavigationDrawerItemSelected(int position) {
         if (fragmentDisplayed != position - 1) {
             displayFragment(position - 1);
@@ -166,12 +174,6 @@ public class MainActivity extends FragmentActivity
 //    }
 
     public void fetchNews(View view) {
-//        ListView list = (ListView) findViewById(R.id.home_media_list);
-//        View errorView = findViewById(R.id.news_error);
-//        if (errorView != null) {
-//            list.removeView(errorView);
-//        }
-
         HomeFragment fragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag("Fragment_Home");
         fragment.homeContentPagerAdapter.homeContentFragments[0].refreshNews();
     }

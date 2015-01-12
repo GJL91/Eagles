@@ -56,9 +56,10 @@ public class MasterDatabase extends SQLiteOpenHelper {
 
     private static final String SCHEDULE_PARAMS_CREATE =
             "CREATE Table ScheduleParams (" +
-                    "LastResultWeek INTEGER NOT NULL, " +
-                    "FirstFixtureWeek INTEGER NOT NULL, " +
-                    "NextGameTime INTEGER NOT NULL);";
+                "ID INTEGER NOT NULL PRIMARY KEY, " +
+                "LastResultWeek INTEGER NOT NULL, " +
+                "FirstFixtureWeek INTEGER NOT NULL, " +
+                "NextGameTime INTEGER NOT NULL);";
 
     private Context context;
 
@@ -158,6 +159,7 @@ public class MasterDatabase extends SQLiteOpenHelper {
     private void insertScheduleParams(SQLiteDatabase db) {
         ContentValues contentValues = new ContentValues();
 
+        contentValues.put("ID","0");
         contentValues.put("LastResultWeek","0");
         contentValues.put("FirstFixtureWeek","0");
         contentValues.put("NextGameTime","0");

@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.garethlewis.eagles.util.ScheduleParams;
 
@@ -46,11 +47,13 @@ public class ScheduleParamsSQLiteHelper extends MasterDatabase {
 
         ContentValues contentValues = new ContentValues();
 
+        contentValues.put("ID", "0");
         contentValues.put("LastResultWeek", ScheduleParams.getLastResult());
         contentValues.put("FirstFixtureWeek", ScheduleParams.getFirstFixture());
         contentValues.put("NextGameTime", ScheduleParams.getNextGameTime());
 
-        db.replace(TABLE_NAME, null, contentValues);
+        boolean result = db.replace(TABLE_NAME, null, contentValues) != -1;
+        Log.e("Eagles", "Result of replace = " + result);
     }
 
 //    public void setParameters(int lastResult, int firstFixture, long nextGame) {
