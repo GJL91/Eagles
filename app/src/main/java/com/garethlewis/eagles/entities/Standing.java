@@ -1,9 +1,13 @@
 package com.garethlewis.eagles.entities;
 
+import android.content.Context;
 import android.support.annotation.Nullable;
+
+import com.garethlewis.eagles.database.ScheduleSQLiteHelper;
 
 public class Standing implements Comparable<Standing>{
 
+    private Context context;
     private String name;
 
     private int wins;
@@ -56,6 +60,14 @@ public class Standing implements Comparable<Standing>{
         this.pointsFor = 0;
         this.pointsAgainst = 0;
         this.streak = 0;
+    }
+
+    public Context getContext() {
+        return context;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
     }
 
     public void setName(String name) {
@@ -244,6 +256,7 @@ public class Standing implements Comparable<Standing>{
     public int compareTo(@Nullable Standing other) {
         if (other == null) return 1;
 
+        // Team with better won-lost-tied record.
         float myPct = (float) (this.wins + (this.ties / 2)) / (float) (this.wins + this.losses + this.ties);
         float otherPct = (float) (other.wins + (other.ties / 2)) / (float) (other.wins + other.losses + other.ties);
 
@@ -254,8 +267,18 @@ public class Standing implements Comparable<Standing>{
             return (Float.compare(myPct, otherPct) * -1);
         }
 
-        // TODO: check results against each other.
+        // Team with better head-to-head won-lost-tied record.
+        ScheduleSQLiteHelper db = ScheduleSQLiteHelper.getInstance(context);
+        float headToHead = db.checkHeadToHead(this.name, other.name);
 
+        tmp1 = String.format("%.3f", headToHead);
+        tmp2 = String.format("%.3f", 1 - headToHead);
+
+        if (!tmp1.equals(tmp2)) {
+            return (Float.compare(headToHead, (1 - headToHead)) * -1);
+        }
+
+        // Team with better won-lost-tied record in divisional games
         myPct = (float) (this.divisionWins + (this.divisionTies / 2)) / (float) (this.divisionWins + this.divisionLosses + this.divisionTies);
         otherPct = (float) (other.divisionWins + (other.divisionTies / 2)) / (float) (other.divisionWins + other.divisionLosses + other.divisionTies);
 
@@ -266,16 +289,19 @@ public class Standing implements Comparable<Standing>{
             return (Float.compare(myPct, otherPct) * -1);
         }
 
+        // TODO: check results in common games
+
+        // Team with better won-lost-tied record in conference games
         myPct = (float) (this.conferenceWins + (this.conferenceTies / 2)) / (float) (this.conferenceWins + this.conferenceLosses + this.conferenceTies);
         otherPct = (float) (other.conferenceWins + (other.conferenceTies / 2)) / (float) (other.conferenceWins + other.conferenceLosses + other.conferenceTies);
 
-//        tmp1 = String.format("%.3f", myPct);
-//        tmp2 = String.format("%.3f", otherPct);
+//        tmp1 =  String.format("%.3f", otherPct);
 
 //        if (!tmp1.equals(tmp2)) {
             return (Float.compare(myPct, otherPct) * -1);
 //        }
-        
-//        return 0;
+
+        // TODO: check strength of victory
+
     }
 }

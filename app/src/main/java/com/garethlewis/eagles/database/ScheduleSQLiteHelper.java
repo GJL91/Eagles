@@ -39,10 +39,10 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
         super(context);
     }
 
-    public boolean deleteAllFixtures() {
-        SQLiteDatabase dbw = this.getWritableDatabase();
-        return (dbw.delete("Schedule", "1", null) > 0);
-    }
+//    public boolean deleteAllFixtures() {
+//        SQLiteDatabase dbw = this.getWritableDatabase();
+//        return (dbw.delete("Schedule", "1", null) > 0);
+//    }
 
     public boolean getAdded(String home, String away, String week) {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -115,36 +115,36 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
         return true;
     }
 
-    /**
-     * Takes a single <code>Fixture</code> and adds it to the database.
-     * If the fixture already exists then it replaces the found record.
-     * @param item The Fixture to insert.
-     * @return If the insert was successful.
-     */
-    public boolean insertFixture(Fixture item) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-
-        contentValues.put(COLUMN_DATE, Fixture.dateStringToEpoch(item.getDate()));
-        contentValues.put(COLUMN_HOME_TEAM, item.getHomeTeam());
-        contentValues.put(COLUMN_AWAY_TEAM, item.getAwayTeam());
-        contentValues.put(COLUMN_WEEK, item.getWeek());
-        if (item.getHomeScore() != null) {
-            contentValues.put(COLUMN_HOME_TEAM_SCORE, item.getHomeScore());
-        }
-        if (item.getAwayScore() != null) {
-            contentValues.put(COLUMN_AWAY_TEAM_SCORE, item.getAwayScore());
-        }
-        int id = getFixture(db, item);
-        boolean success;
-        if(id != -1){
-            contentValues.put(COLUMN_ID,id);
-            success = (db.replace(TABLE_SCHEDULE, null, contentValues) != -1);
-        }else{
-            success = (db.insert(TABLE_SCHEDULE, null, contentValues) != -1);
-        }
-        return success;
-    }
+//    /**
+//     * Takes a single <code>Fixture</code> and adds it to the database.
+//     * If the fixture already exists then it replaces the found record.
+//     * @param item The Fixture to insert.
+//     * @return If the insert was successful.
+//     */
+//    public boolean insertFixture(Fixture item) {
+//        SQLiteDatabase db = this.getWritableDatabase();
+//        ContentValues contentValues = new ContentValues();
+//
+//        contentValues.put(COLUMN_DATE, Fixture.dateStringToEpoch(item.getDate()));
+//        contentValues.put(COLUMN_HOME_TEAM, item.getHomeTeam());
+//        contentValues.put(COLUMN_AWAY_TEAM, item.getAwayTeam());
+//        contentValues.put(COLUMN_WEEK, item.getWeek());
+//        if (item.getHomeScore() != null) {
+//            contentValues.put(COLUMN_HOME_TEAM_SCORE, item.getHomeScore());
+//        }
+//        if (item.getAwayScore() != null) {
+//            contentValues.put(COLUMN_AWAY_TEAM_SCORE, item.getAwayScore());
+//        }
+//        int id = getFixture(db, item);
+//        boolean success;
+//        if(id != -1){
+//            contentValues.put(COLUMN_ID,id);
+//            success = (db.replace(TABLE_SCHEDULE, null, contentValues) != -1);
+//        }else{
+//            success = (db.insert(TABLE_SCHEDULE, null, contentValues) != -1);
+//        }
+//        return success;
+//    }
 
     /**
      * Gets the next game for the specified team.
@@ -228,7 +228,7 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
      * @return A list of fixtures or results for the specified team
      */
     public List<Fixture> getFixturesForTeam(String teamName){
-        List<Fixture> fixtureList = new ArrayList<Fixture>();
+        List<Fixture> fixtureList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         String[] selectionArgs = new String[]{teamName, teamName};
         String orderBy = COLUMN_ID + " ASC";
@@ -247,7 +247,7 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
      * @return a list of the fixtures.
      */
     public List<Fixture> getFixturesForWeek(int week) {
-        List<Fixture> fixtureList = new ArrayList<Fixture>();
+        List<Fixture> fixtureList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         String[] selectionArgs = new String[]{"" + week};
         Cursor cursor = db.rawQuery("SELECT * FROM SCHEDULE WHERE Week = ?;", selectionArgs);
@@ -262,7 +262,7 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
     }
 
     public List<Fixture> getPostseasonFixtures() {
-        List<Fixture> fixtureList = new ArrayList<Fixture>();
+        List<Fixture> fixtureList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         String[] selectionArgs = new String[] {"17"};
         Cursor cursor = db.rawQuery("SELECT * FROM SCHEDULE WHERE CAST(Week as INTEGER) > ?;", selectionArgs);
@@ -323,5 +323,43 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
         }
         cursor.close();
         return id;
+    }
+
+    public float checkHeadToHead(String team1, String team2) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String[] selectionArgs = new String[] {team1, team2};
+        Cursor cursor = db.rawQuery("SELECT HomeTeamScore, AwayTeamScore FROM SCHEDULE WHERE (HomeTeam = ? AND AwayTeam = ?)", selectionArgs);
+
+        int wins = 0, losses = 0, ties = 0;
+        while (cursor.moveToNext()) {
+            int home = cursor.getInt(0), away = cursor.getInt(1);
+            if (home > away) {
+                wins++;
+            } else {
+                if (away > home) {
+                    losses++;
+                } else {
+                    ties++;
+                }
+            }
+        }
+
+        cursor = db.rawQuery("SELECT HomeTeamScore, AwayTeamScore FROM SCHEDULE WHERE (AwayTeam = ? AND HomeTeam = ?)", selectionArgs);
+        while (cursor.moveToNext()) {
+            int home = cursor.getInt(0), away = cursor.getInt(1);
+            if (home > away) {
+                losses++;
+            } else {
+                if (away > home) {
+                    wins++;
+                } else {
+                    ties++;
+                }
+            }
+        }
+
+        return (float) (wins + ties) / (float) (wins + losses + ties);
+//        Cursor cursor = db.rawQuery("SELECT AwayTeam FROM SCHEDULE WHERE (HomeTeam = ? AND HomeTeamScore > AwayTeamScore And HomeTeamScore != -1 AND Status = 2);", selectionArgs);
     }
 }
