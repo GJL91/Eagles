@@ -31,15 +31,15 @@ public class StandingsSQLiteHelper extends MasterDatabase {
         super(context);
     }
 
-    public boolean deleteAllStandings() {
-        SQLiteDatabase dbw = this.getWritableDatabase();
-        return (dbw.delete("Standings", "1", null) > 0);
-    }
+//    public boolean deleteAllStandings() {
+//        SQLiteDatabase dbw = this.getWritableDatabase();
+//        return (dbw.delete("Standings", "1", null) > 0);
+//    }
 
     public List<Fixture> updateStandings(List<Fixture> fixtures) {
         SQLiteDatabase db = this.getWritableDatabase();
         Standing[] standings = getExistingStandings(db);
-        List<Fixture> addedToStandings = new ArrayList<Fixture>();
+        List<Fixture> addedToStandings = new ArrayList<>();
 
         for (Fixture f : fixtures) {
             ScheduleSQLiteHelper scheduleDB = ScheduleSQLiteHelper.getInstance(context);
@@ -146,19 +146,22 @@ public class StandingsSQLiteHelper extends MasterDatabase {
             String record = cursor.getString(0) + " - " + cursor.getString(1);
             String ties = cursor.getString(2);
             if (!"0".equals(ties)) record += (" - " + ties);
+            cursor.close();
             return record;
         }
+        cursor.close();
         Log.e("EAGLES", "Failed to find standings for: " + team);
         return "X-X";
     }
 
-    public void printTeamNames() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT Name FROM STANDINGS", null);
-        while (cursor.moveToNext()) {
-            String name = cursor.getString(0);
-            Log.e("EAGLES", "Has Record: '" + name + "'");
-        }
-    }
+//    public void printTeamNames() {
+//        SQLiteDatabase db = this.getReadableDatabase();
+//        Cursor cursor = db.rawQuery("SELECT Name FROM STANDINGS", null);
+//        while (cursor.moveToNext()) {
+//            String name = cursor.getString(0);
+//            Log.e("EAGLES", "Has Record: '" + name + "'");
+//        }
+//        cursor.close();
+//    }
 
 }

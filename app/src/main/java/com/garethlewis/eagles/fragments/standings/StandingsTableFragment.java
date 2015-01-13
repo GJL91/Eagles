@@ -2,7 +2,6 @@ package com.garethlewis.eagles.fragments.standings;
 
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,7 +79,7 @@ public class StandingsTableFragment extends android.support.v4.app.Fragment {
         String[] titles = new String[] {"NFC", "AFC"};
 
         for (int i = 0; i < 34; i++) {
-            Log.e("EAGLES", "" + i);
+//            Log.e("EAGLES", "" + i);
             TextView view = (TextView) inflater.inflate(R.layout.standings_table_name_item, null, false);
             if (i % 17 == 0) {
                 view.setText(titles[i / 17]);
@@ -337,7 +336,7 @@ public class StandingsTableFragment extends android.support.v4.app.Fragment {
             for (int j = 0; j < 12; j++) {
                 sortedStandings[index++] = temp[j];
             }
-            index+= 5;
+            index += 5;
         }
 
         return sortedStandings;

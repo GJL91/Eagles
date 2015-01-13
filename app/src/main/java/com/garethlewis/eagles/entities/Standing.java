@@ -289,19 +289,42 @@ public class Standing implements Comparable<Standing>{
             return (Float.compare(myPct, otherPct) * -1);
         }
 
-        // TODO: check results in common games
+        // Team with better won-lost-tied record in common games
+        float[] commonGames = db.checkCommonGames(this.name, other.name);
+
+        tmp1 = String.format("%.3f", commonGames[0]);
+        tmp2 = String.format("%.3f", commonGames[1]);
+
+        if (!tmp1.equals(tmp2)) {
+            return (Float.compare(commonGames[0], commonGames[1]) * -1);
+        }
 
         // Team with better won-lost-tied record in conference games
         myPct = (float) (this.conferenceWins + (this.conferenceTies / 2)) / (float) (this.conferenceWins + this.conferenceLosses + this.conferenceTies);
         otherPct = (float) (other.conferenceWins + (other.conferenceTies / 2)) / (float) (other.conferenceWins + other.conferenceLosses + other.conferenceTies);
 
-//        tmp1 =  String.format("%.3f", otherPct);
+        tmp1 = String.format("%.3f", myPct);
+        tmp2 = String.format("%.3f", otherPct);
 
-//        if (!tmp1.equals(tmp2)) {
+        if (!tmp1.equals(tmp2)) {
             return (Float.compare(myPct, otherPct) * -1);
-//        }
+        }
 
-        // TODO: check strength of victory
+        // Team with better strength of victory (combined record of all teams beaten)
+        myPct = db.checkStrengthOfVictory(this.name);
+        otherPct = db.checkStrengthOfVictory(other.name);
 
+        tmp1 = String.format("%.3f", myPct);
+        tmp2 = String.format("%.3f", otherPct);
+
+        if (!tmp1.equals(tmp2)) {
+            return (Float.compare(myPct, otherPct) * -1);
+        }
+
+        // Team with better strength of schedule (combined record of all teams played)
+        myPct = db.checkStrengthOfSchedule(this.name);
+        otherPct = db.checkStrengthOfSchedule(other.name);
+
+        return (Float.compare(myPct, otherPct) * -1);
     }
 }

@@ -4,13 +4,16 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.garethlewis.eagles.entities.Fixture;
 import com.garethlewis.eagles.util.TeamHelper;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ScheduleSQLiteHelper extends MasterDatabase {
     private static ScheduleSQLiteHelper sInstance;
@@ -329,7 +332,7 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
         SQLiteDatabase db = this.getReadableDatabase();
 
         String[] selectionArgs = new String[] {team1, team2};
-        Cursor cursor = db.rawQuery("SELECT HomeTeamScore, AwayTeamScore FROM SCHEDULE WHERE (HomeTeam = ? AND AwayTeam = ?)", selectionArgs);
+        Cursor cursor = db.rawQuery("SELECT HomeTeamScore, AwayTeamScore FROM SCHEDULE WHERE (HomeTeam = ? AND AwayTeam = ? AND CAST(Week AS INTEGER) <= 17)", selectionArgs);
 
         int wins = 0, losses = 0, ties = 0;
         while (cursor.moveToNext()) {
@@ -345,7 +348,8 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
             }
         }
 
-        cursor = db.rawQuery("SELECT HomeTeamScore, AwayTeamScore FROM SCHEDULE WHERE (AwayTeam = ? AND HomeTeam = ?)", selectionArgs);
+        cursor.close();
+        cursor = db.rawQuery("SELECT HomeTeamScore, AwayTeamScore FROM SCHEDULE WHERE (AwayTeam = ? AND HomeTeam = ? AND CAST(Week AS INTEGER) <= 17)", selectionArgs);
         while (cursor.moveToNext()) {
             int home = cursor.getInt(0), away = cursor.getInt(1);
             if (home > away) {
@@ -359,7 +363,227 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
             }
         }
 
+        cursor.close();
         return (float) (wins + ties) / (float) (wins + losses + ties);
 //        Cursor cursor = db.rawQuery("SELECT AwayTeam FROM SCHEDULE WHERE (HomeTeam = ? AND HomeTeamScore > AwayTeamScore And HomeTeamScore != -1 AND Status = 2);", selectionArgs);
+    }
+
+    public float[] checkCommonGames(String team1, String team2) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String[] selectionArgs = new String[] {team1};
+        Cursor cursor = db.rawQuery("SELECT AwayTeam, HomeTeamScore, AwayTeamScore FROM SCHEDULE WHERE HomeTeam = ? AND Status = 2 AND AwayTeam <> ''  AND CAST(Week AS INTEGER) <= 17", selectionArgs);
+
+        List<Integer> results = new ArrayList<>();
+
+        List<String> opponents = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            opponents.add(cursor.getString(0));
+            int home = cursor.getInt(1), away = cursor.getInt(2);
+            if (home > away) {
+                results.add(2);
+            } else {
+                if (away > home) {
+                    results.add(0);
+                } else {
+                    results.add(1);
+                }
+            }
+        }
+
+        cursor.close();
+        cursor = db.rawQuery("SELECT HomeTeam, HomeTeamScore, AwayTeamScore FROM SCHEDULE WHERE AwayTeam = ? AND Status = 2 AND CAST(Week AS INTEGER) <= 17", selectionArgs);
+        while (cursor.moveToNext()) {
+            opponents.add(cursor.getString(0));
+            int home = cursor.getInt(1), away = cursor.getInt(2);
+            if (home > away) {
+                results.add(0);
+            } else {
+                if (away > home) {
+                    results.add(2);
+                } else {
+                    results.add(1);
+                }
+            }
+        }
+
+        Set<String> set = new HashSet<>(opponents);
+        opponents.clear();
+        opponents.addAll(set);
+
+        // Create a
+        String homeWhereClause = "";
+        String awayWhereClause = "";
+        int size = opponents.size();
+
+        selectionArgs = new String[size];
+
+        for (int i = 0; i < size; i++) {
+            if (i != 0) {
+                homeWhereClause += " OR AwayTeam = ?";
+                awayWhereClause += " OR HomeTeam = ?";
+            } else {
+                homeWhereClause += "WHERE HomeTeam = '" + team2 + "' AND (AwayTeam = ?";
+                awayWhereClause += "WHERE AwayTeam = '" + team2 + "' AND (HomeTeam = ?";
+            }
+            selectionArgs[i] = opponents.get(i);
+        }
+
+        if (!"".equals(homeWhereClause)) {
+            homeWhereClause += ");";
+        }
+        if (!"".equals(awayWhereClause)) {
+            awayWhereClause += ");";
+        }
+
+        int team1Wins = 0, team1Losses = 0, team1Ties = 0;
+        int team2Wins = 0, team2Losses = 0, team2Ties = 0;
+
+        cursor.close();
+        cursor = db.rawQuery("SELECT AwayTeam, HomeTeamScore, AwayTeamScore FROM SCHEDULE " + homeWhereClause, selectionArgs);
+        while (cursor.moveToNext()) {
+            int home = cursor.getInt(1), away = cursor.getInt(2);
+            int index = opponents.indexOf(cursor.getString(0));
+            int result = results.get(index);
+            if (result == 0) {
+                team1Losses++;
+            } else  {
+                if (result == 1) {
+                    team1Ties++;
+                } else {
+                    team1Wins++;
+                }
+            }
+
+            if (home > away) {
+                team2Wins++;
+            } else {
+                if (away > home) {
+                    team2Losses++;
+                } else {
+                    team2Ties++;
+                }
+            }
+        }
+
+        cursor.close();
+        cursor = db.rawQuery("SELECT HomeTeam, HomeTeamScore, AwayTeamScore FROM SCHEDULE " + awayWhereClause, selectionArgs);
+        while (cursor.moveToNext()) {
+            int home = cursor.getInt(1), away = cursor.getInt(2);
+            int index = opponents.indexOf(cursor.getString(0));
+            int result = results.get(index);
+            if (result == 0) {
+                team1Losses++;
+            } else  {
+                if (result == 1) {
+                    team1Ties++;
+                } else {
+                    team1Wins++;
+                }
+            }
+
+            if (home > away) {
+                team2Losses++;
+            } else {
+                if (away > home) {
+                    team2Wins++;
+                } else {
+                    team2Ties++;
+                }
+            }
+        }
+
+        float team1Pct = (float) (team1Wins + (team1Ties / 2)) / (float) (team1Wins + team1Losses + team1Ties);
+        float team2Pct = (float) (team2Wins + (team2Ties / 2)) / (float) (team2Wins + team2Losses + team2Ties);
+
+//        Log.e("EAGLES",team1 + " - " + team1Pct + ", " + team2 + " - " + team2Pct);
+
+        return new float[] {team1Pct, team2Pct};
+    }
+
+    public float checkStrengthOfVictory(String team) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String[] selectionArgs = new String[] { team };
+        Cursor cursor = db.rawQuery("SELECT AwayTeam FROM SCHEDULE WHERE HomeTeam = ? AND HomeTeamScore > AwayTeamScore AND Status = 2 AND CAST(Week AS INTEGER) <= 17", selectionArgs);
+
+        List<String> victories = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            victories.add(cursor.getString(0));
+        }
+
+        cursor.close();
+
+        cursor = db.rawQuery("SELECT HomeTeam FROM SCHEDULE WHERE AwayTeam = ? AND AwayTeamScore > HomeTeamScore AND Status = 2 AND CAST(Week AS INTEGER)<= 17", selectionArgs);
+
+        while (cursor.moveToNext()) {
+            victories.add(cursor.getString(0));
+        }
+
+        int[] record = new int[3]; // [0] = wins, [1] = losses, [2] = ties.
+        int count = victories.size();
+
+        StandingsSQLiteHelper standingsDB = StandingsSQLiteHelper.getInstance(getContext());
+        for (int i = 0; i < count; i++) {
+            record = readRecord(standingsDB, record, victories.get(i));
+        }
+
+        cursor.close();
+        return ((record[0] + ((float) record[2] / 2)) / (float) (record[0] + record[1] + record[2]));
+    }
+
+    public float checkStrengthOfSchedule(String team) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String[] selectionArgs = new String[] { team };
+        Cursor cursor = db.rawQuery("SELECT AwayTeam FROM SCHEDULE WHERE HomeTeam = ? AND Status = 2 AND AwayTeam <> '' AND CAST(Week AS INTEGER) <= 17", selectionArgs);
+
+        List<String> victories = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            victories.add(cursor.getString(0));
+        }
+
+        cursor.close();
+
+        cursor = db.rawQuery("SELECT HomeTeam FROM SCHEDULE WHERE AwayTeam = ? AND Status = 2 AND CAST(Week AS INTEGER) <= 17", selectionArgs);
+
+        while (cursor.moveToNext()) {
+            victories.add(cursor.getString(0));
+        }
+
+        int[] record = new int[3]; // [0] = wins, [1] = losses, [2] = ties.
+        int count = victories.size();
+
+        StandingsSQLiteHelper standingsDB = StandingsSQLiteHelper.getInstance(getContext());
+        for (int i = 0; i < count; i++) {
+            record = readRecord(standingsDB, record, victories.get(i));
+        }
+
+        cursor.close();
+        return ((record[0] + ((float) record[2] / 2)) / (float) (record[0] + record[1] + record[2]));
+    }
+
+    private int[] readRecord(StandingsSQLiteHelper db, int[] total, String team) {
+        String record = db.getRecord(team); // In format X-X(-X)
+        String[] parts = record.split("-");
+
+        try {
+            int ties = 0;
+            int wins = Integer.parseInt(parts[0].trim());
+            int losses = Integer.parseInt(parts[1].trim());
+
+            if (parts.length > 2) {
+                ties = Integer.parseInt(parts[2].trim());
+            }
+
+            total[0] += wins;
+            total[1] += losses;
+            total[2] += ties;
+        } catch (NumberFormatException e) {
+            // Error getting record from database. Message already thrown, so do nothing.
+            Log.e("EAGLES1","'" + team + "': " + e.getMessage());
+        }
+
+        return total;
     }
 }
