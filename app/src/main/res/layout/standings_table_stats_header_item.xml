@@ -6,121 +6,145 @@
     android:layout_height="30dp">
 
     <TextView
-        android:id="@+id/standings_wins_text"
+        android:id="@+id/standings_header_wins_text"
         android:layout_width="50dp"
         android:layout_height="match_parent"
+        android:background="@color/grey"
         android:gravity="center"
         android:textColor="@color/black"
+        android:textStyle="bold"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
         android:textSize="12sp"/>
 
     <TextView
-        android:id="@+id/standings_losses_text"
+        android:id="@+id/standings_header_losses_text"
         android:layout_width="50dp"
         android:layout_height="match_parent"
+        android:background="@color/grey"
         android:gravity="center"
         android:textColor="@color/black"
+        android:textStyle="bold"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
         android:textSize="12sp"/>
 
     <TextView
-        android:id="@+id/standings_ties_text"
+        android:id="@+id/standings_header_ties_text"
         android:layout_width="50dp"
         android:layout_height="match_parent"
+        android:background="@color/grey"
         android:gravity="center"
         android:textColor="@color/black"
+        android:textStyle="bold"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
         android:textSize="12sp"/>
 
     <TextView
-        android:id="@+id/standings_percent_text"
+        android:id="@+id/standings_header_percent_text"
         android:layout_width="50dp"
         android:layout_height="match_parent"
+        android:background="@color/grey"
         android:gravity="center"
         android:textColor="@color/black"
+        android:textStyle="bold"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
         android:textSize="12sp"/>
 
     <TextView
-        android:id="@+id/standings_home_text"
+        android:id="@+id/standings_header_home_text"
         android:layout_width="50dp"
         android:layout_height="match_parent"
+        android:background="@color/grey"
         android:gravity="center"
         android:textColor="@color/black"
+        android:textStyle="bold"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
         android:textSize="12sp"/>
 
     <TextView
-        android:id="@+id/standings_road_text"
+        android:id="@+id/standings_header_road_text"
         android:layout_width="50dp"
         android:layout_height="match_parent"
+        android:background="@color/grey"
         android:gravity="center"
         android:textColor="@color/black"
+        android:textStyle="bold"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
         android:textSize="12sp"/>
 
     <TextView
-        android:id="@+id/standings_division_text"
+        android:id="@+id/standings_header_division_text"
         android:layout_width="50dp"
         android:layout_height="match_parent"
+        android:background="@color/grey"
         android:gravity="center"
         android:textColor="@color/black"
+        android:textStyle="bold"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
         android:textSize="12sp"/>
 
     <TextView
-        android:id="@+id/standings_conference_text"
+        android:id="@+id/standings_header_conference_text"
         android:layout_width="50dp"
         android:layout_height="match_parent"
+        android:background="@color/grey"
         android:gravity="center"
         android:textColor="@color/black"
+        android:textStyle="bold"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
         android:textSize="12sp"/>
 
     <TextView
-        android:id="@+id/standings_points_for_text"
+        android:id="@+id/standings_header_points_for_text"
         android:layout_width="50dp"
         android:layout_height="match_parent"
+        android:background="@color/grey"
         android:gravity="center"
         android:textColor="@color/black"
+        android:textStyle="bold"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
         android:textSize="12sp" />
 
     <TextView
-        android:id="@+id/standings_points_against_text"
+        android:id="@+id/standings_header_points_against_text"
         android:layout_width="50dp"
         android:layout_height="match_parent"
+        android:background="@color/grey"
         android:gravity="center"
         android:textColor="@color/black"
+        android:textStyle="bold"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
         android:textSize="12sp" />
 
     <TextView
-        android:id="@+id/standings_diff_text"
+        android:id="@+id/standings_header_diff_text"
         android:layout_width="50dp"
         android:layout_height="match_parent"
+        android:background="@color/grey"
         android:gravity="center"
         android:textColor="@color/black"
+        android:textStyle="bold"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
         android:textSize="12sp" />
 
     <TextView
-        android:id="@+id/standings_streak_text"
+        android:id="@+id/standings_header_streak_text"
         android:layout_width="50dp"
         android:layout_height="match_parent"
+        android:background="@color/grey"
         android:gravity="center"
         android:textColor="@color/black"
+        android:textStyle="bold"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
         android:textSize="12sp" />
