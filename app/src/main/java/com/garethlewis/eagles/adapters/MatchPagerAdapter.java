@@ -1,15 +1,23 @@
 package com.garethlewis.eagles.adapters;
 
-import android.support.v4.app.FragmentManager;
+import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.garethlewis.eagles.database.ScheduleSQLiteHelper;
 import com.garethlewis.eagles.fragments.home.MatchPagerFragment;
 
 public class MatchPagerAdapter extends FragmentPagerAdapter {
 
+    private Context context;
+
     public MatchPagerAdapter(FragmentManager fm) {
         super(fm);
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
     }
 
     @Override
@@ -23,6 +31,14 @@ public class MatchPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return 3;
+        ScheduleSQLiteHelper db = ScheduleSQLiteHelper.getInstance(context);
+
+        String team = "Eagles";
+
+        int total = 1;
+        if (db.hasPreviousGame(team)) total++;
+        if (db.hasNextGame(team)) total++;
+
+        return total;
     }
 }

@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import com.garethlewis.eagles.R;
 import com.garethlewis.eagles.adapters.HomeContentPagerAdapter;
 import com.garethlewis.eagles.adapters.MatchPagerAdapter;
+import com.garethlewis.eagles.database.ScheduleSQLiteHelper;
 import com.garethlewis.eagles.tabs.TabPageIndicator;
 
 public class HomeFragment extends Fragment {
@@ -48,9 +49,14 @@ public class HomeFragment extends Fragment {
         ViewPager mViewPager = (ViewPager) root.findViewById(R.id.placeholder_pager);
 
         MatchPagerAdapter mMatchPagerAdapter = new MatchPagerAdapter(getChildFragmentManager());
+        mMatchPagerAdapter.setContext(getActivity());
         mViewPager.setAdapter(mMatchPagerAdapter);
         mViewPager.setOffscreenPageLimit(2);
-        mViewPager.setCurrentItem(1);
+
+        ScheduleSQLiteHelper db = ScheduleSQLiteHelper.getInstance(getActivity());
+        if (db.hasPreviousGame("Eagles")) {
+            mViewPager.setCurrentItem(1);
+        }
 
         mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override

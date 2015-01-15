@@ -152,27 +152,6 @@ public class MainActivity extends FragmentActivity
         dialog.show();
     }
 
-//    public void refetchData() {
-//        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-//        dialog.setMessage("Data cleared, gather now?");
-//        dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                refresh(null);
-//            }
-//        });
-//
-//        dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                // Do nothing.
-//            }
-//        });
-//
-//        dialog.setCancelable(false);
-//        dialog.show();
-//    }
-
     public void fetchNews(View view) {
         HomeFragment fragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag("Fragment_Home");
         fragment.homeContentPagerAdapter.homeContentFragments[0].refreshNews();

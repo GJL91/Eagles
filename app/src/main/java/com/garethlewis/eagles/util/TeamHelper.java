@@ -45,6 +45,13 @@ public class TeamHelper {
     }
 
     public static String getTriCode(String nickname) {
+        if ("Jets".equals(nickname)) {
+            return "NYJ";
+        } else {
+            if ("Giants".equals(nickname)) {
+                return "NYG";
+            }
+        }
         return getTeamPlacename(nickname).substring(0, 3).toUpperCase();
     }
 

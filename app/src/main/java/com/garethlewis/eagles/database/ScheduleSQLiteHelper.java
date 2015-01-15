@@ -149,6 +149,28 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
 //        return success;
 //    }
 
+    public boolean hasPreviousGame(String teamName) {
+        return getLastGame(teamName) != null;
+    }
+
+    public boolean hasNextGame(String teamName) {
+        return getNextGame(teamName) != null;
+    }
+
+    public Fixture getInProgress(String teamName) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String where = COLUMN_STATUS + " = 1 AND (" + MATCH_TEAM + ")";
+        String[] selectionArgs = new String[] {teamName, teamName};
+
+        Cursor cursor = db.query(TABLE_SCHEDULE, null, where, selectionArgs, null, null, null, "1");
+        Fixture fixture = null;
+        while (cursor.moveToNext()) {
+            fixture = cursorToFixture(cursor);
+        }
+        cursor.close();
+        return fixture;
+    }
+
     /**
      * Gets the next game for the specified team.
      * @param teamName team to retrieve the next game for.
@@ -156,7 +178,7 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
      */
     public Fixture getNextGame(String teamName) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String where = COLUMN_DATE + " > ? AND ( " + MATCH_TEAM + ")";
+        String where = COLUMN_DATE + " > ? AND (" + MATCH_TEAM + ")";
         String[] selectionArgs = new String[]{String.valueOf(new Date().getTime()), teamName, teamName};
         String orderBy = COLUMN_DATE + " ASC";
         Cursor cursor = db.query(TABLE_SCHEDULE, null, where, selectionArgs, null, null, orderBy, "1");
@@ -169,9 +191,9 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
     }
 
     /**
-     * Gets the previous two games for the specified team.
-     * @param teamName team to retrieve the previous two games for.
-     * @return A list of the previous two results.
+     * Gets the previous fixture for the specified team.
+     * @param teamName team to retrieve the previous fixture for.
+     * @return The previous fixture.
      */
     public Fixture getLastGame(String teamName) {
         SQLiteDatabase db = this.getReadableDatabase();

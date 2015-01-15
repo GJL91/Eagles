@@ -52,9 +52,6 @@ public class ScheduleFragment extends Fragment {
 
         ListView list = (ListView) parent.findViewById(R.id.fixtures_list);
 
-        View header = inflater.inflate(R.layout.schedule_spinner_header, list, false);
-        list.addHeaderView(header);
-
         adapter = new FixtureListAdapter(getActivity(), new ArrayList<Fixture>());
         list.setAdapter(adapter);
 
