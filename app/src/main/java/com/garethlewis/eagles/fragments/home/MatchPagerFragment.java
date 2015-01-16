@@ -74,9 +74,14 @@ public class MatchPagerFragment extends android.support.v4.app.Fragment {
                     String overviewText = away + " @ " + home + "\n" + awayScore + " - " + homeScore + " " + result;
                     TextView textView = (TextView) view.findViewById(R.id.empty_prev_match_text);
                     textView.setText(overviewText);
+                } else {
+                    View icon = view.findViewById(R.id.empty_previous_icon);
+                    if (icon != null) {
+                        icon.setVisibility(View.GONE);
+                    }
                 }
 
-                game = scheduleDB.getLastGame("Eagles");
+                game = scheduleDB.getNextGame("Eagles");
                 if (game != null) {
                     // Get fixture preview text e.g. CAR @ PHI\nNov 11 1:30 AM
                     String away = TeamHelper.getTriCode(game.getAwayTeam());
@@ -89,6 +94,11 @@ public class MatchPagerFragment extends android.support.v4.app.Fragment {
                     String previewText = away + " @ " + home + "\n" + date;
                     TextView textView = (TextView) view.findViewById(R.id.empty_next_match_text);
                     textView.setText(previewText);
+                } else {
+                    View icon = view.findViewById(R.id.empty_next_icon);
+                    if (icon != null) {
+                        icon.setVisibility(View.GONE);
+                    }
                 }
             }
 
@@ -131,9 +141,7 @@ public class MatchPagerFragment extends android.support.v4.app.Fragment {
                 imageView.setImageBitmap(bitmap);
             } else {
                 view = inflater.inflate(R.layout.fragment_next_match, container, false);
-//                ScheduleSQLiteHelper scheduleDB = ScheduleSQLiteHelper.getInstance(getActivity());
-//                Fixture nextGame = scheduleDB.getNextGame("Eagles");
-                Fixture nextGame = scheduleDB.getLastGame("Eagles");
+                Fixture nextGame = scheduleDB.getNextGame("Eagles");
 
                 if (nextGame == null) {
                     return view;

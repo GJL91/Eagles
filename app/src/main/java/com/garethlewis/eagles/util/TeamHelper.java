@@ -45,13 +45,21 @@ public class TeamHelper {
     }
 
     public static String getTriCode(String nickname) {
-        if ("Jets".equals(nickname)) {
-            return "NYJ";
-        } else {
-            if ("Giants".equals(nickname)) {
-                return "NYG";
-            }
+        switch (nickname) {
+            case "49ers" : return "SF";
+            case "Buccaneers" : return "TB";
+            case "Chargers" : return "SD";
+            case "Chiefs" : return "KC";
+            case "Giants" : return "NYG";
+            case "Jaguars" : return "JAX";
+            case "Jets" : return "NYJ";
+            case "Packers" : return "GB";
+            case "Patriots" : return "NE";
+            case "Rams" : return "STL";
+            case "Redskins" : return "WSH";
+            case "Saints" : return "NO";
         }
+
         return getTeamPlacename(nickname).substring(0, 3).toUpperCase();
     }
 
