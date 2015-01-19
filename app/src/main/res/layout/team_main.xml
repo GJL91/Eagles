@@ -1,7 +1,381 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:background="@color/eaglesGreen"
+        android:textSize="30sp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:text="@string/statistics_page_header"/>
+
+    <com.baoyz.widget.PullRefreshLayout
+        android:id="@+id/stats_swipe_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:scrollbars="none"
+            android:overScrollMode="never">
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="fill_parent"
+                    android:layout_height="30dp"
+                    android:background="@color/off_white"
+                    android:gravity="center"
+                    android:text="@string/passing_header"
+                    android:textAllCaps="true"
+                    android:textColor="@color/grey" />
+
+                <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/off_white"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp">
+
+                    <ListView
+                        android:id="@+id/team_passing_name_layout"
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:divider="@null"
+                        android:dividerHeight="0dp"
+                        android:scrollbars="none"
+                        android:overScrollMode="never" />
+
+                    <HorizontalScrollView
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent">
+
+                        <ListView
+                            android:id="@+id/team_passing_stats_layout"
+                            android:layout_width="wrap_content"
+                            android:layout_height="fill_parent"
+                            android:divider="@null"
+                            android:dividerHeight="0dp"
+                            android:scrollbars="none"
+                            android:overScrollMode="never" />
+
+                    </HorizontalScrollView>
+
+                </LinearLayout>
+
+                <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="fill_parent"
+                    android:layout_height="30dp"
+                    android:background="@color/off_white"
+                    android:gravity="center"
+                    android:text="@string/rushing_header"
+                    android:textAllCaps="true"
+                    android:textColor="@color/grey" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/off_white"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp">
+
+                    <ListView
+                        android:id="@+id/team_rushing_name_layout"
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:divider="@null"
+                        android:dividerHeight="0dp"
+                        android:scrollbars="none"
+                        android:overScrollMode="never" />
+
+                    <HorizontalScrollView
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent">
+
+                        <ListView
+                            android:id="@+id/team_rushing_stats_layout"
+                            android:layout_width="wrap_content"
+                            android:layout_height="fill_parent"
+                            android:divider="@null"
+                            android:dividerHeight="0dp"
+                            android:scrollbars="none"
+                            android:overScrollMode="never" />
+
+                    </HorizontalScrollView>
+
+                </LinearLayout>
+
+                <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="fill_parent"
+                    android:layout_height="30dp"
+                    android:background="@color/off_white"
+                    android:gravity="center"
+                    android:text="@string/receiving_header"
+                    android:textAllCaps="true"
+                    android:textColor="@color/grey" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/off_white"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp">
+
+                    <ListView
+                        android:id="@+id/team_receiving_name_layout"
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:divider="@null"
+                        android:dividerHeight="0dp"
+                        android:scrollbars="none"
+                        android:overScrollMode="never" />
+
+                    <HorizontalScrollView
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent">
+
+                        <ListView
+                            android:id="@+id/team_receiving_stats_layout"
+                            android:layout_width="wrap_content"
+                            android:layout_height="fill_parent"
+                            android:divider="@null"
+                            android:dividerHeight="0dp"
+                            android:scrollbars="none"
+                            android:overScrollMode="never" />
+
+                    </HorizontalScrollView>
+
+                </LinearLayout>
+
+                <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="fill_parent"
+                    android:layout_height="30dp"
+                    android:background="@color/off_white"
+                    android:gravity="center"
+                    android:text="@string/defending_header"
+                    android:textAllCaps="true"
+                    android:textColor="@color/grey" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/off_white"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp">
+
+                    <ListView
+                        android:id="@+id/team_defending_name_layout"
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:divider="@null"
+                        android:dividerHeight="0dp"
+                        android:scrollbars="none"
+                        android:overScrollMode="never" />
+
+                    <HorizontalScrollView
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent">
+
+                        <ListView
+                            android:id="@+id/team_defending_stats_layout"
+                            android:layout_width="wrap_content"
+                            android:layout_height="fill_parent"
+                            android:divider="@null"
+                            android:dividerHeight="0dp"
+                            android:scrollbars="none"
+                            android:overScrollMode="never" />
+
+                    </HorizontalScrollView>
+
+                </LinearLayout>
+
+                <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="fill_parent"
+                    android:layout_height="30dp"
+                    android:background="@color/off_white"
+                    android:gravity="center"
+                    android:text="@string/kick_returning_header"
+                    android:textAllCaps="true"
+                    android:textColor="@color/grey" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/off_white"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp">
+
+                    <ListView
+                        android:id="@+id/team_kickreturning_name_layout"
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:divider="@null"
+                        android:dividerHeight="0dp"
+                        android:scrollbars="none"
+                        android:overScrollMode="never" />
+
+                    <HorizontalScrollView
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent">
+
+                        <ListView
+                            android:id="@+id/team_kickreturning_stats_layout"
+                            android:layout_width="wrap_content"
+                            android:layout_height="fill_parent"
+                            android:divider="@null"
+                            android:dividerHeight="0dp"
+                            android:scrollbars="none"
+                            android:overScrollMode="never" />
+
+                    </HorizontalScrollView>
+
+                </LinearLayout>
+
+                <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="fill_parent"
+                    android:layout_height="30dp"
+                    android:background="@color/off_white"
+                    android:gravity="center"
+                    android:text="@string/punt_returning_header"
+                    android:textAllCaps="true"
+                    android:textColor="@color/grey" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/off_white"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp">
+
+                    <ListView
+                        android:id="@+id/team_puntreturning_name_layout"
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:divider="@null"
+                        android:dividerHeight="0dp"
+                        android:scrollbars="none"
+                        android:overScrollMode="never" />
+
+                    <HorizontalScrollView
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent">
+
+                        <ListView
+                            android:id="@+id/team_puntreturning_stats_layout"
+                            android:layout_width="wrap_content"
+                            android:layout_height="fill_parent"
+                            android:divider="@null"
+                            android:dividerHeight="0dp"
+                            android:scrollbars="none"
+                            android:overScrollMode="never" />
+
+                    </HorizontalScrollView>
+
+                </LinearLayout>
+
+                <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="fill_parent"
+                    android:layout_height="30dp"
+                    android:background="@color/off_white"
+                    android:gravity="center"
+                    android:text="@string/kicking_header"
+                    android:textAllCaps="true"
+                    android:textColor="@color/grey" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/off_white"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp">
+
+                    <ListView
+                        android:id="@+id/team_kicking_name_layout"
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:divider="@null"
+                        android:dividerHeight="0dp"
+                        android:scrollbars="none"
+                        android:overScrollMode="never" />
+
+                    <HorizontalScrollView
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent">
+
+                        <ListView
+                            android:id="@+id/team_kicking_stats_layout"
+                            android:layout_width="wrap_content"
+                            android:layout_height="fill_parent"
+                            android:divider="@null"
+                            android:dividerHeight="0dp"
+                            android:scrollbars="none"
+                            android:overScrollMode="never" />
+
+                    </HorizontalScrollView>
+
+                </LinearLayout>
+
+                <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="fill_parent"
+                    android:layout_height="30dp"
+                    android:background="@color/off_white"
+                    android:gravity="center"
+                    android:text="@string/punting_header"
+                    android:textAllCaps="true"
+                    android:textColor="@color/grey" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/off_white"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp">
+
+                    <ListView
+                        android:id="@+id/team_punting_name_layout"
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:divider="@null"
+                        android:dividerHeight="0dp"
+                        android:scrollbars="none"
+                        android:overScrollMode="never" />
+
+                    <HorizontalScrollView
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent">
+
+                        <ListView
+                            android:id="@+id/team_punting_stats_layout"
+                            android:layout_width="wrap_content"
+                            android:layout_height="fill_parent"
+                            android:divider="@null"
+                            android:dividerHeight="0dp"
+                            android:scrollbars="none"
+                            android:overScrollMode="never" />
+
+                    </HorizontalScrollView>
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="10dp"
+                    android:background="@color/off_white"/>
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </com.baoyz.widget.PullRefreshLayout>
 
 </LinearLayout>

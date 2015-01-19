@@ -20,6 +20,7 @@ import com.garethlewis.eagles.fragments.news.NewsFragment;
 import com.garethlewis.eagles.fragments.schedule.ScheduleFragment;
 import com.garethlewis.eagles.fragments.settings.SettingsFragment;
 import com.garethlewis.eagles.fragments.standings.StandingsFragment;
+import com.garethlewis.eagles.fragments.team.TeamFragment;
 import com.garethlewis.eagles.util.FileHandler;
 import com.garethlewis.eagles.util.TeamHelper;
 
@@ -86,9 +87,10 @@ public class MainActivity extends FragmentActivity
                 fragment = new NewsFragment();
                 fragmentTag = "Fragment_News";
                 break;
-//                case 2:
-//                    fragment = new TeamFragment();
-//                    break;
+            case 2:
+                fragment = new TeamFragment();
+                fragmentTag = "Fragment_Team";
+                break;
             case 3:
                 fragment = new ScheduleFragment();
                 fragmentTag = "Fragment_Schedule";
@@ -157,12 +159,12 @@ public class MainActivity extends FragmentActivity
         fragment.homeContentPagerAdapter.homeContentFragments[0].refreshNews();
     }
 
-    public void fetchSchedules(View view) {
-        // TODO: Update for schedule.
-
-        HomeFragment fragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag("Fragment_Home");
-        fragment.homeContentPagerAdapter.homeContentFragments[1].refreshSchedule();
-    }
+//    public void fetchSchedules(View view) {
+//        // TODO: Update for schedule.
+//
+//        HomeFragment fragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag("Fragment_Home");
+//        fragment.homeContentPagerAdapter.homeContentFragments[1].refreshSchedule();
+//    }
 
     public void fetchTwitter(View view) {
         HomeFragment fragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag("Fragment_Home");

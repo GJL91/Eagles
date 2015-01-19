@@ -44,6 +44,11 @@ public class TeamHelper {
         }
     }
 
+//    public static String getTriCode(int index) {
+//        String nickname = getTeamNickname(index);
+//        return getTriCode(nickname);
+//    }
+
     public static String getTriCode(String nickname) {
         switch (nickname) {
             case "49ers" : return "SF";
@@ -58,9 +63,9 @@ public class TeamHelper {
             case "Rams" : return "STL";
             case "Redskins" : return "WSH";
             case "Saints" : return "NO";
+            default :
+                return getTeamPlacename(nickname).substring(0, 3).toUpperCase();
         }
-
-        return getTeamPlacename(nickname).substring(0, 3).toUpperCase();
     }
 
     public static String getTeamPlacename(String nickname) {
@@ -78,7 +83,6 @@ public class TeamHelper {
 //    }
 
     public static Bitmap getTeamLogo(String nickname) {
-//        int teamIndex = TeamHelper.getTeamIndex(team);
         int teamIndex = getTeamIndexFromNick(nickname);
         if (teamIndex != -1) {
             Bitmap bitmap;

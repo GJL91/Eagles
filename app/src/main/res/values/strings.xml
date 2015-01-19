@@ -40,4 +40,15 @@
     <string name="away_logo_description">Away team logo</string>
     <string name="home_logo_description">Home team logo</string>
 
+    <string name="passing_header">Passing</string>
+    <string name="rushing_header">Rushing</string>
+    <string name="receiving_header">Receiving</string>
+    <string name="defending_header">Defensive</string>
+    <string name="kick_returning_header">Kick Returns</string>
+    <string name="punt_returning_header">Punt Returns</string>
+    <string name="kicking_header">Kicking</string>
+    <string name="punting_header">Punting</string>
+
+    <string name="statistics_page_header">Statistics</string>
+
 </resources>

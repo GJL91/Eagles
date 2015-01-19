@@ -4,8 +4,10 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.view.View;
 
+import com.garethlewis.eagles.adapters.AllStatsListAdapter;
 import com.garethlewis.eagles.adapters.FixtureListAdapter;
 import com.garethlewis.eagles.adapters.NewsListAdapter;
+import com.garethlewis.eagles.adapters.StatsNameListAdapter;
 import com.garethlewis.eagles.adapters.TwitterListAdapter;
 
 public class FetcherPackage {
@@ -21,6 +23,9 @@ public class FetcherPackage {
     private NewsListAdapter newsListAdapter;
     private FixtureListAdapter fixtureListAdapter;
     private TwitterListAdapter twitterListAdapter;
+
+    private StatsNameListAdapter[] statsNameListAdapters;
+    private AllStatsListAdapter[] allStatsListAdapters;
 
     public FetcherPackage(Context context, boolean mode, View otherView) {
         this.context = context;
@@ -62,6 +67,22 @@ public class FetcherPackage {
 
     public void setTwitterAdapter(TwitterListAdapter twitterListAdapter) {
         this.twitterListAdapter = twitterListAdapter;
+    }
+
+    public StatsNameListAdapter[] getStatsNameAdapters() {
+        return statsNameListAdapters;
+    }
+
+    public void setStatsNameAdapters(StatsNameListAdapter[] statsNameListAdapters) {
+        this.statsNameListAdapters = statsNameListAdapters;
+    }
+
+    public AllStatsListAdapter[] getAllStatsAdapters() {
+        return allStatsListAdapters;
+    }
+
+    public void setAllStatsAdapters(AllStatsListAdapter[] allStatsListAdapters) {
+        this.allStatsListAdapters = allStatsListAdapters;
     }
 
     public Fragment getSource() {
