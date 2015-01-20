@@ -17,6 +17,7 @@ public class FetcherPackage {
 
     /** Whether the ScheduleFetcher should display only the Eagles Schedule */
     private boolean mode;
+    private int extra = -1;
 
     private Fragment source;
 
@@ -39,6 +40,14 @@ public class FetcherPackage {
 
     public boolean getMode() {
         return mode;
+    }
+
+    public int getExtra() {
+        return extra;
+    }
+
+    public void setExtra(int extra) {
+        this.extra = extra;
     }
 
     public View getOtherView() {

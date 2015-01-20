@@ -30,12 +30,6 @@
             android:layout_gravity="bottom"
             android:overScrollMode="never" />
 
-        <!--<com.viewpagerindicator.CirclePageIndicator-->
-            <!--android:id="@+id/circle_indicator"-->
-            <!--android:padding="10dip"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_width="fill_parent"/>-->
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -45,12 +39,9 @@
                 android:id="@+id/open_menu_button"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:background="@drawable/button_action"
-                android:text="@string/menu_image"
-                android:layout_marginLeft="20dp"
-                android:textSize="16sp"
-                android:textColor="@color/white"
-                android:onClick="openMenu" />
+                android:background="@drawable/menu_button_action"
+                android:layout_marginStart="20dp"
+                android:onClick="openMenu"/>
 
             <TextView
                 android:layout_width="0dp"
@@ -59,23 +50,15 @@
 
             <Button
                 android:id="@+id/refresh_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/refresh"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/refresh_button_action"
+                android:layout_marginEnd="20dp"
                 android:onClick="refresh" />
+
         </LinearLayout>
 
     </FrameLayout>
-
-    <!--LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="40dp"
-        android:orientation="horizontal"
-        android:background="@color/eaglesGreen">
-
-
-
-    </LinearLayout-->
 
     <com.garethlewis.eagles.tabs.TabPageIndicator
         style="@style/EaglesTabIndicator"
@@ -89,13 +72,5 @@
         android:layout_height="fill_parent"
         android:layout_gravity="bottom"
         android:overScrollMode="never" />
-
-
-
-    <!--FrameLayout
-        android:id="@+id/placeholder_content"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
-    </FrameLayout-->
 
 </LinearLayout>

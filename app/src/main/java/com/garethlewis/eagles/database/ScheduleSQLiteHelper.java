@@ -211,6 +211,14 @@ public class ScheduleSQLiteHelper extends MasterDatabase {
         return lastGame;
     }
 
+    public boolean gameInProgress(String team) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String where = COLUMN_STATUS + " = 1 AND (" + MATCH_TEAM + ")";
+        String[] whereClause = new String[]{team, team};
+        Cursor cursor = db.query(TABLE_SCHEDULE, null, where, whereClause, null, null, null);
+        return cursor.moveToFirst();
+    }
+
     public boolean gameInProgress() {
         SQLiteDatabase db = this.getReadableDatabase();
         String where = COLUMN_STATUS + " = 1";

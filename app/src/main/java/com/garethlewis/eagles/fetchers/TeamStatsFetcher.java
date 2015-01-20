@@ -8,6 +8,7 @@ import com.garethlewis.eagles.adapters.StatsNameListAdapter;
 import com.garethlewis.eagles.fragments.team.AllStatsViewHelper;
 import com.garethlewis.eagles.fragments.team.TeamFragment;
 import com.garethlewis.eagles.util.FetcherPackage;
+import com.garethlewis.eagles.util.TeamHelper;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -19,7 +20,7 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AllStatsFetcher extends AsyncTask<FetcherPackage, Void, List<List<List<String>>>> {
+public class TeamStatsFetcher extends AsyncTask<FetcherPackage, Void, List<List<List<String>>>> {
 
     private FetcherPackage fetcherPackage;
 
@@ -36,11 +37,17 @@ public class AllStatsFetcher extends AsyncTask<FetcherPackage, Void, List<List<L
 
         fetcherPackage = params[0];
 
+        String team = "phi";
+        int teamNumber = fetcherPackage.getExtra();
+        if (teamNumber != -1) {
+            team = TeamHelper.getTriCode(teamNumber).toLowerCase();
+        }
+
         int year = 2014;
         int season = 2;
 
         try {
-            String url = makeUrl("phi", "" + year, "" + season);
+            String url = makeUrl(team, "" + year, "" + season);
 
             Document doc;
             try {
@@ -181,6 +188,9 @@ public class AllStatsFetcher extends AsyncTask<FetcherPackage, Void, List<List<L
 
         stats.remove(6);
         stats.add(6, newKickers);
+
+        // TODO: Need to save the stats into a TeamStats database table.
+
 
         StatsNameListAdapter[] nameListAdapters = fetcherPackage.getStatsNameAdapters();
         AllStatsListAdapter[] allStatsListAdapters = fetcherPackage.getAllStatsAdapters();

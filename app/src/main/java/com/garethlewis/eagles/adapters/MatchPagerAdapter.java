@@ -34,6 +34,9 @@ public class MatchPagerAdapter extends FragmentPagerAdapter {
         ScheduleSQLiteHelper db = ScheduleSQLiteHelper.getInstance(context);
 
         String team = "Eagles";
+        if (db.gameInProgress(team)) {
+            return 1;
+        }
 
         int total = 1;
         if (db.hasPreviousGame(team)) total++;

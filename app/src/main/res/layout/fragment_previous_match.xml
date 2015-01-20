@@ -5,7 +5,6 @@
     android:layout_height="200dp">
 
     <LinearLayout
-        android:id="@+id/home_match_parent"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center|bottom"
@@ -16,7 +15,8 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="horizontal"
-            android:paddingBottom="12dp">
+            android:paddingBottom="12dp"
+            android:baselineAligned="false">
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -30,8 +30,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight="1"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="0dp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="0dp"
                     android:text="24"
                     android:textColor="@color/white"
                     android:textSize="30sp"
@@ -43,7 +43,8 @@
                     android:layout_height="30dp"
                     android:layout_weight="1"
                     android:scaleType="centerInside"
-                    android:src="@drawable/philadelphia" />
+                    android:src="@drawable/philadelphia"
+                    android:contentDescription="@string/away_logo_description"/>
 
             </LinearLayout>
 
@@ -95,7 +96,8 @@
                     android:layout_height="30dp"
                     android:layout_weight="1"
                     android:scaleType="centerInside"
-                    android:src="@drawable/arizona" />
+                    android:src="@drawable/arizona"
+                    android:contentDescription="@string/home_logo_description"/>
 
                 <TextView
                     android:id="@+id/previous_match_home_team_record"
@@ -103,9 +105,9 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight="1"
-                    android:gravity="right"
-                    android:paddingLeft="0dp"
-                    android:paddingRight="10dp"
+                    android:gravity="end"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="10dp"
                     android:textColor="@color/white"
                     android:textSize="30sp"
                     android:textStyle="bold" />
@@ -122,7 +124,7 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/heading_pass"
+                android:id="@+id/previous_match_heading_pass"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -133,7 +135,7 @@
                 android:textSize="18sp" />
 
             <TextView
-                android:id="@+id/heading_rush"
+                android:id="@+id/previous_match_heading_rush"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -144,7 +146,7 @@
                 android:textSize="18sp" />
 
             <TextView
-                android:id="@+id/heading_rec"
+                android:id="@+id/previous_match_heading_rec"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -168,8 +170,8 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:paddingLeft="8dp"
-                android:paddingRight="0dp">
+                android:paddingStart="8dp"
+                android:paddingEnd="0dp">
 
                 <TextView
                     android:id="@+id/away_player_name"
@@ -199,8 +201,8 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:paddingLeft="0dp"
-                android:paddingRight="8dp">
+                android:paddingStart="0dp"
+                android:paddingEnd="8dp">
 
                 <TextView
                     android:id="@+id/home_player_name"

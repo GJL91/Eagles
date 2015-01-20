@@ -33,14 +33,22 @@ public class MatchPagerFragment extends android.support.v4.app.Fragment {
         int basePosition = 0;
         ScheduleSQLiteHelper scheduleDB = ScheduleSQLiteHelper.getInstance(getActivity());
         Fixture previousGame = scheduleDB.getLastGame("Eagles");
-        if (previousGame == null) {
+        if (previousGame == null || scheduleDB.gameInProgress("Eagles")) {
             basePosition--;
         }
+
+        final TextView pass;
+        final TextView rush;
+        final TextView rec;
 
         if (position == basePosition + 1) {
             Fixture game = scheduleDB.getInProgress("Eagles");
             if (game != null) {
                 view = inflater.inflate(R.layout.fragment_current_match, container, false);
+
+                pass = (TextView) view.findViewById(R.id.current_match_heading_pass);
+                rush = (TextView) view.findViewById(R.id.current_match_heading_rush);
+                rec = (TextView) view.findViewById(R.id.current_match_heading_rec);
             } else {
                 view = inflater.inflate(R.layout.fragment_empty_match, container, false);
 
@@ -100,6 +108,10 @@ public class MatchPagerFragment extends android.support.v4.app.Fragment {
                         icon.setVisibility(View.GONE);
                     }
                 }
+
+                pass = null;
+                rush = null;
+                rec = null;
             }
 
         } else {
@@ -139,6 +151,10 @@ public class MatchPagerFragment extends android.support.v4.app.Fragment {
                 bitmap = TeamHelper.getTeamLogo(homeName);
                 imageView = (ImageView) view.findViewById(R.id.previous_match_home_team_image);
                 imageView.setImageBitmap(bitmap);
+
+                pass = (TextView) view.findViewById(R.id.previous_match_heading_pass);
+                rush = (TextView) view.findViewById(R.id.previous_match_heading_rush);
+                rec = (TextView) view.findViewById(R.id.previous_match_heading_rec);
             } else {
                 view = inflater.inflate(R.layout.fragment_next_match, container, false);
                 Fixture nextGame = scheduleDB.getNextGame("Eagles");
@@ -180,12 +196,14 @@ public class MatchPagerFragment extends android.support.v4.app.Fragment {
                 bitmap = TeamHelper.getTeamLogo(homeName);
                 imageView = (ImageView) view.findViewById(R.id.next_match_home_team_image);
                 imageView.setImageBitmap(bitmap);
+
+                pass = (TextView) view.findViewById(R.id.next_match_heading_pass);
+                rush = (TextView) view.findViewById(R.id.next_match_heading_rush);
+                rec = (TextView) view.findViewById(R.id.next_match_heading_rec);
             }
+        }
 
-            final TextView pass = (TextView) view.findViewById(R.id.heading_pass);
-            final TextView rush = (TextView) view.findViewById(R.id.heading_rush);
-            final TextView rec = (TextView) view.findViewById(R.id.heading_rec);
-
+        if (pass != null) {
             final int greyColour = getResources().getColor(R.color.translucent_black_dark);
             final int whiteColour = getResources().getColor(R.color.white);
 

@@ -44,10 +44,10 @@ public class TeamHelper {
         }
     }
 
-//    public static String getTriCode(int index) {
-//        String nickname = getTeamNickname(index);
-//        return getTriCode(nickname);
-//    }
+    public static String getTriCode(int index) {
+        String nickname = getTeamNickname(index);
+        return getTriCode(nickname);
+    }
 
     public static String getTriCode(String nickname) {
         switch (nickname) {
@@ -98,10 +98,12 @@ public class TeamHelper {
             } else {
                 bitmap = logos[teamIndex];
             }
+
             return bitmap;
         } else {
             Log.e("EAGLES", "Index not found for team: " + nickname);
         }
+
         return null;
     }
 
@@ -258,6 +260,7 @@ public class TeamHelper {
             }
             afcEastTeams = Arrays.asList(newArray);
         }
+
         if (afcEastTeams.contains(team1)) {
             return afcEastTeams.contains(team2);
         }
@@ -270,6 +273,7 @@ public class TeamHelper {
             }
             afcNorthTeams = Arrays.asList(newArray);
         }
+
         if (afcNorthTeams.contains(team1)) {
             return afcNorthTeams.contains(team2);
         }
@@ -282,6 +286,7 @@ public class TeamHelper {
             }
             afcSouthTeams = Arrays.asList(newArray);
         }
+
         if (afcSouthTeams.contains(team1)) {
             return afcSouthTeams.contains(team2);
         }
@@ -294,6 +299,7 @@ public class TeamHelper {
             }
             afcWestTeams = Arrays.asList(newArray);
         }
+
         if (afcWestTeams.contains(team1)) {
             return afcWestTeams.contains(team2);
         }
@@ -306,6 +312,7 @@ public class TeamHelper {
             }
             nfcEastTeams = Arrays.asList(newArray);
         }
+
         if (nfcEastTeams.contains(team1)) {
             return nfcEastTeams.contains(team2);
         }
@@ -318,6 +325,7 @@ public class TeamHelper {
             }
             nfcNorthTeams = Arrays.asList(newArray);
         }
+
         if (nfcNorthTeams.contains(team1)) {
              return nfcNorthTeams.contains(team2);
         }
@@ -330,6 +338,7 @@ public class TeamHelper {
             }
             nfcSouthTeams = Arrays.asList(newArray);
         }
+
         if (nfcSouthTeams.contains(team1)) {
             return nfcSouthTeams.contains(team2);
         }

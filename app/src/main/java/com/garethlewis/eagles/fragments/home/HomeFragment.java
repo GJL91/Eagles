@@ -34,14 +34,6 @@ public class HomeFragment extends Fragment {
 
     public HomeContentPagerAdapter homeContentPagerAdapter;
 
-//    private FragmentActivity fragmentActivity;
-//
-//    @Override
-//    public void onAttach(Activity activity) {
-//        fragmentActivity = (FragmentActivity) activity;
-//        super.onAttach(activity);
-//    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.home_main, container, false);
@@ -58,25 +50,34 @@ public class HomeFragment extends Fragment {
             mViewPager.setCurrentItem(1);
         }
 
-        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int i, float v, int i2) {}
-
-            @Override
-            public void onPageScrollStateChanged(int i) {}
-
-            @Override
-            public void onPageSelected(int position) {
-                if (position == 0 || position == 2) {
-                    if (!blurred) changeOnFinish = true;
-                    else {
-                        ((ImageView) root.findViewById(R.id.home_match_background)).setImageBitmap(blurredBackground);
-                    }
-                } else {
-                    ((ImageView) root.findViewById(R.id.home_match_background)).setImageBitmap(currentBackground);
+        if (!db.gameInProgress("Eagles")) { // If game in progress, there's only one screen.
+            mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                @Override
+                public void onPageScrolled(int i, float v, int i2) {
                 }
+
+                @Override
+                public void onPageScrollStateChanged(int i) {
+                }
+
+                @Override
+                public void onPageSelected(int position) {
+                    if (position == 0 || position == 2) {
+                        if (!blurred) changeOnFinish = true;
+                        else {
+                            ((ImageView) root.findViewById(R.id.home_match_background)).setImageBitmap(blurredBackground);
+                        }
+                    } else {
+                        ((ImageView) root.findViewById(R.id.home_match_background)).setImageBitmap(currentBackground);
+                    }
+                }
+            });
+        } else {
+            if (!blurred) changeOnFinish = true;
+            else {
+                ((ImageView) root.findViewById(R.id.home_match_background)).setImageBitmap(blurredBackground);
             }
-        });
+        }
 
         ViewPager contentViewPager = (ViewPager) root.findViewById(R.id.placeholder_content);
         HomeContentPagerAdapter mContentPagerAdapter = new HomeContentPagerAdapter(getChildFragmentManager());

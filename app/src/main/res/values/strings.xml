@@ -39,6 +39,11 @@
 
     <string name="away_logo_description">Away team logo</string>
     <string name="home_logo_description">Home team logo</string>
+    <string name="away_timeout_description">Timeouts for away team</string>
+    <string name="home_timeout_description">Timeouts for home team</string>
+    <string name="possession_description">If the team is in possession</string>
+    <string name="slide_left_description">Slide left for more</string>
+    <string name="slide_right_description">Slide right for more</string>
 
     <string name="passing_header">Passing</string>
     <string name="rushing_header">Rushing</string>

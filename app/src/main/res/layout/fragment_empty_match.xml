@@ -16,7 +16,9 @@
         <ImageView
             android:id="@+id/empty_previous_icon"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:src="@drawable/headline_slide_arrow_l"
+            android:contentDescription="@string/slide_left_description" />
 
         <TextView
             android:id="@+id/empty_prev_match_text"
@@ -45,7 +47,9 @@
         <ImageView
             android:id="@+id/empty_next_icon"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:src="@drawable/headline_slide_arrow_r"
+            android:contentDescription="@string/slide_right_description"/>
 
     </LinearLayout>
 

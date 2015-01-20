@@ -54,7 +54,7 @@
                     android:id="@+id/open_menu_button"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:background="@drawable/button_action"
+                    android:background="@drawable/menu_button_action"
                     android:text="@string/menu_image"
                     android:layout_marginLeft="20dp"
                     android:textSize="16dp"
